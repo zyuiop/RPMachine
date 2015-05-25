@@ -6,7 +6,7 @@ import net.zyuiop.rpmachine.economy.shops.ShopGsonHelper;
 import net.zyuiop.rpmachine.economy.shops.ShopSign;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
+import com.google.gson.Gson;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ShardedJedis;
 

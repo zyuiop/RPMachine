@@ -6,7 +6,7 @@ import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.cities.data.VirtualChunk;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
+import com.google.gson.Gson;
 import org.bukkit.entity.Player;
 
 import java.io.*;
