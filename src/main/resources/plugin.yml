@@ -1,0 +1,61 @@
+name: RPMachine
+main: net.zyuiop.RPMachine
+version: 0.42
+authors: [zyuiop]
+softdepend: [BukkitBridge]
+commands:
+   money:
+     description: Obtient votre monnaie actuelle
+     usage: /money
+   pay:
+     description: Paye un joueur
+     usage: /pay <joueur> <montant>
+   home:
+     description: Vous téléporte à votre home
+     usage: /home
+   spawn:
+     description: Vous téléporte au spawn du monde
+     usage: /spawn
+   sethome:
+     description: Définit votre home
+     usage: /sethome
+   fly:
+     description: Active/Désactive le fly
+     usage: /fly
+   endsee:
+     description: Affiche l'enderchest
+     usage: /endsee <pseudo>
+   city:
+     description: Commande de villes
+     usage: /city
+     aliases: [cities, c]
+   createcity:
+     description: Création de villes
+     usage: /createcity
+   plot:
+     description: Commande de parcelles
+     usage: /plot
+     aliases: [p, plots]
+   info:
+     description: Commande d'aide
+     usage: /help
+   floors:
+     description: Paliers de villes
+     usage: /floors
+   job:
+     description: Choisit un job
+     aliases: [jobs]
+     usage: /job [list] [info <nom>] [choose <nom>]
+   bypass:
+     description: Autorise le bypass des zones de villes
+     usage: /bypass
+     permission: rp.bypass
+   runtaxes:
+     description: Exécute le paiement des impôts de force.
+     usage: /runtaxes
+     permission: rp.runtaxes
+permissions:
+   rp.bypass:
+     default: op
+   rp.runtaxes:
+     default: op

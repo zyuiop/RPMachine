@@ -1,0 +1,68 @@
+package net.zyuiop.rpmachine.cities.data;
+
+/**
+ * This file is a part of the SamaGames project
+ * This code is absolutely confidential.
+ * Created by zyuiop
+ * (C) Copyright Elydra Network 2015
+ * All rights reserved.
+ */
+public class CityFloor {
+	private String name;
+	private int inhabitants;
+	private int maxsurface;
+	private int maxtaxes;
+	private int chunkPrice;
+
+	public CityFloor() {
+
+	}
+
+	public CityFloor(String name, int inhabitants, int maxsurface, int maxtaxes, int chunkPrice) {
+		this.name = name;
+		this.inhabitants = inhabitants;
+		this.maxsurface = maxsurface;
+		this.maxtaxes = maxtaxes;
+		this.chunkPrice = chunkPrice;
+	}
+
+	public int getChunkPrice() {
+		return chunkPrice;
+	}
+
+	public void setChunkPrice(int chunkPrice) {
+		this.chunkPrice = chunkPrice;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getInhabitants() {
+		return inhabitants;
+	}
+
+	public void setInhabitants(int inhabitants) {
+		this.inhabitants = inhabitants;
+	}
+
+	public int getMaxsurface() {
+		return maxsurface;
+	}
+
+	public void setMaxsurface(int maxsurface) {
+		this.maxsurface = maxsurface;
+	}
+
+	public int getMaxtaxes() {
+		return maxtaxes;
+	}
+
+	public void setMaxtaxes(int maxtaxes) {
+		this.maxtaxes = maxtaxes;
+	}
+}
