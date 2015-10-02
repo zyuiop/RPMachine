@@ -28,7 +28,7 @@ public class ScoreboardThread implements Runnable {
 	public ScoreboardThread(Player player) {
 		this.player = player;
 		this.uuid = player.getUniqueId();
-		sign = new ObjectiveSign("rp"+player.getName(), ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
+		sign = new ObjectiveSign(player.getName(), ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
 		sign.addReceiver(player);
 	}
 

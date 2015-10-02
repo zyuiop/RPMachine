@@ -76,7 +76,7 @@ public class RPMachine extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new SignsListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
 
-
+		Bukkit.getScheduler().runTaskTimer(this, () -> Bukkit.getWorld("world").save(), 7*20*60, 7*20*60);
 
 		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {

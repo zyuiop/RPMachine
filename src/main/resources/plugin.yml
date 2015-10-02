@@ -1,5 +1,5 @@
 name: RPMachine
-main: net.zyuiop.RPMachine
+main: net.zyuiop.rpmachine.RPMachine
 version: 0.42
 authors: [zyuiop]
 softdepend: [BukkitBridge]
