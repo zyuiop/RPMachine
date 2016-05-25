@@ -45,6 +45,8 @@ public class RPMachine extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
+		
+		saveDefaultConfig();
 
 		this.economyManager = new EconomyManager();
 		this.shopsManager = new ShopsManager();
