@@ -42,6 +42,9 @@ commands:
    floors:
      description: Paliers de villes
      usage: /floors
+   myshops:
+     description: Affiche vos shops
+     usage: /myshops
    job:
      description: Choisit un job
      aliases: [jobs]

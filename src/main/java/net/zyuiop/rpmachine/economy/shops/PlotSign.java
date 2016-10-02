@@ -1,6 +1,5 @@
 package net.zyuiop.rpmachine.economy.shops;
 
-import java.util.concurrent.CopyOnWriteArrayList;
 import net.minecraft.server.v1_8_R2.EntityFireworks;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -19,8 +18,14 @@ import org.bukkit.craftbukkit.v1_8_R2.entity.CraftFirework;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
+
+import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 
 public class PlotSign extends AbstractShopSign {
 	protected String plotName;
@@ -36,21 +41,6 @@ public class PlotSign extends AbstractShopSign {
 		this.plotName = regionName;
 		this.citizensOnly = citizensOnly;
 		this.cityName = cityName;
-	}
-
-	public static void launchfw(final Location loc, final FireworkEffect effect) {
-		final Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
-		FireworkMeta fwm = fw.getFireworkMeta();
-		fwm.addEffect(effect);
-		fwm.setPower(0);
-		fw.setFireworkMeta(fwm);
-		((CraftFirework) fw).getHandle().setInvisible(true);
-		Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), (Runnable) () -> {
-			net.minecraft.server.v1_8_R2.World w = (((CraftWorld) loc.getWorld()).getHandle());
-			EntityFireworks fireworks = ((CraftFirework) fw).getHandle();
-			w.broadcastEntityEffect(fireworks, (byte) 17);
-			fireworks.die();
-		}, 5);
 	}
 
 	public String getPlotName() {
@@ -117,6 +107,29 @@ public class PlotSign extends AbstractShopSign {
 	}
 
 	void clickUser(Player player, PlayerInteractEvent event) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
+			if (city == null) {
+				player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la ville n'existe pas.");
+				return;
+			}
+
+			Plot plot = city.getPlots().get(plotName);
+			if (plot == null) {
+				player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la parcelle n'existe pas.");
+				return;
+			}
+
+			player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
+			player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
+			player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
+			player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs²");
+			player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().getVolume() + " blocs³");
+			player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " $");
+
+			return;
+		}
+
 		EconomyManager manager = RPMachine.getInstance().getEconomyManager();
 		City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
 		if (city == null) {
@@ -160,5 +173,22 @@ public class PlotSign extends AbstractShopSign {
 				player.sendMessage(ChatColor.GREEN + "Vous êtes désormais propriétaire de cette parcelle.");
 			}
 		});
+	}
+
+
+
+	public static void launchfw(final Location loc, final FireworkEffect effect) {
+		final Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
+		FireworkMeta fwm = fw.getFireworkMeta();
+		fwm.addEffect(effect);
+		fwm.setPower(0);
+		fw.setFireworkMeta(fwm);
+		((CraftFirework)fw).getHandle().setInvisible(true);
+		Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), (Runnable) () -> {
+			net.minecraft.server.v1_8_R2.World w = (((CraftWorld) loc.getWorld()).getHandle());
+			EntityFireworks fireworks = ((CraftFirework)fw).getHandle();
+			w.broadcastEntityEffect(fireworks, (byte)17);
+			fireworks.die();
+		}, 5);
 	}
 }

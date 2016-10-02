@@ -13,11 +13,23 @@ import net.zyuiop.rpmachine.economy.commands.*;
 import net.zyuiop.rpmachine.economy.jobs.JobsManager;
 import net.zyuiop.rpmachine.economy.listeners.PlayerListener;
 import net.zyuiop.rpmachine.economy.listeners.SignsListener;
+import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.google.common.collect.Lists;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class RPMachine extends JavaPlugin {
@@ -38,7 +50,7 @@ public class RPMachine extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		
+
 		saveDefaultConfig();
 		if (!loadDatabase()) {
 			setEnabled(false);
@@ -68,13 +80,18 @@ public class RPMachine extends JavaPlugin {
 		getCommand("info").setExecutor(new CommandHelp());
 		getCommand("runtaxes").setExecutor(new CommandRuntaxes(citiesManager));
 		getCommand("bypass").setExecutor(new CommandBypass(citiesManager));
+		getCommand("myshops").setExecutor(new CommandShops(this));
 
 		Bukkit.getPluginManager().registerEvents(selectionManager, this);
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new SignsListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
 
-		Bukkit.getScheduler().runTaskTimer(this, () -> Bukkit.getWorld("world").save(), 7*20*60, 7*20*60);
+		Bukkit.getScheduler().runTaskTimer(this, () -> {
+			Bukkit.getLogger().info("Saving world...");
+			Bukkit.getWorld("world").save();
+			Bukkit.getLogger().info("Done !");
+		}, 20 * 60, 20 * 20 * 60);
 
 		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
@@ -83,6 +100,18 @@ public class RPMachine extends JavaPlugin {
 					player.sendMessage(ChatColor.GOLD + "Vous n'avez pas encore choisi de métier. Tapez /job pour plus d'infos.");
 			}
 		}, 100L, 3 * 60 * 20L);
+
+		ItemStack capturator = new ItemStack(Material.MOB_SPAWNER);
+		ItemMeta meta = capturator.getItemMeta();
+		meta.setDisplayName(ChatColor.GOLD + "PokeBall");
+		meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Clic droit sur un animal pour le capturer !", ChatColor.RED + "Attention !", ChatColor.RED + "Les données de l'entité ne sont pas conservées"));
+		capturator.setItemMeta(meta);
+		ShapedRecipe recipe = new ShapedRecipe(capturator);
+		recipe.shape("XXX", "XCX", "XXX");
+		recipe.setIngredient('X', Material.IRON_FENCE);
+		recipe.setIngredient('C', Material.CHEST);
+
+		Bukkit.addRecipe(recipe);
 
 		try {
 			Calendar calendar = new GregorianCalendar();

@@ -13,10 +13,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -71,8 +76,8 @@ public class CitiesListener implements Listener {
 
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onInteract(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_AIR)
-			return;
+		//if (event.getAction() == Action.RIGHT_CLICK_AIR)
+		//	return;
 
 		if (event.getAction() == Action.PHYSICAL) {
 			event.setCancelled(!manager.canBuild(event.getPlayer(), event.getClickedBlock().getLocation()));
@@ -90,7 +95,7 @@ public class CitiesListener implements Listener {
 		if (event.getClickedBlock() == null || !checkInteract.contains(event.getClickedBlock().getType()))
 			return;
 
-		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getClickedBlock().getLocation()));
+		event.setCancelled(!manager.canInteractWithBlock(event.getPlayer(), event.getClickedBlock().getLocation()));
 	}
 
 	@EventHandler
@@ -124,12 +129,22 @@ public class CitiesListener implements Listener {
 		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlock().getLocation()));
 	}
 
+	@EventHandler
+	public void onEntityExplodeEvent(EntityExplodeEvent entityExplodeEvent) {
+		entityExplodeEvent.blockList().clear();
+	}
+
+	@EventHandler
+	public void onBlockExplode(BlockExplodeEvent explodeEvent) {
+		explodeEvent.blockList().clear();
+	}
+
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBreak(BlockBreakEvent event) {
 		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlock().getLocation()));
 	}
 
-	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler (priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onInteractEntity(PlayerInteractEntityEvent event) {
 		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getRightClicked().getLocation()));
 	}
@@ -154,6 +169,8 @@ public class CitiesListener implements Listener {
 			if (!isSameChunk(event.getFrom(), event.getTo())) {
 				City c1 = manager.getCityHere(event.getFrom().getChunk());
 				City c2 = manager.getCityHere(event.getTo().getChunk());
+				boolean entering = false;
+				boolean leaving = false;
 
 				if (c1 != null && c2 != null && c1.getCityName().equals(c2.getCityName())) {
 
@@ -166,13 +183,15 @@ public class CitiesListener implements Listener {
 					boolean pOverride = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
 
 					if (plot != null && (id.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+						leaving = true;
 					} else if (pOverride && plot != null) {
 						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + plot.getPlotName());
 					}
 
 					if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+						entering = true;
 					} else if (pOverride && to != null) {
 						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
 					}
@@ -181,12 +200,13 @@ public class CitiesListener implements Listener {
 				}
 
 				if (c1 != null) {
-					event.getPlayer().sendMessage(ChatColor.GOLD + "Vous quittez la ville de " + ChatColor.YELLOW + c1.getCityName() + ChatColor.GOLD + " !");
+					event.getPlayer().sendMessage(ChatColor.GOLD + "Vous quittez " + ChatColor.YELLOW + c1.getCityName() + ChatColor.GOLD + " !");
 					boolean c1Override = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
 					Plot from = c1.getPlotHere(event.getFrom());
 
 					if (from != null && (id.equals(from.getOwner()) || from.getPlotMembers().contains(id))) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+						leaving = true;
 					} else if (c1Override && from != null) {
 						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + from.getPlotName());
 					}
@@ -199,10 +219,17 @@ public class CitiesListener implements Listener {
 					Plot to = c2.getPlotHere(event.getTo());
 
 					if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+						entering = true;
 					} else if (c2Override && to != null) {
 						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
 					}
+				}
+
+				if (entering && !leaving) {
+					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+				} else if (!entering && leaving) {
+					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
 				}
 			} else {
 				// Same chunk, same city.
@@ -244,5 +271,13 @@ public class CitiesListener implements Listener {
 		Chunk c1 = l1.getChunk();
 		Chunk c2 = l2.getChunk();
 		return (c1.getX() == c2.getX() && c1.getZ() == c2.getZ());
+	}
+
+	@EventHandler
+	public void onChunkUnload(ChunkUnloadEvent event) {
+		event.setCancelled(true);
+		final Chunk chunk = event.getChunk();
+		Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(),
+				() -> chunk.unload(true, true), 60 * 2);
 	}
 }

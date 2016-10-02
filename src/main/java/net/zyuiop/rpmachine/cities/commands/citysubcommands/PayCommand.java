@@ -64,7 +64,7 @@ public class PayCommand implements SubCommand {
 						RPMachine.getInstance().getEconomyManager().giveMoney(targetID, amount, (newAmount, difference) -> {
 							Player tar = Bukkit.getPlayer(targetID);
 							if (tar != null) {
-								tar.sendMessage(Messages.ECO_PREFIX.getMessage() + ChatColor.YELLOW + "Vous recevez " + ChatColor.AQUA + finalAmount + " " + EconomyManager.getMoneyName() + ChatColor.YELLOW + " de " + ChatColor.AQUA + player.getName());
+								tar.sendMessage(Messages.ECO_PREFIX.getMessage() + ChatColor.YELLOW + "Vous recevez " + ChatColor.AQUA + finalAmount + " " + EconomyManager.getMoneyName() + ChatColor.YELLOW + " de " + ChatColor.AQUA + city.getCityName());
 							}
 
 							player.sendMessage(Messages.ECO_PREFIX.getMessage() + ChatColor.YELLOW + "Vous avez envoyé " + ChatColor.GOLD + amtStr + " " + EconomyManager.getMoneyName());

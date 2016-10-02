@@ -175,7 +175,19 @@ public class CitiesManager {
 
 		if (location.getWorld().getName().equals("world")) {
 			City city = getCityHere(location.getChunk());
-			return city != null && city.canBuild(player, location);
+			return city == null || city.canBuild(player, location);
+		} else {
+			return true;
+		}
+	}
+
+	public boolean canInteractWithBlock(Player player, Location location) {
+		if (bypass.contains(player.getUniqueId()))
+			return true;
+
+		if (location.getWorld().getName().equals("world")) {
+			City city = getCityHere(location.getChunk());
+			return city == null || city.canInteractWithBlock(player, location);
 		} else {
 			return true;
 		}

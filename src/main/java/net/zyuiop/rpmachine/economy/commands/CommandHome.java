@@ -30,6 +30,8 @@ public class CommandHome extends EconomixCommand {
 			else {
 				Bukkit.getScheduler().runTask(rpMachine, () -> {
 					Location tp = loc.getLocation();
+					if (!tp.getChunk().isLoaded())
+						tp.getChunk().load();
 					player.teleport(tp);
 					player.playSound(tp, Sound.ENDERMAN_TELEPORT, 1, 1);
 					player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté !");

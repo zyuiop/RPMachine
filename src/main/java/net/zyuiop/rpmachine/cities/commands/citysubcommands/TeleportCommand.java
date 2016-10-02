@@ -36,6 +36,7 @@ public class TeleportCommand implements SubCommand {
 	public void run(CommandSender sender, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			City playerCity = citiesManager.getPlayerCity(player.getUniqueId());
 			City target;
 			boolean pay = false;
 			if (args.length > 0) {
@@ -43,14 +44,14 @@ public class TeleportCommand implements SubCommand {
 				if (target == null) {
 					sender.sendMessage(ChatColor.RED + "Cette ville n'existe pas.");
 					return;
-				} else if (target.isRequireInvite() && !target.getInvitedUsers().contains(player.getUniqueId())) {
+				} else if (target.isRequireInvite() && !target.getInvitedUsers().contains(player.getUniqueId()) && (playerCity == null || !playerCity.getCityName().equalsIgnoreCase(target.getCityName()))) {
 					sender.sendMessage(ChatColor.RED + "Cette ville est privée.");
 					return;
-				} else {
+				} else if (playerCity == null || !playerCity.getCityName().equalsIgnoreCase(target.getCityName())) {
 					pay = true;
 				}
 			} else {
-				target = citiesManager.getPlayerCity(player.getUniqueId());
+				target = playerCity;
 				if (target == null) {
 					sender.sendMessage(ChatColor.RED + "Vous ne faites partie d'aucune ville.");
 					return;
@@ -64,6 +65,9 @@ public class TeleportCommand implements SubCommand {
 			}
 
 			Location spawn = vspawn.getLocation();
+			if (!spawn.getChunk().isLoaded())
+				spawn.getChunk().load();
+
 			if (pay) {
 				RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), 1, (newAmount, difference) -> {
 					if (difference == 0) {
