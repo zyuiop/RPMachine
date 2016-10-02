@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 public class TeleportCommand implements SubCommand {
 
 	private final CitiesManager citiesManager;
+
 	public TeleportCommand(CitiesManager citiesManager) {
 		this.citiesManager = citiesManager;
 	}
@@ -63,7 +64,7 @@ public class TeleportCommand implements SubCommand {
 
 			Location spawn = vspawn.getLocation();
 			if (pay) {
-				RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), 1, (newAmount, difference, error) -> {
+				RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), 1, (newAmount, difference) -> {
 					if (difference == 0) {
 						player.sendMessage(ChatColor.RED + "Vous n'avez pas assez d'argent pour faire cela.");
 					} else {

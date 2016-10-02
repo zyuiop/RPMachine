@@ -33,9 +33,9 @@ public class AdminShopSign extends AbstractItemShop {
 			} else {
 				sign.setLine(0, ChatColor.RED + "La Communauté");
 				if (action == ShopAction.BUY) {
-					sign.setLine(1, ChatColor.GREEN + "achète "+amountPerPackage);
+					sign.setLine(1, ChatColor.GREEN + "achète " + amountPerPackage);
 				} else {
-					sign.setLine(1, ChatColor.BLUE + "vend "+amountPerPackage);
+					sign.setLine(1, ChatColor.BLUE + "vend " + amountPerPackage);
 				}
 				sign.setLine(2, ChatColor.BOLD + itemType.toString());
 				sign.setLine(3, ChatColor.BLUE + "Prix : " + price);
@@ -43,15 +43,14 @@ public class AdminShopSign extends AbstractItemShop {
 
 			Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> sign.update());
 		} else {
-			Bukkit.getLogger().info("Error : sign is not a sign, at "+location.toString());
+			Bukkit.getLogger().info("Error : sign is not a sign, at " + location.toString());
 		}
 	}
 
 	public void rightClick(Player player, PlayerInteractEvent event) {
-		if (player.getUniqueId().equals(ownerId) && itemType == null)
+		if (player.getUniqueId().equals(ownerId) && itemType == null) {
 			clickOwner(player, event);
-		else
-			clickUser(player, event);
+		} else { clickUser(player, event); }
 
 		RPMachine.getInstance().getShopsManager().save(this);
 	}
@@ -68,11 +67,10 @@ public class AdminShopSign extends AbstractItemShop {
 
 	void clickOwner(Player player, PlayerInteractEvent event) {
 		if (itemType == null) {
-			if (event.getItem() == null)
-				return;
+			if (event.getItem() == null) { return; }
 
 			itemType = event.getItem().getType();
-			player.sendMessage(ChatColor.AQUA + "["+ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] "+ ChatColor.GREEN + "Votre shop est maintenant totalement oppérationnel.");
+			player.sendMessage(ChatColor.AQUA + "[" + ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] " + ChatColor.GREEN + "Votre shop est maintenant totalement oppérationnel.");
 			display();
 		}
 	}
@@ -84,7 +82,7 @@ public class AdminShopSign extends AbstractItemShop {
 			ItemStack click = event.getItem();
 			if (isItemValid(click) && click.getAmount() >= amountPerPackage) {
 				EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-				manager.giveMoney(player.getUniqueId(), price, (newAmount, difference, error) -> {
+				manager.giveMoney(player.getUniqueId(), price, (newAmount, difference) -> {
 					click.setAmount(click.getAmount() - amountPerPackage);
 					event.getPlayer().getInventory().setItemInHand(click);
 					player.sendMessage(ChatColor.GREEN + "Vous avez bien vendu " + amountPerPackage + " " + itemType.toString() + " pour " + difference + "$");
@@ -99,7 +97,7 @@ public class AdminShopSign extends AbstractItemShop {
 			}
 
 			EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-			manager.withdrawMoneyWithBalanceCheck(player.getUniqueId(), price, (newAmount, difference, error) -> {
+			manager.withdrawMoneyWithBalanceCheck(player.getUniqueId(), price, (newAmount, difference) -> {
 				if (difference != price) {
 					player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
 				} else {
