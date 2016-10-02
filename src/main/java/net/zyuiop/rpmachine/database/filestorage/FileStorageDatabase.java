@@ -19,11 +19,10 @@ public class FileStorageDatabase implements DatabaseManager {
 	private final FileShops fileShops = new FileShops();
 
 	public FileStorageDatabase() throws IOException {
-		playersDirectory = new File(RPMachine.getInstance().getDataFolder().getPath() + "/players/");
+		playersDirectory = new File(RPMachine.getInstance().getDataFolder(), "players");
 
-		if (!playersDirectory.exists()) {
-			playersDirectory.mkdirs();
-		}
+		playersDirectory.mkdirs();
+		playersDirectory.mkdir();
 
 		if (!playersDirectory.isDirectory()) {
 			throw new IOException("Error : players directory is not a directory at " + playersDirectory.getAbsolutePath());

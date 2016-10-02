@@ -5,30 +5,22 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.ShopsManager;
 import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
 import net.zyuiop.rpmachine.economy.shops.ShopGsonHelper;
-import net.zyuiop.rpmachine.economy.shops.ShopSign;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class FileShops extends ShopsManager {
-	private final File shopsDirectory;
 
 	public FileShops() throws IOException {
-		shopsDirectory = new File(RPMachine.getInstance().getDataFolder().getPath() + "/shops/");
+		File shopsDirectory = new File(RPMachine.getInstance().getDataFolder(), "shops");
 
-		if (!shopsDirectory.exists()) {
-			shopsDirectory.mkdirs();
-		}
+		shopsDirectory.mkdirs();
+		shopsDirectory.mkdir();
 
 		if (!shopsDirectory.isDirectory()) {
 			throw new IOException("Error : shops directory is not a directory at " + shopsDirectory.getAbsolutePath());
@@ -40,6 +32,7 @@ public class FileShops extends ShopsManager {
 	@Override
 	protected void doCreate(AbstractShopSign sign) {
 		String target = locAsString(sign.getLocation());
+		File shopsDirectory = new File(RPMachine.getInstance().getDataFolder().getPath() + "/shops/");
 		File file = new File(shopsDirectory, target);
 		if (file.exists()) {
 			try {
@@ -63,13 +56,16 @@ public class FileShops extends ShopsManager {
 		}
 	}
 
-	public void load()  {
-		for (File file : shopsDirectory.listFiles()) {
-			if (file.isDirectory())
-				continue;
+	public void load() {
+		File shopsDirectory = new File(RPMachine.getInstance().getDataFolder(), "/shops/");
 
-			if (!file.getName().endsWith(".json"))
-				continue;
+		shopsDirectory.mkdirs();
+		shopsDirectory.mkdir();
+
+		for (File file : shopsDirectory.listFiles()) {
+			if (file.isDirectory()) { continue; }
+
+			if (!file.getName().endsWith(".json")) { continue; }
 
 			Gson gson = new Gson();
 			Location loc = locFromString(file.getName().substring(0, -5));
@@ -95,6 +91,7 @@ public class FileShops extends ShopsManager {
 	@Override
 	protected void doRemove(AbstractShopSign shopSign) {
 		String target = locAsString(shopSign.getLocation());
+		File shopsDirectory = new File(RPMachine.getInstance().getDataFolder().getPath() + "/shops/");
 		File file = new File(shopsDirectory, target);
 		if (file.exists()) {
 			try {
@@ -107,6 +104,7 @@ public class FileShops extends ShopsManager {
 
 	public void save(AbstractShopSign shopSign) {
 		String target = locAsString(shopSign.getLocation());
+		File shopsDirectory = new File(RPMachine.getInstance().getDataFolder().getPath() + "/shops/");
 		File file = new File(shopsDirectory, target);
 		if (!file.exists()) {
 			return;
