@@ -2,16 +2,26 @@ package net.zyuiop.rpmachine.economy.listeners;
 
 
 import net.bridgesapi.api.BukkitBridge;
+import net.minecraft.server.v1_8_R2.BlockPosition;
+import net.minecraft.server.v1_8_R2.PacketPlayOutOpenSignEditor;
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.Plot;
 import net.zyuiop.rpmachine.economy.shops.*;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -30,12 +40,47 @@ public class SignsListener implements Listener {
 		this.plugin = plugin;
 	}
 
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onSignPlace(BlockPlaceEvent event) {
+		if (event.getBlockPlaced().getState() instanceof Sign && event.getPlayer().isSneaking()) {
+			City city = RPMachine.getInstance().getCitiesManager().getCityHere(event.getBlock().getChunk());
+			if (city != null) {
+				Plot plot = city.getPlotHere(event.getBlock().getLocation());
+				if (plot != null &&
+						(event.getPlayer().getUniqueId().equals(plot.getOwner())
+								|| city.getMayor().equals(event.getPlayer().getUniqueId())
+								|| (plot.getOwner() == null
+								&& city.getCouncils().contains(event.getPlayer().getUniqueId())))) {
+					Player player = event.getPlayer();
+					player.sendMessage(ChatColor.GOLD + "Votre parcelle actuelle : " + ChatColor.YELLOW + plot.getPlotName());
+
+					/*Sign sign = (Sign) event.getBlockPlaced().getState();
+					sign.setLine(0, "PlotShop");
+					sign.setLine(2, plot.getPlotName());
+					sign.update();
+
+					CraftPlayer player = ((CraftPlayer) event.getPlayer());
+					PacketPlayOutOpenSignEditor editor = new PacketPlayOutOpenSignEditor(new BlockPosition(sign.getLocation().getX(), sign.getLocation().getY(), sign.getLocation().getZ()));
+					Bukkit.getScheduler().runTaskLater(plugin, () -> player.getHandle().playerConnection.sendPacket(editor), 5);
+					*/
+				}
+			}
+		}
+	}
+
 	@EventHandler
 	public void onSignPlace(SignChangeEvent event) {
 		if (!event.getPlayer().getWorld().getName().equals("world"))
 			return;
 
-		if (event.getLine(0).equalsIgnoreCase("Shop")) {
+		String line0 = event.getLine(0);
+		if (line0 == null || line0.equalsIgnoreCase(""))
+			line0 = ((Sign) event.getBlock().getState()).getLine(0);
+		String line2 = event.getLine(2);
+		if (line2 == null || line2.equalsIgnoreCase(""))
+			line2 = ((Sign) event.getBlock().getState()).getLine(2);
+
+		if (line0.equalsIgnoreCase("Shop")) {
 			String price = event.getLine(1);
 			String bundleSize = event.getLine(2);
 			String action = event.getLine(3);
@@ -128,8 +173,22 @@ public class SignsListener implements Listener {
 			}
 		} else if (event.getLine(0).equalsIgnoreCase("PlotShop")) {
 			String price = event.getLine(1);
-			String plotname = event.getLine(2);
+			String plotname = line2;
 			String restrict = event.getLine(3);
+
+			if (plotname == null) {
+				City city = RPMachine.getInstance().getCitiesManager().getCityHere(event.getBlock().getChunk());
+				if (city != null) {
+					Plot plot = city.getPlotHere(event.getBlock().getLocation());
+					if (plot != null &&
+							(event.getPlayer().getUniqueId().equals(plot.getOwner())
+									|| city.getMayor().equals(event.getPlayer().getUniqueId())
+									|| (plot.getOwner() == null
+										&& city.getCouncils().contains(event.getPlayer().getUniqueId())))) {
+						plotname = plot.getPlotName();
+					}
+				}
+			}
 
 			if (price == null || plotname == null || restrict == null) {
 				showPlotSignsRules(event.getPlayer());
@@ -241,6 +300,21 @@ public class SignsListener implements Listener {
 				event.setCancelled(false);
 			else
 				sign.breakSign(event.getPlayer());
+		} else {
+			for (BlockFace face : BlockFace.values()) {
+				Block block = event.getBlock().getRelative(face);
+				if (block == null)
+					continue;
+
+				if (block.getType() == Material.SIGN || block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN) {
+					event.setCancelled(true);
+					AbstractShopSign sign = plugin.getShopsManager().get(event.getBlock().getLocation());
+					if (sign == null)
+						event.setCancelled(false);
+					else
+						sign.breakSign(event.getPlayer());
+				}
+			}
 		}
 	}
 }

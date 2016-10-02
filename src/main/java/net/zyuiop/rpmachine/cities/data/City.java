@@ -253,4 +253,13 @@ public class City {
 
 		return ret;
 	}
+
+	public boolean canInteractWithBlock(Player player, Location location) {
+		if (mayor.equals(player.getUniqueId()) || councils.contains(player.getUniqueId())) {
+			return true;
+		} else {
+			Plot plot = getPlotHere(location);
+			return (inhabitants.contains(player.getUniqueId()) && plot == null) || (plot != null && plot.canBuild(player, location));
+		}
+	}
 }

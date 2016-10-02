@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.economy.shops;
 
+import net.bridgesapi.api.BukkitBridge;
 import net.minecraft.server.v1_8_R2.EntityFireworks;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -9,14 +10,18 @@ import net.zyuiop.rpmachine.economy.Messages;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R2.entity.CraftFirework;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
 
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -107,6 +112,29 @@ public class PlotSign extends AbstractShopSign {
 	}
 
 	void clickUser(Player player, PlayerInteractEvent event) {
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
+			if (city == null) {
+				player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la ville n'existe pas.");
+				return;
+			}
+
+			Plot plot = city.getPlots().get(plotName);
+			if (plot == null) {
+				player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la parcelle n'existe pas.");
+				return;
+			}
+
+			player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
+			player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
+			player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
+			player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs²");
+			player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().getVolume() + " blocs³");
+			player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " $");
+
+			return;
+		}
+
 		EconomyManager manager = RPMachine.getInstance().getEconomyManager();
 		City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
 		if (city == null) {

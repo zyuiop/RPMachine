@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,10 +20,7 @@ import org.bukkit.entity.Player;
  * (C) Copyright Elydra Network 2015
  * All rights reserved.
  */
-public class CommandHome extends EconomixCommand {
-	public CommandHome(RPMachine economix) {
-		super(economix);
-	}
+public class CommandToggleMessages implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
@@ -32,19 +30,9 @@ public class CommandHome extends EconomixCommand {
 		Player player = (Player) commandSender;
 		new Thread(() -> {
 			PlayerData data = BukkitBridge.get().getPlayerManager().getPlayerData(player.getUniqueId());
-			String loc = data.get("rp.home");
-			if (loc == null)
-				player.sendMessage(ChatColor.RED + "Vous n'avez pas défini de domicile.");
-			else {
-				Bukkit.getScheduler().runTask(rpMachine, () -> {
-					Location tp = new VirtualLocation(loc).getLocation();
-					if (!tp.getChunk().isLoaded())
-						tp.getChunk().load();
-					player.teleport(tp);
-					player.playSound(tp, Sound.ENDERMAN_TELEPORT, 1, 1);
-					player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté !");
-				});
-			}
+			boolean val = !data.getBoolean("seemessages", true);
+			data.setBoolean("seemessages", val);
+			commandSender.sendMessage(ChatColor.GOLD + "Messages de parcelles : " + ((val ? ChatColor.GREEN + "Activés" : ChatColor.RED + "Désactivés")));
 		}).start();
 		return true;
 	}

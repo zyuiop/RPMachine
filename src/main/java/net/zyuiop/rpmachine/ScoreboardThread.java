@@ -28,7 +28,7 @@ public class ScoreboardThread implements Runnable {
 	public ScoreboardThread(Player player) {
 		this.player = player;
 		this.uuid = player.getUniqueId();
-		sign = new ObjectiveSign("rp"+player.getName(), ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
+		sign = new ObjectiveSign(player.getName(), ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
 		sign.addReceiver(player);
 	}
 
@@ -83,21 +83,21 @@ public class ScoreboardThread implements Runnable {
 			c = (city == null) ? ChatColor.DARK_GREEN + "Nature" : ChatColor.AQUA + city.getCityName();
 		}
 
-		sign.setLine(-1, ChatColor.RED + "  ");
-		sign.setLine(-2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
-		sign.setLine(-3, ChatColor.AQUA + "" + money + " $");
-		sign.setLine(-4, ChatColor.RED + "   ");
-		sign.setLine(-5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Métier");
-		sign.setLine(-6, job);
-		sign.setLine(-7, ChatColor.RED + "    ");
-		sign.setLine(-8, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Maison");
-		sign.setLine(-9, home);
-		sign.setLine(-10, ChatColor.RED + "     ");
-		sign.setLine(-11, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Ville actuelle");
-		sign.setLine(-12, c);
-		sign.setLine(-13, ChatColor.RED + "      ");
-		sign.setLine(-14, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Monde & heure");
-		sign.setLine(-15, ChatColor.AQUA + player.getWorld().getName() + ChatColor.GREEN + ", " + ((hours < 10) ? "0" : "") + ((int) hours) + " h " + ((minutes < 10) ? "0" : "") + ((int) minutes));
+		sign.setLine(1, ChatColor.RED + "  ");
+		sign.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
+		sign.setLine(3, ChatColor.AQUA + "" + money + " $");
+		sign.setLine(4, ChatColor.RED + "   ");
+		sign.setLine(5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Métier");
+		sign.setLine(6, job);
+		sign.setLine(7, ChatColor.RED + "    ");
+		sign.setLine(8, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Maison");
+		sign.setLine(9, home);
+		sign.setLine(10, ChatColor.RED + "     ");
+		sign.setLine(11, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Ville actuelle");
+		sign.setLine(12, c);
+		sign.setLine(13, ChatColor.RED + "      ");
+		sign.setLine(14, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Monde & heure");
+		sign.setLine(15, ChatColor.AQUA + player.getWorld().getName() + ChatColor.GREEN + ", " + ((hours < 10) ? "0" : "") + ((int) hours) + " h " + ((minutes < 10) ? "0" : "") + ((int) minutes));
 
 	}
 
@@ -111,21 +111,21 @@ public class ScoreboardThread implements Runnable {
 
 		sign.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.BOLD +  "Ville : " + city.getCityName());
 
-		sign.setLine(-1, ChatColor.RED + "  ");
-		sign.setLine(-2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
-		sign.setLine(-3, ChatColor.AQUA + "" + city.getMoney() + " $");
-		sign.setLine(-4, ChatColor.RED + "   ");
-		sign.setLine(-5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Habitants");
-		sign.setLine(-6, ChatColor.AQUA + "" + city.countInhabitants() + " Hab.");
-		sign.setLine(-7, ChatColor.RED + "    ");
-		sign.setLine(-8, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Surface");
-		sign.setLine(-9, ChatColor.AQUA + "" + city.getChunks().size() + " chunks");
-		sign.setLine(-10, ChatColor.RED + "     ");
-		sign.setLine(-11, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Palier");
-		sign.setLine(-12, ChatColor.AQUA + "" + RPMachine.getInstance().getCitiesManager().getFloor(city).getName());
-		sign.setLine(-13, ChatColor.RED + "      ");
-		sign.setLine(-14, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Type");
-		sign.setLine(-15, ((city.isRequireInvite() ? ChatColor.RED + "Sur invitation" : ChatColor.GREEN + "Publique")));
+		sign.setLine(1, ChatColor.RED + "  ");
+		sign.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
+		sign.setLine(3, ChatColor.AQUA + "" + city.getMoney() + " $");
+		sign.setLine(4, ChatColor.RED + "   ");
+		sign.setLine(5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Habitants");
+		sign.setLine(6, ChatColor.AQUA + "" + city.countInhabitants() + " Hab.");
+		sign.setLine(7, ChatColor.RED + "    ");
+		sign.setLine(8, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Surface");
+		sign.setLine(9, ChatColor.AQUA + "" + city.getChunks().size() + " chunks");
+		sign.setLine(10, ChatColor.RED + "     ");
+		sign.setLine(11, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Palier");
+		sign.setLine(12, ChatColor.AQUA + "" + RPMachine.getInstance().getCitiesManager().getFloor(city).getName());
+		sign.setLine(13, ChatColor.RED + "      ");
+		sign.setLine(14, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Type");
+		sign.setLine(15, ((city.isRequireInvite() ? ChatColor.RED + "Sur invitation" : ChatColor.GREEN + "Publique")));
 
 	}
 
