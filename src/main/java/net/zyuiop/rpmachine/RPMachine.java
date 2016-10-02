@@ -121,7 +121,7 @@ public class RPMachine extends JavaPlugin {
 			timer.schedule(new TimerTask() {
 				@Override
 				public void run() {
-					Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Le réseau redémarrera à 4h du matin soit dans précisément 15 minutes.");
+					Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Le serveur redémarrera à 4h du matin soit dans précisément 15 minutes.");
 				}
 			}, sched);
 			this.getLogger().info("Scheduled automatic reboot at : " + calendar.toString());
