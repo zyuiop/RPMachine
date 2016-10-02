@@ -5,6 +5,7 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
+import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -49,13 +50,13 @@ public class InfoCommand implements SubCommand {
 			sender.sendMessage(ChatColor.YELLOW + "Maire actuel : " + RPMachine.database().getUUIDTranslator().getName(target.getMayor()));
 			sender.sendMessage(ChatColor.YELLOW + "Nombre d'habitants : " + target.countInhabitants());
 			sender.sendMessage(ChatColor.YELLOW + "Type de ville : " + ((target.isRequireInvite() ? ChatColor.RED + "Sur invitation" : ChatColor.GREEN + "Publique")));
-			sender.sendMessage(ChatColor.YELLOW + "Impôts : " + target.getTaxes() + " $ par semaine");
+			sender.sendMessage(ChatColor.YELLOW + "Impôts : " + target.getTaxes() + " " + EconomyManager.getMoneyName() + " par semaine");
 
 			CityFloor floor = citiesManager.getFloor(target);
 			sender.sendMessage(ChatColor.YELLOW + "Palier : " + floor.getName());
 
 			if (sender instanceof ConsoleCommandSender || (sender instanceof Player && (((Player) sender).getUniqueId().equals(target.getMayor()) ||target.getCouncils().contains(((Player) sender).getUniqueId())))) {
-				sender.sendMessage(ChatColor.YELLOW + "Monnaie : " +  target.getMoney() +" $");
+				sender.sendMessage(ChatColor.YELLOW + "Monnaie : " +  target.getMoney() + " " + EconomyManager.getMoneyName());
 				sender.sendMessage(ChatColor.YELLOW + "Taille : " + target.getChunks().size() + " / " + floor.getMaxsurface());
 			}
 		}

@@ -7,6 +7,8 @@ import net.zyuiop.rpmachine.database.FinancialCallback;
 import net.zyuiop.rpmachine.database.PlayerData;
 
 public class EconomyManager {
+	private static String moneyName = null;
+	private static double baseAmount = -1;
 
 	private PlayerData getData(UUID player) {
 		return RPMachine.database().getPlayerData(player);
@@ -80,4 +82,17 @@ public class EconomyManager {
 		}).start();
 	}
 
+	public static String getMoneyName() {
+		if (moneyName == null) {
+			moneyName = RPMachine.getInstance().getConfig().getString("money.symbol", "$");
+		}
+		return moneyName;
+	}
+
+	public static double getBaseAmount() {
+		if (baseAmount == -1) {
+			baseAmount = RPMachine.getInstance().getConfig().getDouble("money.baseAmount", 150D);
+		}
+		return baseAmount;
+	}
 }

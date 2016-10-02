@@ -5,6 +5,7 @@ import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -28,7 +29,7 @@ public class TeleportCommand implements SubCommand {
 
 	@Override
 	public String getDescription() {
-		return "Vous téléporte dans votre ville. Si [ville] est fourni, vous téléporte dans la ville [ville] pour un prix de 1$";
+		return "Vous téléporte dans votre ville. Si [ville] est fourni, vous téléporte dans la ville [ville] pour un prix de 1" + EconomyManager.getMoneyName();
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class TeleportCommand implements SubCommand {
 						citiesManager.saveCity(target);
 						Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
 						player.playSound(spawn, Sound.ENDERMAN_TELEPORT, 1, 1);
-						player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté et 1$ vous a été débité.");
+						player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté et 1" + EconomyManager.getMoneyName() + " vous a été débité.");
 					}
 				});
 			} else {

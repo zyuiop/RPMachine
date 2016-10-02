@@ -206,7 +206,7 @@ public class ShopSign extends AbstractItemShop {
 			EconomyManager manager = RPMachine.getInstance().getEconomyManager();
 			manager.transferMoneyBalanceCheck(player.getUniqueId(), getOwnerId(), price, result -> {
 				if (result) {
-					player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + itemType.toString() + " pour " + price + "$");
+					player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + itemType.toString() + " pour " + price + " " + EconomyManager.getMoneyName());
 					available -= amountPerPackage;
 					player.getInventory().addItem(getNewStack());
 				} else {

@@ -5,6 +5,7 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -56,7 +57,7 @@ public class PayTaxesCommand implements SubCommand {
 						city.setMoney(city.getMoney() + amount);
 						topay = topay - amount;
 						data.setUnpaidTaxes(city.getCityName(), topay);
-						player.sendMessage(ChatColor.RED + "Vous devez encore " + topay + " $ à la ville.");
+						player.sendMessage(ChatColor.RED + "Vous devez encore " + topay + " " + EconomyManager.getMoneyName() + " à la ville.");
 						city.pay(player.getUniqueId(), amount);
 					}
 					citiesManager.saveCity(city);

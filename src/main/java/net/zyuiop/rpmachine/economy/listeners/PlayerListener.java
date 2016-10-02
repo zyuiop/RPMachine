@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.economy.listeners;
 import net.md_5.bungee.api.ChatColor;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,7 +24,7 @@ public class PlayerListener implements Listener {
 
 		PlayerData d = RPMachine.database().getPlayerData(event.getPlayer().getUniqueId());
 		if (d.isNew()) {
-			d.setMoney(150D);
+			d.setMoney(EconomyManager.getBaseAmount());
 			event.setJoinMessage(ChatColor.YELLOW + "" + ChatColor.ITALIC + "Bienvenue à " + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "" + ChatColor.ITALIC + " !");
 		}
 	}

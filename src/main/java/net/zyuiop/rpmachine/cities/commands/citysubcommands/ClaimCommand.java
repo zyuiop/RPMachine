@@ -5,6 +5,7 @@ import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.cities.data.VirtualChunk;
+import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.command.CommandSender;
@@ -49,7 +50,7 @@ public class ClaimCommand implements SubCommand {
 					} else if (!city.isAdjacent(chunk)) {
 						player.sendMessage(ChatColor.RED + "Ce chunk n'est pas adjacent à votre ville.");
 					} else if (city.getMoney() < floor.getChunkPrice()) {
-						player.sendMessage(ChatColor.RED + "Votre ville ne dispose pas d'assez d'argent pour faire cela. Il lui faut " + floor.getChunkPrice() +" $ au minimum.");
+						player.sendMessage(ChatColor.RED + "Votre ville ne dispose pas d'assez d'argent pour faire cela. Il lui faut " + floor.getChunkPrice() + " " + EconomyManager.getMoneyName() + " au minimum.");
 					} else if (city.getChunks().size() >= floor.getMaxsurface()) {
 						player.sendMessage(ChatColor.RED + "Votre ville a atteind sa taille maximale.");
 					} else if (args.length >= 1 && args[0].equals("confirm")) {
@@ -58,7 +59,7 @@ public class ClaimCommand implements SubCommand {
 						citiesManager.saveCity(city);
 						player.sendMessage(ChatColor.GREEN + "Votre ville a bien été agrandie sur ce terrain !");
 					} else {
-						player.sendMessage(ChatColor.GOLD + "Êtes vous certain de vouloir acheter ce chunk ? Cela vous coûtera " + ChatColor.YELLOW + floor.getChunkPrice() + "$");
+						player.sendMessage(ChatColor.GOLD + "Êtes vous certain de vouloir acheter ce chunk ? Cela vous coûtera " + ChatColor.YELLOW + floor.getChunkPrice() + " " + EconomyManager.getMoneyName());
 						player.sendMessage(ChatColor.GOLD + "Tapez " + ChatColor.YELLOW + "/city claim confirm" + ChatColor.GOLD + " pour valider.");
 					}
 				} else {

@@ -85,7 +85,7 @@ public class AdminShopSign extends AbstractItemShop {
 				manager.giveMoney(player.getUniqueId(), price, (newAmount, difference) -> {
 					click.setAmount(click.getAmount() - amountPerPackage);
 					event.getPlayer().getInventory().setItemInHand(click);
-					player.sendMessage(ChatColor.GREEN + "Vous avez bien vendu " + amountPerPackage + " " + itemType.toString() + " pour " + difference + "$");
+					player.sendMessage(ChatColor.GREEN + "Vous avez bien vendu " + amountPerPackage + " " + itemType.toString() + " pour " + difference + " " + EconomyManager.getMoneyName());
 				});
 			} else {
 				player.sendMessage(ChatColor.RED + "Vous devez cliquer sur la panneau en tenant " + ChatColor.AQUA + itemType.toString() + ChatColor.RED + " en main.");
@@ -102,7 +102,7 @@ public class AdminShopSign extends AbstractItemShop {
 					player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
 				} else {
 					player.getInventory().addItem(this.getNewStack());
-					player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + " " + itemType.toString() + " pour " + price + "$");
+					player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + " " + itemType.toString() + " pour " + price + " " + EconomyManager.getMoneyName());
 				}
 			});
 		}

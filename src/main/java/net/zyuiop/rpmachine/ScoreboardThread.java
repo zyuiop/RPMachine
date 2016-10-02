@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine;
 import net.bridgesapi.tools.scoreboards.ObjectiveSign;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -77,7 +78,7 @@ public class ScoreboardThread implements Runnable {
 
 		sign.setLine(-1, ChatColor.RED + "  ");
 		sign.setLine(-2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
-		sign.setLine(-3, ChatColor.AQUA + "" + money + " $");
+		sign.setLine(-3, ChatColor.AQUA + "" + money + " " + EconomyManager.getMoneyName());
 		sign.setLine(-4, ChatColor.RED + "   ");
 		sign.setLine(-5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Métier");
 		sign.setLine(-6, job);
@@ -105,7 +106,7 @@ public class ScoreboardThread implements Runnable {
 
 		sign.setLine(-1, ChatColor.RED + "  ");
 		sign.setLine(-2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
-		sign.setLine(-3, ChatColor.AQUA + "" + city.getMoney() + " $");
+		sign.setLine(-3, ChatColor.AQUA + "" + city.getMoney() + " " + EconomyManager.getMoneyName());
 		sign.setLine(-4, ChatColor.RED + "   ");
 		sign.setLine(-5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Habitants");
 		sign.setLine(-6, ChatColor.AQUA + "" + city.countInhabitants() + " Hab.");
