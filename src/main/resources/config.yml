@@ -60,7 +60,6 @@ jobs:
       - RAW_FISH
       - COOKED_FISH
       - CAKE
-      - WHEAT_ITEM
       - WHEAT
       - COOKIE
       - MELON
@@ -94,13 +93,12 @@ jobs:
       - WOOD_DOUBLE_STEP
       - BOOKSHELF
       - FENCE
-      - WOODEN_FENCE
       - ACACIA_FENCE
       - BIRCH_FENCE
       - JUNGLE_FENCE
       - SPRUCE_FENCE
       - FENCE_GATE
-      - WOODEN_FENCE_GATE
+      - DARK_OAK_FENCE
       - ACACIA_FENCE_GATE
       - BIRCH_FENCE_GATE
       - JUNGLE_FENCE_GATE
@@ -147,7 +145,6 @@ jobs:
       - BLAZE_POWDER
       - STRING
       - SPIDER_EYE
-      - FISH
       - EYE_OF_ENDER
       - ENDER_PEARL
       - SLIME_BALL
@@ -180,21 +177,21 @@ jobs:
       - JUNGLE_DOOR
       - SPRUCE_DOOR
       - TRAP_DOOR
-      - STONE_STEP
-      - STONE_DOUBLE_STEP
+      - STEP
+      - DOUBLE_STEP
       - SMOOTH_STAIRS
       - COBBLESTONE_STAIRS
       - SANDSTONE
       - SANDSTONE_STAIRS
       - SMOOTH_STAIRS
       - GLASS
-      - GLASS_PANE
+      - THIN_GLASS
       - STAINED_GLASS
       - STAINED_GLASS_PANE
       - STONE
       - COBBLESTONE
       - STONE_SLAB2
-      - STONE_DOUBLE_SLAB2
+      - DOUBLE_STONE_SLAB2
       - 97
       - 98
       - 168
