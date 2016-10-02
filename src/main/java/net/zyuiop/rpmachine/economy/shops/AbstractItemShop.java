@@ -4,13 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public abstract class AbstractItemShop extends AbstractShopSign {
 	protected Material itemType;
 	protected short damage;

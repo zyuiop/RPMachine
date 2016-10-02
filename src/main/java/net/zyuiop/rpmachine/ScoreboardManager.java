@@ -7,13 +7,6 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class ScoreboardManager {
 	protected ConcurrentHashMap<UUID, BukkitTask> scoreboards = new ConcurrentHashMap<>();
 	private final RPMachine plugin;

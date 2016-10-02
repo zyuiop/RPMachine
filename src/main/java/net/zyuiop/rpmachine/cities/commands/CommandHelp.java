@@ -5,13 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class CommandHelp implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender s, Command command, String c, String[] strings) {

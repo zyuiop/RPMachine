@@ -8,13 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class RemoveCommand implements SubCommand {
 	private final CitiesManager citiesManager;
 

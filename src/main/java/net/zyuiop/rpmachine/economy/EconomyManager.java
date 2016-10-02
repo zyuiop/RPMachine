@@ -3,17 +3,10 @@ package net.zyuiop.rpmachine.economy;
 import net.bridgesapi.api.BukkitBridge;
 import net.bridgesapi.api.player.FinancialCallback;
 import net.bridgesapi.api.player.PlayerData;
-import net.zyuiop.rpmachine.Callback;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class EconomyManager {
 
 	private PlayerData getData(UUID player) {
@@ -78,14 +71,14 @@ public class EconomyManager {
 		}).start();
 	}
 
-	public void transferMoneyBalanceCheck(UUID from, UUID to, double amount, Callback<Boolean> result) {
+	public void transferMoneyBalanceCheck(UUID from, UUID to, double amount, Consumer<Boolean> result) {
 		new Thread(() -> {
 			PlayerData fromData = getData(from);
 			PlayerData toData = getData(to);
 
 			if (fromData.getDouble("rpmoney", 0D) < amount) {
 				if (result != null)
-					result.done(false);
+					result.accept(false);
 				return;
 			}
 
@@ -93,7 +86,7 @@ public class EconomyManager {
 			toData.setDouble("rpmoney", toData.getDouble("rpmoney", 0D) + amount);
 
 			if (result != null)
-				result.done(true);
+				result.accept(true);
 		}).start();
 	}
 

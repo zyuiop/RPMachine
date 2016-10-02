@@ -4,110 +4,103 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class Area {
-	private int min_x;
-	private int min_y;
-	private int min_z;
-	private int max_x;
-	private int max_y;
-	private int max_z;
+	private int minX;
+	private int minY;
+	private int minZ;
+	private int maxX;
+	private int maxY;
+	private int maxZ;
 
 	public Area(Location l1, Location l2) {
-		min_x = Math.min(l1.getBlockX(), l2.getBlockX());
-		min_y = Math.min(l1.getBlockY(), l2.getBlockY());
-		min_z = Math.min(l1.getBlockZ(), l2.getBlockZ());
-		max_x = Math.max(l1.getBlockX(), l2.getBlockX());
-		max_y = Math.max(l1.getBlockY(), l2.getBlockY());
-		max_z = Math.max(l1.getBlockZ(), l2.getBlockZ());
+		minX = Math.min(l1.getBlockX(), l2.getBlockX());
+		minY = Math.min(l1.getBlockY(), l2.getBlockY());
+		minZ = Math.min(l1.getBlockZ(), l2.getBlockZ());
+		maxX = Math.max(l1.getBlockX(), l2.getBlockX());
+		maxY = Math.max(l1.getBlockY(), l2.getBlockY());
+		maxZ = Math.max(l1.getBlockZ(), l2.getBlockZ());
 	}
 
-	public Area(int min_x, int min_y, int min_z, int max_x, int max_y, int max_z) {
-		this.min_x = min_x;
-		this.min_y = min_y;
-		this.min_z = min_z;
-		this.max_x = max_x;
-		this.max_y = max_y;
-		this.max_z = max_z;
+	public Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+		this.minX = minX;
+		this.minY = minY;
+		this.minZ = minZ;
+		this.maxX = maxX;
+		this.maxY = maxY;
+		this.maxZ = maxZ;
 	}
 
 	public Area() {
 
 	}
 
-	public int getMin_x() {
-		return min_x;
+	public int getMinX() {
+		return minX;
 	}
 
-	public void setMin_x(int min_x) {
-		this.min_x = min_x;
+	public void setMinX(int minX) {
+		this.minX = minX;
 	}
 
-	public int getMin_y() {
-		return min_y;
+	public int getMinY() {
+		return minY;
 	}
 
-	public void setMin_y(int min_y) {
-		this.min_y = min_y;
+	public void setMinY(int minY) {
+		this.minY = minY;
 	}
 
-	public int getMin_z() {
-		return min_z;
+	public int getMinZ() {
+		return minZ;
 	}
 
-	public void setMin_z(int min_z) {
-		this.min_z = min_z;
+	public void setMinZ(int minZ) {
+		this.minZ = minZ;
 	}
 
-	public int getMax_x() {
-		return max_x;
+	public int getMaxX() {
+		return maxX;
 	}
 
-	public void setMax_x(int max_x) {
-		this.max_x = max_x;
+	public void setMaxX(int maxX) {
+		this.maxX = maxX;
 	}
 
-	public int getMax_y() {
-		return max_y;
+	public int getMaxY() {
+		return maxY;
 	}
 
-	public void setMax_y(int max_y) {
-		this.max_y = max_y;
+	public void setMaxY(int maxY) {
+		this.maxY = maxY;
 	}
 
-	public int getMax_z() {
-		return max_z;
+	public int getMaxZ() {
+		return maxZ;
 	}
 
-	public void setMax_z(int max_z) {
-		this.max_z = max_z;
+	public void setMaxZ(int maxZ) {
+		this.maxZ = maxZ;
 	}
 
 	public boolean isInside(Location loc) {
-		return ((min_x <= loc.getBlockX() && loc.getBlockX() <= max_x) && (min_y <= loc.getBlockY() && loc.getBlockY() <= max_y) && (min_z <= loc.getBlockZ() && loc.getBlockZ() <= max_z));
+		return ((minX <= loc.getBlockX() && loc.getBlockX() <= maxX) && (minY <= loc.getBlockY() && loc.getBlockY() <= maxY) && (minZ <= loc.getBlockZ() && loc.getBlockZ() <= maxZ));
 	}
 
 	public int getSquareArea() {
-		return (max_x - min_x) * (max_z - min_z);
+		return (maxX - minX) * (maxZ - minZ);
 	}
 
 	public int getVolume() {
-		return getSquareArea() * (max_y - min_y);
+		return getSquareArea() * (maxY - minY);
 	}
 
 	public int getPerimeter() {
-		return ((max_x - min_x) * 2) + ((max_z - min_z) * 2);
+		return ((maxX - minX) * 2) + ((maxZ - minZ) * 2);
 	}
 
 	public Block getMiddleFloor() {
-		int midX = (min_x + max_x) / 2;
-		int midZ = (min_z + max_z) / 2;
+		int midX = (minX + maxX) / 2;
+		int midZ = (minZ + maxZ) / 2;
 		return Bukkit.getWorld("world").getHighestBlockAt(midX, midZ);
 	}
 }

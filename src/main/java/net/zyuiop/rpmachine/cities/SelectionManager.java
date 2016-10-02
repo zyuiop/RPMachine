@@ -16,13 +16,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class SelectionManager implements Listener {
 	private ConcurrentHashMap<UUID, Selection> selections = new ConcurrentHashMap<>();
 	private final CitiesManager citiesManager;

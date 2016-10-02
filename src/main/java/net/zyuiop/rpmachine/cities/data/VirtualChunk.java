@@ -3,13 +3,6 @@ package net.zyuiop.rpmachine.cities.data;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class VirtualChunk {
 	private int x;
 	private int z;
