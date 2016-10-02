@@ -1,7 +1,5 @@
 package net.zyuiop.rpmachine.economy.commands;
 
-
-import net.bridgesapi.api.BukkitBridge;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,7 +9,7 @@ import org.bukkit.entity.Player;
 public class CommandFly implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-		if (! BukkitBridge.get().getPermissionsManager().hasPermission(commandSender, "rp.fly")) {
+		if (! commandSender.hasPermission("rp.fly")) {
 			commandSender.sendMessage(ChatColor.RED + "Vous n'avez pas la permission !");
 			return true;
 		}

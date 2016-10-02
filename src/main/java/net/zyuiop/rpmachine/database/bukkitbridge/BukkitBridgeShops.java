@@ -1,30 +1,28 @@
-package net.zyuiop.rpmachine.economy;
-
-import net.bridgesapi.api.BukkitBridge;
-import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
-import net.zyuiop.rpmachine.economy.shops.ShopGsonHelper;
-import net.zyuiop.rpmachine.economy.shops.ShopSign;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import com.google.gson.Gson;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.ShardedJedis;
+package net.zyuiop.rpmachine.database.bukkitbridge;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import com.google.gson.Gson;
+import net.bridgesapi.api.BukkitBridge;
+import net.zyuiop.rpmachine.database.ShopsManager;
+import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
+import net.zyuiop.rpmachine.economy.shops.ShopGsonHelper;
+import net.zyuiop.rpmachine.economy.shops.ShopSign;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import redis.clients.jedis.Jedis;
 
-public class ShopsManager {
+public class BukkitBridgeShops extends ShopsManager {
 	private final ConcurrentHashMap<Location, AbstractShopSign> signs = new ConcurrentHashMap<>();
 
-	public ShopsManager() {
+	public BukkitBridgeShops() {
 		load();
 	}
 
-	public void create(AbstractShopSign sign) {
-		signs.put(sign.getLocation(), sign);
-		sign.display();
+	@Override
+	protected void doCreate(AbstractShopSign sign) {
 		new Thread(() -> {
 			Jedis jedis = BukkitBridge.get().getResource();
 			jedis.hset("rpshops", locAsString(sign.getLocation()), new Gson().toJson(sign));
@@ -53,22 +51,13 @@ public class ShopsManager {
 			}
 	}
 
-	String locAsString(Location loc) {
-		return loc.getBlockX() + "/" + loc.getBlockY() + "/" + loc.getBlockZ();
-	}
-
-	Location locFromString(String loc) {
-		String[] parts = loc.split("/");
-		return new Location(Bukkit.getWorld("world"), Integer.valueOf(parts[0]), Integer.valueOf(parts[1]), Integer.valueOf(parts[2]));
-	}
-
-	public void remove(AbstractShopSign shopSign) {
+	@Override
+	protected void doRemove(AbstractShopSign shopSign) {
 		new Thread(() -> {
 			Jedis jedis = BukkitBridge.get().getResource();
 			jedis.hdel("rpshops", locAsString(shopSign.getLocation()));
 			jedis.close();
 		}).start();
-		signs.remove(shopSign.getLocation());
 	}
 
 	public AbstractShopSign get(Location location) {

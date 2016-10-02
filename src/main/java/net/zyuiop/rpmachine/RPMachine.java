@@ -1,13 +1,13 @@
 package net.zyuiop.rpmachine;
 
-import net.bridgesapi.api.BukkitBridge;
-import net.bridgesapi.api.player.PlayerData;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.SelectionManager;
 import net.zyuiop.rpmachine.cities.commands.*;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
+import net.zyuiop.rpmachine.database.DatabaseManager;
+import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
-import net.zyuiop.rpmachine.economy.ShopsManager;
+import net.zyuiop.rpmachine.database.ShopsManager;
 import net.zyuiop.rpmachine.economy.TransactionsHelper;
 import net.zyuiop.rpmachine.economy.commands.*;
 import net.zyuiop.rpmachine.economy.jobs.JobsManager;
@@ -23,6 +23,7 @@ import java.util.*;
 public class RPMachine extends JavaPlugin {
 
 	private static RPMachine instance;
+	private DatabaseManager databaseManager; // TODO : init
 	private TransactionsHelper transactionsHelper;
 	private EconomyManager economyManager;
 	private ShopsManager shopsManager;
@@ -75,8 +76,8 @@ public class RPMachine extends JavaPlugin {
 
 		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				PlayerData data = BukkitBridge.get().getPlayerManager().getPlayerData(player.getUniqueId());
-				if (data.get("job") == null)
+				PlayerData data = databaseManager.getPlayerData(player.getUniqueId());
+				if (data.getJob() == null)
 					player.sendMessage(ChatColor.GOLD + "Vous n'avez pas encore choisi de métier. Tapez /job pour plus d'infos.");
 			}
 		}, 100L, 3 * 60 * 20L);
@@ -164,5 +165,13 @@ public class RPMachine extends JavaPlugin {
 
 	public ScoreboardManager getScoreboardManager() {
 		return scoreboardManager;
+	}
+
+	public DatabaseManager getDatabaseManager() {
+		return databaseManager;
+	}
+
+	public static DatabaseManager database() {
+		return getInstance().getDatabaseManager();
 	}
 }

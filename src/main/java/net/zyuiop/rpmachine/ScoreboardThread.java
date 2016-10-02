@@ -1,9 +1,8 @@
 package net.zyuiop.rpmachine;
 
-import net.bridgesapi.api.BukkitBridge;
-import net.bridgesapi.api.player.PlayerData;
 import net.bridgesapi.tools.scoreboards.ObjectiveSign;
 import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,10 +28,11 @@ public class ScoreboardThread implements Runnable {
 	public void personnalBoard() {
 		sign.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
 
-		PlayerData data = BukkitBridge.get().getPlayerManager().getPlayerData(uuid);
-		double money = Math.round(data.getDouble("rpmoney", 0.0)*100) / 100;
-		String job = ChatColor.AQUA + data.get("job", ChatColor.RED + "Aucun");
-		String homeData = data.get("rp.home", null);
+		PlayerData data = RPMachine.getInstance().getDatabaseManager().getPlayerData(uuid);
+		double money = data.getMoney();
+		String job = data.getJob();
+		job = job != null ? ChatColor.AQUA + job : ChatColor.RED + "Aucun";
+		VirtualLocation homeData = data.getHome();
 		String home;
 		if (homeData == null)
 			home = ChatColor.RED + "Non défini";
@@ -40,8 +40,7 @@ public class ScoreboardThread implements Runnable {
 			home = ChatColor.RED + "Autre monde";
 		else {
 			try {
-				VirtualLocation loc = new VirtualLocation(homeData);
-				Location location = loc.getLocation();
+				Location location = homeData.getLocation();
 				double dist = location.distance(player.getLocation());
 				home = ChatColor.GREEN + "" + (Math.round(dist * 10)/10.0) + "m";
 			} catch (Exception e) {

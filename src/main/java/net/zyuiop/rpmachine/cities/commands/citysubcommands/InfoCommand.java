@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -46,7 +46,7 @@ public class InfoCommand implements SubCommand {
 
 		if (target != null) {
 			sender.sendMessage(ChatColor.YELLOW + "-----[ Ville de " + ChatColor.GOLD + target.getCityName() + ChatColor.YELLOW + " ]-----");
-			sender.sendMessage(ChatColor.YELLOW + "Maire actuel : " + BukkitBridge.get().getUUIDTranslator().getName(target.getMayor()));
+			sender.sendMessage(ChatColor.YELLOW + "Maire actuel : " + RPMachine.database().getUUIDTranslator().getName(target.getMayor()));
 			sender.sendMessage(ChatColor.YELLOW + "Nombre d'habitants : " + target.countInhabitants());
 			sender.sendMessage(ChatColor.YELLOW + "Type de ville : " + ((target.isRequireInvite() ? ChatColor.RED + "Sur invitation" : ChatColor.GREEN + "Publique")));
 			sender.sendMessage(ChatColor.YELLOW + "Impôts : " + target.getTaxes() + " $ par semaine");

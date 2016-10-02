@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -51,7 +51,7 @@ public class InfoCommand implements SubCommand {
 					if (proprio == null) {
 						player.sendMessage(ChatColor.YELLOW + "Propriétaire : " + ChatColor.RED + "Aucun");
 					} else {
-						String name = BukkitBridge.get().getUUIDTranslator().getName(proprio, false);
+						String name = RPMachine.database().getUUIDTranslator().getName(proprio, false);
 						if (name == null) {
 							player.sendMessage(ChatColor.YELLOW + "Propriétaire : " + ChatColor.GOLD + "Inconnu");
 						} else {
@@ -61,7 +61,7 @@ public class InfoCommand implements SubCommand {
 
 					ArrayList<String> members = new ArrayList<>();
 					for (UUID id : plot.getPlotMembers()) {
-						String name = BukkitBridge.get().getUUIDTranslator().getName(id, false);
+						String name = RPMachine.database().getUUIDTranslator().getName(id, false);
 						if (name != null)
 							members.add(name);
 					}

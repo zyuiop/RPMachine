@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -40,7 +40,7 @@ public class CouncilCommand implements SubCommand {
 					if (args.length == 1 && args[0].equals("list")) {
 						player.sendMessage(ChatColor.GOLD + "-----[ Liste des Conseillers ]-----");
 						for (UUID council : city.getCouncils()) {
-							String name = BukkitBridge.get().getUUIDTranslator().getName(council, false);
+							String name = RPMachine.database().getUUIDTranslator().getName(council, false);
 							if (name != null)
 								player.sendMessage(ChatColor.YELLOW + " - " + name);
 						}
@@ -55,7 +55,7 @@ public class CouncilCommand implements SubCommand {
 							return;
 						}
 
-						UUID id = BukkitBridge.get().getUUIDTranslator().getUUID(pseudo, true);
+						UUID id = RPMachine.database().getUUIDTranslator().getUUID(pseudo, true);
 						if (id == null) {
 							player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
 						} else {

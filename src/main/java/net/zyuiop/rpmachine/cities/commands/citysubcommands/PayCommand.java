@@ -1,11 +1,10 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
-import net.bridgesapi.api.player.FinancialCallback;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.database.FinancialCallback;
 import net.zyuiop.rpmachine.economy.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,7 +45,7 @@ public class PayCommand implements SubCommand {
 			} else {
 				try {
 					String target = args[0];
-					UUID targetID = BukkitBridge.get().getUUIDTranslator().getUUID(target);
+					UUID targetID = RPMachine.database().getUUIDTranslator().getUUID(target);
 					String amtStr = args[1];
 					double amount = Double.valueOf(amtStr);
 					if (amount < 0)
@@ -61,16 +60,13 @@ public class PayCommand implements SubCommand {
 					} else {
 						city.setMoney(city.getMoney() - amount);
 						final double finalAmount = amount;
-						RPMachine.getInstance().getEconomyManager().giveMoney(targetID, amount, new FinancialCallback<Double>() {
-							@Override
-							public void done(Double newAmount, Double difference, Throwable error) {
-								Player tar = Bukkit.getPlayer(targetID);
-								if (tar != null) {
-									tar.sendMessage(Messages.ECO_PREFIX.getMessage() + ChatColor.YELLOW + "Vous recevez " + ChatColor.AQUA + finalAmount + " $" + ChatColor.YELLOW + " de " + ChatColor.AQUA + player.getName());
-								}
-
-								player.sendMessage(Messages.ECO_PREFIX.getMessage() + ChatColor.YELLOW + "Vous avez envoyé " + ChatColor.GOLD + amtStr + "$");
+						RPMachine.getInstance().getEconomyManager().giveMoney(targetID, amount, (newAmount, difference) -> {
+							Player tar = Bukkit.getPlayer(targetID);
+							if (tar != null) {
+								tar.sendMessage(Messages.ECO_PREFIX.getMessage() + ChatColor.YELLOW + "Vous recevez " + ChatColor.AQUA + finalAmount + " $" + ChatColor.YELLOW + " de " + ChatColor.AQUA + player.getName());
 							}
+
+							player.sendMessage(Messages.ECO_PREFIX.getMessage() + ChatColor.YELLOW + "Vous avez envoyé " + ChatColor.GOLD + amtStr + "$");
 						});
 						citiesManager.saveCity(city);
 					}

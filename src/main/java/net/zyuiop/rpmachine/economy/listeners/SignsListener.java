@@ -1,7 +1,5 @@
 package net.zyuiop.rpmachine.economy.listeners;
 
-
-import net.bridgesapi.api.BukkitBridge;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.Plot;
@@ -75,7 +73,7 @@ public class SignsListener implements Listener {
 					showSignsRules(event.getPlayer());
 				}
 			}
-		} else if (event.getLine(0).equalsIgnoreCase("AdminShop") && BukkitBridge.get().getPermissionsManager().hasPermission(event.getPlayer(), "rp.adminshop")) {
+		} else if (event.getLine(0).equalsIgnoreCase("AdminShop") && event.getPlayer().hasPermission("rp.adminshop")) {
 			String price = event.getLine(1);
 			String bundleSize = event.getLine(2);
 			String action = event.getLine(3);
@@ -198,7 +196,7 @@ public class SignsListener implements Listener {
 		AbstractShopSign sign = plugin.getShopsManager().get(event.getClickedBlock().getLocation());
 		if (sign == null)
 			return;
-		else if (event.getPlayer().isSneaking() && BukkitBridge.get().getPermissionsManager().hasPermission(event.getPlayer(), "sign.debug")) {
+		else if (event.getPlayer().isSneaking() && event.getPlayer().hasPermission("sign.debug")) {
 			Player p = event.getPlayer();
 			p.sendMessage(ChatColor.YELLOW + "-----[ Débug Shop ] -----");
 			p.sendMessage(ChatColor.YELLOW + "Price : " + sign.getPrice());

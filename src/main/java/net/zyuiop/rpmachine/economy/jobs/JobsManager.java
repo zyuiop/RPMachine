@@ -1,8 +1,7 @@
 package net.zyuiop.rpmachine.economy.jobs;
 
-import net.bridgesapi.api.BukkitBridge;
-import net.bridgesapi.api.player.PlayerData;
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
@@ -39,8 +38,8 @@ public class JobsManager {
 	}
 
 	public Job getJob(UUID player) {
-		PlayerData data = BukkitBridge.get().getPlayerManager().getPlayerData(player);
-		String job = data.get("job");
+		PlayerData data = RPMachine.database().getPlayerData(player);
+		String job = data.getJob();
 		if (job == null)
 			return null;
 		Bukkit.getLogger().info("Job found : " + job);

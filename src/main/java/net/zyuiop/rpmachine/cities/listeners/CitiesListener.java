@@ -1,10 +1,10 @@
 package net.zyuiop.rpmachine.cities.listeners;
 
-import net.bridgesapi.api.BukkitBridge;
-
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.Plot;
+import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -19,6 +19,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -96,22 +97,22 @@ public class CitiesListener implements Listener {
 	public void onJoin(PlayerJoinEvent event) {
 		new Thread(() -> {
 			Player player = event.getPlayer();
-			Set<String> dataKeys = BukkitBridge.get().getPlayerManager().getPlayerData(player.getUniqueId()).getValues().keySet();
-			for (String key : dataKeys) {
-				if (key.startsWith("topay.")) {
-					String city = key.split(".")[0];
-					double topay = BukkitBridge.get().getPlayerManager().getPlayerData(player.getUniqueId()).getDouble(key);
-					player.sendMessage(ChatColor.RED + "ATTENTION ! Votre compte ne contient pas assez d'argent pour payer vos impots.");
-					player.sendMessage(ChatColor.RED + "Vous devez " + ChatColor.AQUA + topay + ChatColor.RED + " à la ville de " + ChatColor.AQUA + city);
-					player.sendMessage(ChatColor.RED + "Payez les rapidement avec " + ChatColor.AQUA + "/city paytaxes " + city);
-				}
+			PlayerData data = RPMachine.database().getPlayerData(player.getUniqueId());
+			for (Map.Entry<String, Double> entry : data.getUnpaidTaxes().entrySet()) {
+				double topay = entry.getValue();
+				if (topay <= 0)
+					continue;
+
+				player.sendMessage(ChatColor.RED + "ATTENTION ! Votre compte ne contient pas assez d'argent pour payer vos impots.");
+				player.sendMessage(ChatColor.RED + "Vous devez " + ChatColor.AQUA + topay + ChatColor.RED + " à la ville de " + ChatColor.AQUA + entry.getKey());
+				player.sendMessage(ChatColor.RED + "Payez les rapidement avec " + ChatColor.AQUA + "/city paytaxes " + entry.getKey());
 			}
 		}).start();
 	}
 
 	@EventHandler
 	public void onGamemode(PlayerGameModeChangeEvent event) {
-		if (! BukkitBridge.get().getPermissionsManager().hasPermission(event.getPlayer(), "rp.gamemode") && event.getNewGameMode() != GameMode.SURVIVAL) {
+		if (! event.getPlayer().hasPermission("rp.gamemode") && event.getNewGameMode() != GameMode.SURVIVAL) {
 			event.getPlayer().setGameMode(GameMode.SURVIVAL);
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "Vous n'avez pas le droit d'accéder au gamemode créatif.");

@@ -1,7 +1,6 @@
 package net.zyuiop.rpmachine.economy.commands;
 
 
-import net.bridgesapi.api.BukkitBridge;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,7 +11,7 @@ import org.bukkit.entity.Player;
 public class CommandEnderchest implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-		if (! BukkitBridge.get().getPermissionsManager().hasPermission(commandSender, "rp.enderchest")) {
+		if (!commandSender.hasPermission("rp.enderchest")) {
 			commandSender.sendMessage(ChatColor.RED + "Vous n'avez pas la permission !");
 			return true;
 		}

@@ -1,15 +1,18 @@
 package net.zyuiop.rpmachine.cities.data;
 
-import net.bridgesapi.api.BukkitBridge;
-import net.bridgesapi.api.player.FinancialCallback;
-import net.bridgesapi.api.player.PlayerData;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-
-import java.util.*;
 
 public class City {
 	private String cityName;
@@ -30,8 +33,22 @@ public class City {
 
 	private boolean requireInvite;
 
+	private static boolean sameDay(Date target) {
+		GregorianCalendar date = new GregorianCalendar();
+		date.setTime(new Date());
+
+		GregorianCalendar compare = new GregorianCalendar();
+		compare.setTime(target);
+
+		return compare.get(Calendar.DAY_OF_MONTH) == date.get(Calendar.DAY_OF_MONTH) && date.get(Calendar.MONTH) == compare.get(Calendar.MONTH) && date.get(Calendar.YEAR) == compare.get(Calendar.YEAR);
+	}
+
 	public String getCityName() {
 		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
 	}
 
 	public HashMap<UUID, Double> getTaxesToPay() {
@@ -40,10 +57,6 @@ public class City {
 
 	public void setTaxesToPay(HashMap<UUID, Double> taxesToPay) {
 		this.taxesToPay = taxesToPay;
-	}
-
-	public void setCityName(String cityName) {
-		this.cityName = cityName;
 	}
 
 	public VirtualLocation getSpawn() {
@@ -143,7 +156,7 @@ public class City {
 	}
 
 	public double getMoney() {
-		return Math.floor(money*100) / 100;
+		return Math.floor(money * 100) / 100;
 	}
 
 	public void setMoney(double money) {
@@ -167,7 +180,7 @@ public class City {
 		int x = ch.getX();
 		int z = ch.getZ();
 
-		return (chunks.contains(new VirtualChunk(x+1, z)) || chunks.contains(new VirtualChunk(x-1, z)) || chunks.contains(new VirtualChunk(x, z+1)) || chunks.contains(new VirtualChunk(x, z-1)));
+		return (chunks.contains(new VirtualChunk(x + 1, z)) || chunks.contains(new VirtualChunk(x - 1, z)) || chunks.contains(new VirtualChunk(x, z + 1)) || chunks.contains(new VirtualChunk(x, z - 1)));
 	}
 
 	public Plot getPlotHere(Location location) {
@@ -203,32 +216,30 @@ public class City {
 		if (this.taxes == 0)
 			return;
 
-		GregorianCalendar date = new GregorianCalendar();
-		date.setTime(new Date());
-		String dateString = date.get(Calendar.DAY_OF_MONTH) + "/" + date.get(Calendar.MONTH) + "/" + date.get(Calendar.YEAR);
-
 		for (Plot plot : plots.values()) {
 			if (plot.getOwner() != null) {
 				UUID owner = plot.getOwner();
-				PlayerData ownerData = BukkitBridge.get().getPlayerManager().getPlayerData(owner);
-				if (force || !ownerData.get("lasttaxes."+getCityName(), "none").equals(dateString)) {
-					double toPay = plot.getArea().getSquareArea() * taxes;
-					RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(owner, toPay, new FinancialCallback<Double>() {
-						@Override
-						public void done(Double newAmount, Double difference, Throwable error) {
-							if (difference != 0) {
-								money += toPay;
-							} else {
-								ownerData.setDouble("topay."+getCityName(), ownerData.getDouble("topay."+getCityName(), 0D) + toPay);
-								Double total = taxesToPay.get(owner);
-								if (total == null)
-									taxesToPay.put(owner, toPay);
-								else
-									taxesToPay.put(owner, total + toPay);
-							}
+				PlayerData ownerData = RPMachine.database().getPlayerData(owner);
+				Date lastPaid = ownerData.getLastTaxes(getCityName());
 
-							ownerData.set("lasttaxes."+getCityName(), dateString);
+				if (force || lastPaid == null || !sameDay(lastPaid)) {
+					double toPay = plot.getArea().getSquareArea() * taxes;
+					RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(owner, toPay, (newAmount, difference) -> {
+						if (difference != 0) {
+							money += toPay;
+						} else {
+							double lateTaxes = ownerData.getUnpaidTaxes(getCityName());
+							lateTaxes += toPay;
+							ownerData.setUnpaidTaxes(getCityName(), lateTaxes);
+
+							Double total = taxesToPay.get(owner);
+							if (total == null)
+								taxesToPay.put(owner, toPay);
+							else
+								taxesToPay.put(owner, total + toPay);
 						}
+
+						ownerData.setLastTaxes(getCityName(), new Date());
 					});
 				}
 			}

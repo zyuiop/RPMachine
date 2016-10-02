@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -41,7 +41,7 @@ public class UnpaidTaxesCommand implements SubCommand {
 			} else {
 				player.sendMessage(ChatColor.GOLD + "-----[ Impôts impayés ]-----");
 				for (Map.Entry<UUID, Double> entry : city.getTaxesToPay().entrySet()) {
-					String name = BukkitBridge.get().getUUIDTranslator().getName(entry.getKey(), true);
+					String name = RPMachine.database().getUUIDTranslator().getName(entry.getKey(), true);
 					player.sendMessage(ChatColor.YELLOW + " - " + name + " doit " + ChatColor.RED + entry.getValue() + ChatColor.YELLOW + " à la ville.");
 				}
 			}

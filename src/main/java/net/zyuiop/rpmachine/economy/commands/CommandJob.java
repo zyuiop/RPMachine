@@ -1,8 +1,7 @@
 package net.zyuiop.rpmachine.economy.commands;
 
-import net.bridgesapi.api.BukkitBridge;
-import net.bridgesapi.api.player.PlayerData;
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.jobs.Job;
 import net.zyuiop.rpmachine.economy.shops.ShopSign;
 import org.bukkit.ChatColor;
@@ -61,11 +60,11 @@ public class CommandJob extends EconomixCommand {
 				}
 
 				new Thread(() -> {
-					PlayerData data = BukkitBridge.get().getPlayerManager().getPlayerData(((Player) commandSender).getUniqueId());
-					if (data.get("job") != null)
+					PlayerData data = RPMachine.database().getPlayerData(((Player) commandSender).getUniqueId());
+					if (data.getJob() != null)
 						commandSender.sendMessage(ChatColor.RED + "Vous avez déjà un métier.");
 					else {
-						data.set("job", j.getJobName());
+						data.setJob(j.getJobName());
 						commandSender.sendMessage(ChatColor.GREEN + "Vous avez bien choisi le métier " + ChatColor.DARK_GREEN + j.getJobName());
 					}
 				}).start();
@@ -81,8 +80,8 @@ public class CommandJob extends EconomixCommand {
 					}
 					commandSender.sendMessage(ChatColor.AQUA + "" + i + ChatColor.GOLD + " Shops ont été supprimés.");
 					new Thread(() -> {
-						PlayerData data = BukkitBridge.get().getPlayerManager().getPlayerData(((Player) commandSender).getUniqueId());
-						data.remove("job");
+						PlayerData data = RPMachine.database().getPlayerData(((Player) commandSender).getUniqueId());
+						data.setJob(null);
 						commandSender.sendMessage(ChatColor.GOLD + "Vous n'avez maintenant plus de métier.");
 					}).start();
 				}

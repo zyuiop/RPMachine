@@ -1,8 +1,8 @@
 package net.zyuiop.rpmachine.economy.commands;
 
-import net.bridgesapi.api.BukkitBridge;
-import net.bridgesapi.api.player.PlayerData;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,8 +22,8 @@ public class CommandSethome implements CommandExecutor {
 		}
 		VirtualLocation home = new VirtualLocation(player.getLocation());
 		new Thread(() -> {
-			PlayerData data = BukkitBridge.get().getPlayerManager().getPlayerData(player.getUniqueId());
-			data.set("rp.home", home.toString());
+			PlayerData data = RPMachine.database().getPlayerData(player.getUniqueId());
+			data.setHome(home);
 			player.sendMessage(ChatColor.GREEN + "Votre domicile a bien été fixé !");
 		}).start();
 		return true;

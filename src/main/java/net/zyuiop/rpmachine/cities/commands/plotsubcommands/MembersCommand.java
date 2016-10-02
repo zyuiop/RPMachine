@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -49,7 +49,7 @@ public class MembersCommand implements SubCommand {
 			} else if (!city.getCouncils().contains(player.getUniqueId()) && !player.getUniqueId().equals(city.getMayor()) && !player.getUniqueId().equals(plot.getOwner())) {
 				player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
 			} else {
-				UUID id = BukkitBridge.get().getUUIDTranslator().getUUID(args[3], true);
+				UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[3], true);
 				if (id == null) {
 					player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
 				} else {
