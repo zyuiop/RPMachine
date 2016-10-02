@@ -11,4 +11,5 @@ floors:
      chunk-price: 150 # Prix d'un chunk pour cette ville
 
 
-database: net.zyuiop.rpmachine.database.bukkitbridge.BukkitBridgeDatabase
+# database: net.zyuiop.rpmachine.database.bukkitbridge.BukkitBridgeDatabase
+database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase

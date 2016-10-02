@@ -15,7 +15,7 @@ public abstract class ShopsManager {
 		load();
 	}
 
-	public void create(AbstractShopSign sign) {
+	public final void create(AbstractShopSign sign) {
 		signs.put(sign.getLocation(), sign);
 		sign.display();
 		doCreate(sign);
@@ -26,28 +26,28 @@ public abstract class ShopsManager {
 	protected abstract void load();
 
 	protected String locAsString(Location loc) {
-		return loc.getBlockX() + "/" + loc.getBlockY() + "/" + loc.getBlockZ();
+		return loc.getWorld().getName() + "-" + loc.getBlockX() + "-" + loc.getBlockY() + "-" + loc.getBlockZ();
 	}
 
 	protected Location locFromString(String loc) {
-		String[] parts = loc.split("/");
-		return new Location(Bukkit.getWorld("world"), Integer.valueOf(parts[0]), Integer.valueOf(parts[1]), Integer.valueOf(parts[2]));
+		String[] parts = loc.split("-");
+		return new Location(Bukkit.getWorld(parts[0]), Integer.valueOf(parts[1]), Integer.valueOf(parts[2]), Integer.valueOf(parts[3]));
 	}
 
-	public void remove(AbstractShopSign shopSign) {
+	public final void remove(AbstractShopSign shopSign) {
 		doRemove(shopSign);
 		signs.remove(shopSign.getLocation());
 	}
 
 	protected abstract void doRemove(AbstractShopSign shopSign);
 
-	public AbstractShopSign get(Location location) {
+	public final AbstractShopSign get(Location location) {
 		return signs.get(location);
 	}
 
 	public abstract void save(AbstractShopSign shopSign);
 
-	public HashSet<ShopSign> getPlayerShops(UUID player) {
+	public final HashSet<ShopSign> getPlayerShops(UUID player) {
 		HashSet<ShopSign> ret = new HashSet<>();
 		for (AbstractShopSign shopSign : signs.values())
 			if (shopSign.getOwnerId().equals(player) && shopSign instanceof ShopSign)

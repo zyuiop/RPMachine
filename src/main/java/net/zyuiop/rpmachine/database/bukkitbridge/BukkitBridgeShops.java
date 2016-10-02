@@ -15,8 +15,6 @@ import org.bukkit.Location;
 import redis.clients.jedis.Jedis;
 
 public class BukkitBridgeShops extends ShopsManager {
-	private final ConcurrentHashMap<Location, AbstractShopSign> signs = new ConcurrentHashMap<>();
-
 	public BukkitBridgeShops() {
 		load();
 	}
@@ -60,25 +58,12 @@ public class BukkitBridgeShops extends ShopsManager {
 		}).start();
 	}
 
-	public AbstractShopSign get(Location location) {
-		return signs.get(location);
-	}
-
 	public void save(AbstractShopSign shopSign) {
 		new Thread(() -> {
 			Jedis jedis = BukkitBridge.get().getResource();
 			jedis.hset("rpshops", locAsString(shopSign.getLocation()), new Gson().toJson(shopSign));
 			jedis.close();
 		}).start();
-	}
-
-	public HashSet<ShopSign> getPlayerShops(UUID player) {
-		HashSet<ShopSign> ret = new HashSet<>();
-		for (AbstractShopSign shopSign : signs.values())
-			if (shopSign.getOwnerId().equals(player) && shopSign instanceof ShopSign)
-				ret.add((ShopSign) shopSign);
-
-		return ret;
 	}
 
 }
