@@ -1,6 +1,5 @@
 package net.zyuiop.rpmachine;
 
-import net.bridgesapi.tools.scoreboards.ObjectiveSign;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
@@ -15,19 +14,18 @@ public class ScoreboardThread implements Runnable {
 
 	private final Player player;
 	private final UUID uuid;
-	private final ObjectiveSign sign;
+	private final ScoreboardSign sign;
 	private int elapsed = 0;
 
 	public ScoreboardThread(Player player) {
 		this.player = player;
 		this.uuid = player.getUniqueId();
-		sign = new ObjectiveSign(player.getName(), ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
-		sign.addReceiver(player);
+		sign = new ScoreboardSign(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
 	}
 
 
 	public void personnalBoard() {
-		sign.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
+		sign.setObjectiveName(ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
 
 		PlayerData data = RPMachine.getInstance().getDatabaseManager().getPlayerData(uuid);
 		double money = data.getMoney();
@@ -102,7 +100,7 @@ public class ScoreboardThread implements Runnable {
 			return;
 		}
 
-		sign.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.BOLD +  "Ville : " + city.getCityName());
+		sign.setObjectiveName(ChatColor.DARK_AQUA + "" + ChatColor.BOLD +  "Ville : " + city.getCityName());
 
 		sign.setLine(1, ChatColor.RED + "  ");
 		sign.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
@@ -144,6 +142,6 @@ public class ScoreboardThread implements Runnable {
 			elapsed = 0;
 
 
-		sign.updateLines();
+		// sign.updateLines();
 	}
 }

@@ -135,4 +135,11 @@ public class PlayerFile implements net.zyuiop.rpmachine.database.PlayerData {
 	public boolean isNew() {
 		return !data.getKeys(false).contains("rpmoney");
 	}
+
+	@Override
+	public boolean togglePlotMessages() {
+		boolean val = !data.getBoolean("seemessages", true);
+		data.set("seemessages", val);
+		return val;
+	}
 }

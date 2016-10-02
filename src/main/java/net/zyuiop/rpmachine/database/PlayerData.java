@@ -35,4 +35,6 @@ public interface PlayerData {
 	Map<String, Double> getUnpaidTaxes();
 
 	boolean isNew();
+
+	boolean togglePlotMessages();
 }

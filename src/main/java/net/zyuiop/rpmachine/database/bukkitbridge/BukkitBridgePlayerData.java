@@ -116,4 +116,11 @@ public class BukkitBridgePlayerData implements net.zyuiop.rpmachine.database.Pla
 	public boolean isNew() {
 		return !data.getKeys().contains("rpmoney");
 	}
+
+	@Override
+	public boolean togglePlotMessages() {
+		boolean val = !data.getBoolean("seemessages", true);
+		data.setBoolean("seemessages", val);
+		return val;
+	}
 }
