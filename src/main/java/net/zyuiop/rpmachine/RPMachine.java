@@ -26,7 +26,6 @@ public class RPMachine extends JavaPlugin {
 	private DatabaseManager databaseManager; // TODO : init
 	private TransactionsHelper transactionsHelper;
 	private EconomyManager economyManager;
-	private ShopsManager shopsManager;
 	private JobsManager jobsManager;
 	private CitiesManager citiesManager;
 	private SelectionManager selectionManager;
@@ -41,9 +40,12 @@ public class RPMachine extends JavaPlugin {
 		instance = this;
 		
 		saveDefaultConfig();
+		if (!loadDatabase()) {
+			setEnabled(false);
+			return;
+		}
 
 		this.economyManager = new EconomyManager();
-		this.shopsManager = new ShopsManager();
 		this.transactionsHelper = new TransactionsHelper(this.economyManager);
 		this.jobsManager = new JobsManager(this);
 		this.citiesManager = new CitiesManager(this);
@@ -134,6 +136,19 @@ public class RPMachine extends JavaPlugin {
 			citiesManager.payTaxes(false);
 	}
 
+	private boolean loadDatabase() {
+		String managerClass = getConfig().getString("database", "net.zyuiop.rpmachine.database.bukkitbridge.BukkitBridgeDatabase");
+		try {
+			Class<? extends DatabaseManager> clazz = (Class<? extends DatabaseManager>) Class.forName(managerClass);
+			databaseManager = clazz.newInstance();
+			return true;
+		} catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException e) {
+			getLogger().severe("Cannot load Database Manager. Cancelling start.");
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	public SelectionManager getSelectionManager() {
 		return selectionManager;
 	}
@@ -155,7 +170,7 @@ public class RPMachine extends JavaPlugin {
 	}
 
 	public ShopsManager getShopsManager() {
-		return shopsManager;
+		return getDatabaseManager().getShopsManager();
 	}
 
 	@Override

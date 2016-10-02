@@ -9,3 +9,6 @@ floors:
      max-chunks: 15 # Nombre maximum de chunks d'une ville à ce pallier
      max-taxes: 1 # Impot maximum par bloc percevable par cette ville
      chunk-price: 150 # Prix d'un chunk pour cette ville
+
+
+database: net.zyuiop.rpmachine.database.bukkitbridge.BukkitBridgeDatabase
