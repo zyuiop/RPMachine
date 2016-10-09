@@ -7,7 +7,7 @@ import net.zyuiop.rpmachine.economy.TaxPayer;
 /**
  * @author zyuiop
  */
-public interface PlayerData extends AccountHolder, TaxPayer {
+public interface PlayerData extends TaxPayer {
 	String getJob();
 
 	void setJob(String job);

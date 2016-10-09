@@ -1,21 +1,17 @@
 package net.zyuiop.rpmachine.cities.data;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
+
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.AccountHolder;
+import net.zyuiop.rpmachine.economy.TaxPayer;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class City implements AccountHolder {
+public class City implements TaxPayer {
 	private String cityName;
 	private VirtualLocation spawn;
 	private String fileName;
@@ -26,6 +22,8 @@ public class City implements AccountHolder {
 	private ArrayList<UUID> inhabitants = new ArrayList<>();
 	private ArrayList<UUID> invitedUsers = new ArrayList<>();
 	private HashMap<UUID, Double> taxesToPay = new HashMap<>();
+
+	private CityTaxPayer taxPayer = new CityTaxPayer(); // loaded by Gson
 
 	private double taxes = 0;
 	private double money = 0;
@@ -278,6 +276,52 @@ public class City implements AccountHolder {
 		} else {
 			Plot plot = getPlotHere(location);
 			return (inhabitants.contains(player.getUniqueId()) && plot == null) || (plot != null && plot.canBuild(player, location));
+		}
+	}
+
+	@Override
+	public void setUnpaidTaxes(String city, double amount) {
+		taxPayer.getUnpaidTaxes().put(city, amount);
+	}
+
+	@Override
+	public double getUnpaidTaxes(String city) {
+		return taxPayer.getUnpaidTaxes().get(city);
+	}
+
+	@Override
+	public void setLastTaxes(String city, Date date) {
+		taxPayer.getLastPaidTaxes().put(city, date);
+	}
+
+	@Override
+	public Date getLastTaxes(String city) {
+		return taxPayer.getLastPaidTaxes().get(city);
+	}
+
+	@Override
+	public Map<String, Double> getUnpaidTaxes() {
+		return taxPayer.getUnpaidTaxes();
+	}
+
+	public static class CityTaxPayer {
+		private Map<String, Double> unpaidTaxes = new HashMap<>();
+		private Map<String, Date> lastPaidTaxes = new HashMap<>();
+
+		Map<String, Double> getUnpaidTaxes() {
+			return unpaidTaxes;
+		}
+
+		public void setUnpaidTaxes(Map<String, Double> unpaidTaxes) {
+			this.unpaidTaxes = unpaidTaxes;
+		}
+
+		Map<String, Date> getLastPaidTaxes() {
+			return lastPaidTaxes;
+		}
+
+		public void setLastPaidTaxes(Map<String, Date> lastPaidTaxes) {
+			this.lastPaidTaxes = lastPaidTaxes;
 		}
 	}
 }

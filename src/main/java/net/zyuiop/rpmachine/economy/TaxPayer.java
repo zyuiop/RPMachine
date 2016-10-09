@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * @author zyuiop
  */
-public interface TaxPayer {
+public interface TaxPayer extends AccountHolder {
 	void setUnpaidTaxes(String city, double amount);
 
 	double getUnpaidTaxes(String city);
