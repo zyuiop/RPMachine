@@ -10,11 +10,12 @@ import java.util.UUID;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.economy.AccountHolder;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class City {
+public class City implements AccountHolder {
 	private String cityName;
 	private VirtualLocation spawn;
 	private String fileName;
@@ -161,6 +162,19 @@ public class City {
 
 	public void setMoney(double money) {
 		this.money = money;
+	}
+
+	@Override
+	public boolean withdrawMoney(double amount) {
+		if (money < amount)
+			return false;
+		setMoney(money - amount);
+		return true;
+	}
+
+	@Override
+	public void creditMoney(double amount) {
+		setMoney(money + amount);
 	}
 
 	public double countInhabitants() {

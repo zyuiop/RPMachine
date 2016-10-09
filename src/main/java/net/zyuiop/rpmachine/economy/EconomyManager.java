@@ -1,10 +1,11 @@
 package net.zyuiop.rpmachine.economy;
 
-import java.util.UUID;
-import java.util.function.Consumer;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.FinancialCallback;
 import net.zyuiop.rpmachine.database.PlayerData;
+
+import java.util.UUID;
+import java.util.function.Consumer;
 
 public class EconomyManager {
 	private static String moneyName = null;
@@ -62,16 +63,20 @@ public class EconomyManager {
 			PlayerData fromData = getData(from);
 			PlayerData toData = getData(to);
 
-			fromData.creditMoney(- amount);
+			fromData.creditMoney(-amount);
 			toData.creditMoney(amount);
 		}).start();
 	}
 
 	public void transferMoneyBalanceCheck(UUID from, UUID to, double amount, Consumer<Boolean> result) {
-		new Thread(() -> {
-			PlayerData fromData = getData(from);
-			PlayerData toData = getData(to);
+		PlayerData fromData = getData(from);
+		PlayerData toData = getData(to);
 
+		transferMoneyBalanceCheck(fromData, toData, amount, result);
+	}
+
+	public void transferMoneyBalanceCheck(AccountHolder fromData, AccountHolder toData, double amount, Consumer<Boolean> result) {
+		new Thread(() -> {
 			if (fromData.withdrawMoney(amount)) {
 				toData.creditMoney(amount);
 

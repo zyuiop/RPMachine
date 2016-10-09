@@ -1,13 +1,13 @@
 package net.zyuiop.rpmachine.database;
 
-import java.util.Date;
-import java.util.Map;
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.economy.AccountHolder;
+import net.zyuiop.rpmachine.economy.TaxPayer;
 
 /**
  * @author zyuiop
  */
-public interface PlayerData {
+public interface PlayerData extends AccountHolder, TaxPayer {
 	String getJob();
 
 	void setJob(String job);
@@ -15,24 +15,6 @@ public interface PlayerData {
 	VirtualLocation getHome();
 
 	void setHome(VirtualLocation location);
-
-	double getMoney();
-
-	void setMoney(double amount);
-
-	boolean withdrawMoney(double amount);
-
-	void creditMoney(double amount);
-
-	void setUnpaidTaxes(String city, double amount);
-
-	double getUnpaidTaxes(String city);
-
-	void setLastTaxes(String city, Date date);
-
-	Date getLastTaxes(String city);
-
-	Map<String, Double> getUnpaidTaxes();
 
 	boolean isNew();
 
