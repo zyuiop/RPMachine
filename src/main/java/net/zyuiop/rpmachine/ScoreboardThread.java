@@ -27,6 +27,7 @@ public class ScoreboardThread implements Runnable {
 		this.player = player;
 		this.uuid = player.getUniqueId();
 		sign = ReflectionUtils.getVersion().createScoreboardSign(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
+		sign.create();
 	}
 
 

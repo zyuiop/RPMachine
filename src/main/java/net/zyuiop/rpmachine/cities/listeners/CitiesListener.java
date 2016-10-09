@@ -272,12 +272,4 @@ public class CitiesListener implements Listener {
 		Chunk c2 = l2.getChunk();
 		return (c1.getX() == c2.getX() && c1.getZ() == c2.getZ());
 	}
-
-	@EventHandler
-	public void onChunkUnload(ChunkUnloadEvent event) {
-		event.setCancelled(true);
-		final Chunk chunk = event.getChunk();
-		Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(),
-				() -> chunk.unload(true, true), 60 * 2);
-	}
 }

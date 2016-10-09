@@ -7,7 +7,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author zyuiop
@@ -41,7 +40,7 @@ public class CommandActAs implements CommandExecutor {
 				break;
 			case "admin":
 				if (sender.hasPermission("actas.actAsAdmin")) {
-					sender.sendMessage(ChatColor.GREEN + "Vous agissez désormais au nom de §cLa Conférédation");
+					sender.sendMessage(ChatColor.GREEN + "Vous agissez désormais au nom de §cLa Confédération");
 					token.setAdmin(true);
 					RPMachine.setPlayerRoleToken((Player) sender, token);
 				} else {

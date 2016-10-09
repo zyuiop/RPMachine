@@ -35,7 +35,7 @@ public class TaxPayerToken {
 
 	public String displayable() {
 		if (isAdmin()) {
-			return ChatColor.RED + "La Conférédation";
+			return ChatColor.RED + "La Confédération";
 		} else if (playerUuid != null) {
 			return ChatColor.YELLOW + "(Joueur) " + ChatColor.GOLD + RPMachine.database().getUUIDTranslator().getName(playerUuid);
 		} else if (cityName != null) {
@@ -52,7 +52,7 @@ public class TaxPayerToken {
 
 	public String shortDisplayable() {
 		if (isAdmin()) {
-			return ChatColor.RED + "Conférédation";
+			return ChatColor.RED + "Confédération";
 		} else if (playerUuid != null) {
 			return ChatColor.GOLD + RPMachine.database().getUUIDTranslator().getName(playerUuid);
 		} else if (cityName != null) {
