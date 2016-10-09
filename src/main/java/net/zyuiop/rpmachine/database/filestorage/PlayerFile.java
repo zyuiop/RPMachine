@@ -2,11 +2,7 @@ package net.zyuiop.rpmachine.database.filestorage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
@@ -18,10 +14,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class PlayerFile implements net.zyuiop.rpmachine.database.PlayerData {
 	private final YamlConfiguration data;
 	private final File file;
+	private final UUID uuid;
 
-	public PlayerFile(YamlConfiguration data, File file) {
+	public PlayerFile(UUID uuid, YamlConfiguration data, File file) {
 		this.data = data;
 		this.file = file;
+		this.uuid = uuid;
 	}
 
 	@Override
@@ -141,5 +139,10 @@ public class PlayerFile implements net.zyuiop.rpmachine.database.PlayerData {
 		boolean val = !data.getBoolean("seemessages", true);
 		data.set("seemessages", val);
 		return val;
+	}
+
+	@Override
+	public UUID getUuid() {
+		return uuid;
 	}
 }

@@ -4,6 +4,7 @@ import java.util.*;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.cities.LandOwner;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.AccountHolder;
 import net.zyuiop.rpmachine.economy.TaxPayer;
@@ -11,7 +12,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class City implements TaxPayer {
+public class City implements TaxPayer, LandOwner {
 	private String cityName;
 	private VirtualLocation spawn;
 	private String fileName;
@@ -302,6 +303,11 @@ public class City implements TaxPayer {
 	@Override
 	public Map<String, Double> getUnpaidTaxes() {
 		return taxPayer.getUnpaidTaxes();
+	}
+
+	@Override
+	public boolean canManage(Player player) {
+		return mayor.equals(player.getUniqueId());
 	}
 
 	public static class CityTaxPayer {

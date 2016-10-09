@@ -40,7 +40,7 @@ public class FileStorageDatabase implements DatabaseManager {
 			}
 
 		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(data);
-		return new PlayerFile(configuration, data);
+		return new PlayerFile(uuid, configuration, data);
 	}
 
 	@Override

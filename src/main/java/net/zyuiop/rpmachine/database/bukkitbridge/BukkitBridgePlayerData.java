@@ -1,10 +1,6 @@
 package net.zyuiop.rpmachine.database.bukkitbridge;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import net.bridgesapi.api.player.PlayerData;
 import net.zyuiop.rpmachine.VirtualLocation;
@@ -122,5 +118,10 @@ public class BukkitBridgePlayerData implements net.zyuiop.rpmachine.database.Pla
 		boolean val = !data.getBoolean("seemessages", true);
 		data.setBoolean("seemessages", val);
 		return val;
+	}
+
+	@Override
+	public UUID getUuid() {
+		return data.getPlayerID();
 	}
 }
