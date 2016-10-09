@@ -3,7 +3,7 @@ package net.zyuiop.rpmachine.economy.commands;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.jobs.Job;
-import net.zyuiop.rpmachine.economy.shops.ShopSign;
+import net.zyuiop.rpmachine.economy.shops.ItemShopSign;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -74,7 +74,7 @@ public class CommandJob extends EconomixCommand {
 					return true;
 				} else if (strings[1].equalsIgnoreCase("confirm")) {
 					int i = 0;
-					for (ShopSign sign : rpMachine.getShopsManager().getPlayerShops(((Player) commandSender).getUniqueId())) {
+					for (ItemShopSign sign : rpMachine.getShopsManager().getPlayerShops(((Player) commandSender))) {
 						sign.breakSign((Player) commandSender);
 						i++;
 					}

@@ -162,6 +162,9 @@ public class CitiesManager {
 	}
 
 	public City getCityHere(Chunk chunk) {
+		if (!chunk.getWorld().getName().equals("world"))
+			return null;
+
 		VirtualChunk vchunk = new VirtualChunk(chunk);
 		for (City city : cities.values()) {
 			if (city.getChunks().contains(vchunk))

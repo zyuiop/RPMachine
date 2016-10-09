@@ -32,7 +32,6 @@ public class CityCommand extends CitiesCommand {
 		registerSubCommand("settaxes", new SetTaxesCommand(citiesManager));
 		registerSubCommand("paytaxes", new PayTaxesCommand(citiesManager));
 		registerSubCommand("unpaidtaxes", new UnpaidTaxesCommand(citiesManager));
-		registerSubCommand("pay", new PayCommand(citiesManager));
 		registerSubCommand("simulatetaxes", new SimulateTaxesCommand(citiesManager));
 
 		aliases.put("i", "info");

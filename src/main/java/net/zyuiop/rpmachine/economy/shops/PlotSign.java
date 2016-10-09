@@ -3,9 +3,9 @@ package net.zyuiop.rpmachine.economy.shops;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.Plot;
-import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
+import net.zyuiop.rpmachine.economy.TaxPayer;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -136,7 +136,7 @@ public class PlotSign extends AbstractShopSign {
 			price *= -1;
 		}
 
-		PlayerData data = RPMachine.database().getPlayerData(player.getUniqueId());
+		TaxPayer data = RPMachine.getPlayerRoleToken(player).getTaxPayer();
 		manager.withdrawMoneyWithBalanceCheck(data, price, (newAmount, difference) -> {
 			if (difference == 0) {
 				player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
@@ -155,7 +155,8 @@ public class PlotSign extends AbstractShopSign {
 				if (plot.getOwner() == null) {
 					city.setMoney(city.getMoney() + price);
 				} else {
-					plot.getOwner().getTaxPayer().creditMoney(price * 0.8D);
+					// On crédite à l'owner du panneau
+					getOwner().getTaxPayer().creditMoney(price * 0.8D);
 					city.creditMoney(price * 0.2D);
 				}
 

@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.economy.shops;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import net.zyuiop.rpmachine.economy.jobs.Job;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -175,13 +176,15 @@ public class ItemShopSign extends AbstractShopSign {
 	}
 
 	void clickUser(Player player, PlayerInteractEvent event) {
+		TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
+
 		if (itemType == null) {
 			player.sendMessage(ChatColor.RED + "Le créateur de ce shop n'a pas terminé sa configuration.");
 		} else if (action == ShopAction.BUY) {
 			ItemStack click = event.getItem();
 			if (isItemValid(click) && click.getAmount() >= amountPerPackage) {
 				EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-				manager.transferMoneyBalanceCheck(this.getOwner().getTaxPayer(), RPMachine.database().getPlayerData(player.getUniqueId()), price, result -> {
+				manager.transferMoneyBalanceCheck(token.getTaxPayer(), RPMachine.database().getPlayerData(player.getUniqueId()), price, result -> {
 					if (result) {
 						available += amountPerPackage;
 						player.sendMessage(Messages.RECEIVED_MONEY.getMessage().replace("{AMT}", "" + price).replace("{FROM}", owner.displayable()));
@@ -204,7 +207,7 @@ public class ItemShopSign extends AbstractShopSign {
 			}
 
 			EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-			manager.transferMoneyBalanceCheck(RPMachine.database().getPlayerData(player.getUniqueId()), getOwner().getTaxPayer(), price, result -> {
+			manager.transferMoneyBalanceCheck(RPMachine.database().getPlayerData(player.getUniqueId()), token.getTaxPayer(), price, result -> {
 				if (result) {
 					player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + itemType.toString() + " pour " + price + " " + EconomyManager.getMoneyName());
 					available -= amountPerPackage;

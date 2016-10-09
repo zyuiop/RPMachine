@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.LandOwner;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.AccountHolder;
@@ -164,6 +165,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 
 	public void setMoney(double money) {
 		this.money = money;
+		save();
 	}
 
 	@Override
@@ -283,6 +285,11 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	@Override
 	public void setUnpaidTaxes(String city, double amount) {
 		taxPayer.getUnpaidTaxes().put(city, amount);
+		save();
+	}
+
+	public void save() {
+		RPMachine.getInstance().getCitiesManager().saveCity(this);
 	}
 
 	@Override
@@ -293,6 +300,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	@Override
 	public void setLastTaxes(String city, Date date) {
 		taxPayer.getLastPaidTaxes().put(city, date);
+		save();
 	}
 
 	@Override

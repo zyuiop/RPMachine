@@ -2,14 +2,15 @@ package net.zyuiop.rpmachine.database;
 
 import com.google.gson.*;
 import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
-import net.zyuiop.rpmachine.economy.shops.ShopSign;
+import net.zyuiop.rpmachine.economy.shops.ItemShopSign;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public abstract class ShopsManager implements JsonDeserializer<AbstractShopSign>, JsonSerializer<AbstractShopSign> {
 	protected final ConcurrentHashMap<Location, AbstractShopSign> signs = new ConcurrentHashMap<>();
@@ -68,13 +69,8 @@ public abstract class ShopsManager implements JsonDeserializer<AbstractShopSign>
 
 	public abstract void save(AbstractShopSign shopSign);
 
-	public final HashSet<ShopSign> getPlayerShops(UUID player) {
-		HashSet<ShopSign> ret = new HashSet<>();
-		for (AbstractShopSign shopSign : signs.values())
-			if (shopSign.getOwnerId().equals(player) && shopSign instanceof ShopSign)
-				ret.add((ShopSign) shopSign);
-
-		return ret;
+	public final HashSet<ItemShopSign> getPlayerShops(Player player) {
+		return signs.values().stream().filter(shopSign -> shopSign.getOwner().getShopOwner().canManageShop(player) && shopSign instanceof ItemShopSign).map(shopSign -> (ItemShopSign) shopSign).collect(Collectors.toCollection(HashSet::new));
 	}
 
 }

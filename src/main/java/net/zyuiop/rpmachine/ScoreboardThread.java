@@ -1,8 +1,13 @@
 package net.zyuiop.rpmachine;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.TextComponentSerializer;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -142,7 +147,18 @@ public class ScoreboardThread implements Runnable {
 		if (elapsed > 50)
 			elapsed = 0;
 
+		TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
+		if (token.getPlayerUuid() == null) {
+			String actAs = "§cVous agissez en tant que : ";
+			if (token.isAdmin())
+				actAs += "La Confédération";
+			else if (token.getCityName() != null)
+				actAs += ChatColor.DARK_AQUA + token.getCityName();
+			else
+				actAs += ChatColor.DARK_RED + "Inconnu";
 
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(actAs));
+		}
 		// sign.updateLines();
 	}
 }
