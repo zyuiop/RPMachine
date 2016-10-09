@@ -1,22 +1,19 @@
 package net.zyuiop.rpmachine.economy.shops;
 
-import net.minecraft.server.v1_8_R2.EntityFireworks;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.economy.jobs.Job;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftFirework;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
 
 public class ShopSign extends AbstractItemShop {
 	private String ownerName;
@@ -57,9 +54,9 @@ public class ShopSign extends AbstractItemShop {
 			} else {
 				sign.setLine(0, ownerName);
 				if (action == ShopAction.BUY) {
-					sign.setLine(1, ChatColor.GREEN + "achète "+amountPerPackage);
+					sign.setLine(1, ChatColor.GREEN + "achète " + amountPerPackage);
 				} else {
-					sign.setLine(1, ChatColor.BLUE + "vend "+amountPerPackage);
+					sign.setLine(1, ChatColor.BLUE + "vend " + amountPerPackage);
 				}
 				sign.setLine(2, ChatColor.BOLD + itemType.toString());
 				sign.setLine(3, ChatColor.BLUE + "Prix : " + price);
@@ -67,7 +64,7 @@ public class ShopSign extends AbstractItemShop {
 
 			Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> sign.update());
 		} else {
-			Bukkit.getLogger().info("Error : sign is not a sign, at "+location.toString());
+			Bukkit.getLogger().info("Error : sign is not a sign, at " + location.toString());
 		}
 	}
 
@@ -130,7 +127,7 @@ public class ShopSign extends AbstractItemShop {
 					int amt = event.getItem().getAmount();
 					available += amt;
 					event.getPlayer().setItemInHand(new ItemStack(Material.AIR, 1));
-					event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous venez d'ajouter "+ChatColor.AQUA + amt + ChatColor.GREEN + " ressources à votre shop. Il y en a maintenant " + ChatColor.AQUA + available + ChatColor.GREEN + " au total.");
+					event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous venez d'ajouter " + ChatColor.AQUA + amt + ChatColor.GREEN + " ressources à votre shop. Il y en a maintenant " + ChatColor.AQUA + available + ChatColor.GREEN + " au total.");
 				} else {
 					event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.YELLOW + "Il y a actuellement " + ChatColor.GOLD + this.available + ChatColor.YELLOW + " items dans la réserve de ce shop.");
 				}
@@ -141,9 +138,9 @@ public class ShopSign extends AbstractItemShop {
 					if (available >= amountPerPackage) {
 						player.getInventory().addItem(getNewStack());
 						available -= amountPerPackage;
-						event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous venez de récupérer "+ChatColor.AQUA + amountPerPackage + ChatColor.GREEN + " ressources à votre shop. Il en reste " + ChatColor.AQUA + available + ChatColor.GREEN + ".");
+						event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous venez de récupérer " + ChatColor.AQUA + amountPerPackage + ChatColor.GREEN + " ressources à votre shop. Il en reste " + ChatColor.AQUA + available + ChatColor.GREEN + ".");
 					} else {
-						player.sendMessage(Messages.SHOPS_PREFIX.getMessage() +  ChatColor.RED + "Il n'y a aucun item à récupérer.");
+						player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.RED + "Il n'y a aucun item à récupérer.");
 					}
 				}
 			}
@@ -215,23 +212,4 @@ public class ShopSign extends AbstractItemShop {
 			});
 		}
 	}
-
-
-
-	public static void launchfw(final Location loc, final FireworkEffect effect) {
-			final Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
-			FireworkMeta fwm = fw.getFireworkMeta();
-			fwm.addEffect(effect);
-			fwm.setPower(0);
-			fw.setFireworkMeta(fwm);
-			((CraftFirework)fw).getHandle().setInvisible(true);
-			Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), (Runnable) () -> {
-				net.minecraft.server.v1_8_R2.World w = (((CraftWorld) loc.getWorld()).getHandle());
-				EntityFireworks fireworks = ((CraftFirework)fw).getHandle();
-				w.broadcastEntityEffect(fireworks, (byte)17);
-				fireworks.die();
-			}, 5);
-		}
-
-
 }

@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,7 +21,7 @@ public class ScoreboardThread implements Runnable {
 	public ScoreboardThread(Player player) {
 		this.player = player;
 		this.uuid = player.getUniqueId();
-		sign = new ScoreboardSign(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
+		sign = ReflectionUtils.getVersion().createScoreboardSign(player, ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
 	}
 
 

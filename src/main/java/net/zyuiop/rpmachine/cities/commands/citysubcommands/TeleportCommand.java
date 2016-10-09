@@ -6,6 +6,7 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -76,13 +77,13 @@ public class TeleportCommand implements SubCommand {
 						target.setMoney(target.getMoney() + 1);
 						citiesManager.saveCity(target);
 						Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
-						player.playSound(spawn, Sound.ENDERMAN_TELEPORT, 1, 1);
+						ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);
 						player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté et 1" + EconomyManager.getMoneyName() + " vous a été débité.");
 					}
 				});
 			} else {
 				Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
-				player.playSound(spawn, Sound.ENDERMAN_TELEPORT, 1, 1);
+				ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);
 				player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté.");
 			}
 		} else {

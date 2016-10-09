@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.economy.commands;
 
+import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -17,7 +18,8 @@ public class CommandSpawn implements CommandExecutor {
 
 		Player player = (Player) commandSender;
 		player.teleport(Bukkit.getWorld("world").getSpawnLocation());
-		player.playSound(Bukkit.getWorld("world").getSpawnLocation(), Sound.ENDERMAN_TELEPORT, 1, 1);
+		ReflectionUtils.getVersion().playEndermanTeleport(Bukkit.getWorld("world").getSpawnLocation(), player);
+
 		player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté !");
 		return true;
 	}

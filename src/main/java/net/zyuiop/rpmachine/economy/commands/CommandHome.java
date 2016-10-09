@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.economy.commands;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -33,7 +34,7 @@ public class CommandHome extends EconomixCommand {
 					if (!tp.getChunk().isLoaded())
 						tp.getChunk().load();
 					player.teleport(tp);
-					player.playSound(tp, Sound.ENDERMAN_TELEPORT, 1, 1);
+					ReflectionUtils.getVersion().playEndermanTeleport(tp, player);
 					player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté !");
 				});
 			}

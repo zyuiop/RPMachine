@@ -1,29 +1,18 @@
 package net.zyuiop.rpmachine.economy.shops;
 
-import net.minecraft.server.v1_8_R2.EntityFireworks;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.Plot;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
+import net.zyuiop.rpmachine.reflection.ReflectionUtils;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_8_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftFirework;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.meta.FireworkMeta;
 
-import java.util.ArrayList;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -73,7 +62,9 @@ public class PlotSign extends AbstractShopSign {
 			Sign sign = (Sign) block.getState();
 			sign.setLine(0, ChatColor.GREEN + "[Terrain]");
 			sign.setLine(1, ChatColor.BLUE + "Prix : " + price);
-			if (citizensOnly) { sign.setLine(2, ChatColor.RED + "Citoyens"); } else {
+			if (citizensOnly) {
+				sign.setLine(2, ChatColor.RED + "Citoyens");
+			} else {
 				sign.setLine(2, ChatColor.GREEN + "Public");
 			}
 			sign.setLine(3, ChatColor.GOLD + "> Acheter <");
@@ -148,7 +139,9 @@ public class PlotSign extends AbstractShopSign {
 			return;
 		}
 
-		if (price < 0) { price *= -1; }
+		if (price < 0) {
+			price *= -1;
+		}
 
 		manager.withdrawMoneyWithBalanceCheck(player.getUniqueId(), price, (newAmount, difference) -> {
 			if (difference == 0) {
@@ -176,19 +169,7 @@ public class PlotSign extends AbstractShopSign {
 	}
 
 
-
 	public static void launchfw(final Location loc, final FireworkEffect effect) {
-		final Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
-		FireworkMeta fwm = fw.getFireworkMeta();
-		fwm.addEffect(effect);
-		fwm.setPower(0);
-		fw.setFireworkMeta(fwm);
-		((CraftFirework)fw).getHandle().setInvisible(true);
-		Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), (Runnable) () -> {
-			net.minecraft.server.v1_8_R2.World w = (((CraftWorld) loc.getWorld()).getHandle());
-			EntityFireworks fireworks = ((CraftFirework)fw).getHandle();
-			w.broadcastEntityEffect(fireworks, (byte)17);
-			fireworks.die();
-		}, 5);
+		ReflectionUtils.getVersion().launchfw(loc, effect);
 	}
 }

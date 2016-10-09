@@ -1,19 +1,14 @@
 package net.zyuiop.rpmachine.economy.listeners;
 
-import net.minecraft.server.v1_8_R2.BlockPosition;
-import net.minecraft.server.v1_8_R2.PacketPlayOutOpenSignEditor;
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.Plot;
 import net.zyuiop.rpmachine.economy.shops.*;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -111,7 +106,7 @@ public class SignsListener implements Listener {
 					sign.setOwnerId(event.getPlayer().getUniqueId());
 					sign.setOwnerName(event.getPlayer().getName());
 
-					event.getPlayer().sendMessage(ChatColor.AQUA + "["+ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] "+ChatColor.GREEN + "Votre boutique est presque prête à l'emploi. Cliquez droit avec l'item que vous souhaitez vendre pour terminer la configuration.");
+					event.getPlayer().sendMessage(ChatColor.AQUA + "[" + ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] " + ChatColor.GREEN + "Votre boutique est presque prête à l'emploi. Cliquez droit avec l'item que vous souhaitez vendre pour terminer la configuration.");
 
 					plugin.getShopsManager().create(sign);
 				} catch (Exception e) {
@@ -155,7 +150,7 @@ public class SignsListener implements Listener {
 					}
 
 					sign.setOwnerId(event.getPlayer().getUniqueId());
-					event.getPlayer().sendMessage(ChatColor.AQUA + "["+ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] "+ChatColor.GREEN + "Votre boutique est presque prête à l'emploi. Cliquez droit avec l'item que vous souhaitez vendre pour terminer la configuration.");
+					event.getPlayer().sendMessage(ChatColor.AQUA + "[" + ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] " + ChatColor.GREEN + "Votre boutique est presque prête à l'emploi. Cliquez droit avec l'item que vous souhaitez vendre pour terminer la configuration.");
 
 					plugin.getShopsManager().create(sign);
 				} catch (Exception e) {
@@ -175,7 +170,7 @@ public class SignsListener implements Listener {
 							(event.getPlayer().getUniqueId().equals(plot.getOwner())
 									|| city.getMayor().equals(event.getPlayer().getUniqueId())
 									|| (plot.getOwner() == null
-										&& city.getCouncils().contains(event.getPlayer().getUniqueId())))) {
+									&& city.getCouncils().contains(event.getPlayer().getUniqueId())))) {
 						plotname = plot.getPlotName();
 					}
 				}
@@ -205,7 +200,7 @@ public class SignsListener implements Listener {
 					}
 
 					if (!event.getPlayer().getUniqueId().equals(plot.getOwner())) {
-						if (! (city.getMayor().equals(event.getPlayer().getUniqueId()) || (plot.getOwner() == null && city.getCouncils().contains(event.getPlayer().getUniqueId())))) {
+						if (!(city.getMayor().equals(event.getPlayer().getUniqueId()) || (plot.getOwner() == null && city.getCouncils().contains(event.getPlayer().getUniqueId())))) {
 							event.getPlayer().sendMessage(ChatColor.RED + "Vous n'êtes pas propriétaire de cette parcelle.");
 							event.getBlock().breakNaturally();
 							return;
@@ -222,7 +217,7 @@ public class SignsListener implements Listener {
 					sign.setOwnerId(event.getPlayer().getUniqueId());
 					sign.setPrice(dprice);
 
-					event.getPlayer().sendMessage(ChatColor.AQUA + "["+ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] "+ChatColor.GREEN + "Votre boutique est prête à l'emploi.");
+					event.getPlayer().sendMessage(ChatColor.AQUA + "[" + ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] " + ChatColor.GREEN + "Votre boutique est prête à l'emploi.");
 
 					plugin.getShopsManager().create(sign);
 				} catch (Exception e) {
