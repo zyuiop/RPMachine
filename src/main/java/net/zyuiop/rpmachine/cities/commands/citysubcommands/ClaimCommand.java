@@ -1,10 +1,11 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
-import net.zyuiop.rpmachine.cities.data.VirtualChunk;
+import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -47,6 +48,8 @@ public class ClaimCommand implements SubCommand {
 					Chunk chunk = player.getLocation().getChunk();
 					if (citiesManager.getCityHere(chunk) != null) {
 						player.sendMessage(ChatColor.RED + "Ce chunk appartient déjà a une ville.");
+					} else if (RPMachine.getInstance().getZonesManager().getZonesHere(chunk).size() > 0) {
+						player.sendMessage(ChatColor.RED + "Il y a des zones de la Confédération dans ce chunk.");
 					} else if (!city.isAdjacent(chunk)) {
 						player.sendMessage(ChatColor.RED + "Ce chunk n'est pas adjacent à votre ville.");
 					} else if (city.getMoney() < floor.getChunkPrice()) {

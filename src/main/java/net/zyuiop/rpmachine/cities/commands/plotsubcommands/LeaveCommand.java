@@ -3,7 +3,7 @@ package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.Plot;
+import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -44,7 +44,7 @@ public class LeaveCommand implements SubCommand {
 			Plot plot = city.getPlots().get(args[1]);
 			if (plot == null) {
 				player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
-			} else if (!player.getUniqueId().equals(plot.getOwner())) {
+			} else if (!plot.getOwner().getLandOwner().canManagePlot(player)) {
 				player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
 			} else {
 				plot.setOwner((TaxPayerToken) null);

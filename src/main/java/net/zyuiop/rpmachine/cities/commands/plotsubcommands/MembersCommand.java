@@ -4,7 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.Plot;
+import net.zyuiop.rpmachine.common.Plot;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -46,7 +46,7 @@ public class MembersCommand implements SubCommand {
 			Plot plot = city.getPlots().get(args[1]);
 			if (plot == null) {
 				player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
-			} else if (!city.getCouncils().contains(player.getUniqueId()) && !player.getUniqueId().equals(city.getMayor()) && !player.getUniqueId().equals(plot.getOwner())) {
+			} else if (!city.getCouncils().contains(player.getUniqueId()) && !player.getUniqueId().equals(city.getMayor()) && !plot.getOwner().getLandOwner().canManagePlot(player)) {
 				player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
 			} else {
 				UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[3], true);

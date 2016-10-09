@@ -1,7 +1,13 @@
-package net.zyuiop.rpmachine.cities.data;
+package net.zyuiop.rpmachine.common;
 
+import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.common.Area;
+import net.zyuiop.rpmachine.common.PlotSettings;
 import net.zyuiop.rpmachine.economy.TaxPayer;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.zones.Zone;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

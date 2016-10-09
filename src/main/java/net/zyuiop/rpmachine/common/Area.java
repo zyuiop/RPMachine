@@ -1,10 +1,12 @@
-package net.zyuiop.rpmachine.cities.data;
+package net.zyuiop.rpmachine.common;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 public class Area {
+	private String world = "world";
 	private int minX;
 	private int minY;
 	private int minZ;
@@ -13,6 +15,7 @@ public class Area {
 	private int maxZ;
 
 	public Area(Location l1, Location l2) {
+		world = l1.getWorld().getName();
 		minX = Math.min(l1.getBlockX(), l2.getBlockX());
 		minY = Math.min(l1.getBlockY(), l2.getBlockY());
 		minZ = Math.min(l1.getBlockZ(), l2.getBlockZ());
@@ -22,6 +25,16 @@ public class Area {
 	}
 
 	public Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+		this.minX = minX;
+		this.minY = minY;
+		this.minZ = minZ;
+		this.maxX = maxX;
+		this.maxY = maxY;
+		this.maxZ = maxZ;
+	}
+
+	public Area(String world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+		this.world = world;
 		this.minX = minX;
 		this.minY = minY;
 		this.minZ = minZ;
@@ -83,7 +96,7 @@ public class Area {
 	}
 
 	public boolean isInside(Location loc) {
-		return ((minX <= loc.getBlockX() && loc.getBlockX() <= maxX) && (minY <= loc.getBlockY() && loc.getBlockY() <= maxY) && (minZ <= loc.getBlockZ() && loc.getBlockZ() <= maxZ));
+		return (loc.getWorld().getName().equalsIgnoreCase(world) &&(minX <= loc.getBlockX() && loc.getBlockX() <= maxX) && (minY <= loc.getBlockY() && loc.getBlockY() <= maxY) && (minZ <= loc.getBlockZ() && loc.getBlockZ() <= maxZ));
 	}
 
 	public int getSquareArea() {
@@ -102,5 +115,19 @@ public class Area {
 		int midX = (minX + maxX) / 2;
 		int midZ = (minZ + maxZ) / 2;
 		return Bukkit.getWorld("world").getHighestBlockAt(midX, midZ);
+	}
+
+	public boolean hasCommonPositionsWith(Chunk chunk) {
+		Area chunkArea = new Area(chunk.getBlock(0, 0, 0).getLocation(), chunk.getBlock(15, 0, 15).getLocation());
+
+		if (chunkArea.getMaxX() < getMinX() || chunkArea.getMaxZ() < getMaxZ() || chunkArea.getMinX() > getMaxZ() || chunkArea.getMinZ() > getMaxZ()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public Area getFlatArea() {
+		return new Area(minX, 1, minZ, maxX, 1, maxZ);
 	}
 }

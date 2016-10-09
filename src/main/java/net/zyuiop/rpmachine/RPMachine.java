@@ -16,6 +16,8 @@ import net.zyuiop.rpmachine.economy.jobs.JobsManager;
 import net.zyuiop.rpmachine.economy.listeners.PlayerListener;
 import net.zyuiop.rpmachine.economy.listeners.SignsListener;
 import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
+import net.zyuiop.rpmachine.zones.ZoneCommand;
+import net.zyuiop.rpmachine.zones.ZonesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -46,6 +48,7 @@ public class RPMachine extends JavaPlugin {
 	private CitiesManager citiesManager;
 	private SelectionManager selectionManager;
 	private ScoreboardManager scoreboardManager;
+	private ZonesManager zonesManager;
 
 	public static RPMachine getInstance() {
 		return instance;
@@ -67,6 +70,7 @@ public class RPMachine extends JavaPlugin {
 		this.citiesManager = new CitiesManager(this);
 		this.selectionManager = new SelectionManager(citiesManager);
 		this.scoreboardManager = new ScoreboardManager(this);
+		this.zonesManager = new ZonesManager(this);
 
 		getCommand("city").setExecutor(new CityCommand(citiesManager));
 		getCommand("plot").setExecutor(new PlotCommand(citiesManager));
@@ -86,6 +90,7 @@ public class RPMachine extends JavaPlugin {
 		getCommand("bypass").setExecutor(new CommandBypass(citiesManager));
 		getCommand("myshops").setExecutor(new CommandShops(this));
 		getCommand("actas").setExecutor(new CommandActAs());
+		getCommand("zones").setExecutor(new ZoneCommand(zonesManager));
 
 		Bukkit.getPluginManager().registerEvents(selectionManager, this);
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -194,6 +199,10 @@ public class RPMachine extends JavaPlugin {
 
 	public DatabaseManager getDatabaseManager() {
 		return databaseManager;
+	}
+
+	public ZonesManager getZonesManager() {
+		return zonesManager;
 	}
 
 	public static DatabaseManager database() {

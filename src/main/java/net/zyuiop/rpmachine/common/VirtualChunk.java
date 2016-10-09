@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.cities.data;
+package net.zyuiop.rpmachine.common;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;

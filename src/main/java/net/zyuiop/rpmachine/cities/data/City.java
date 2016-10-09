@@ -5,13 +5,12 @@ import java.util.stream.Collectors;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
-import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.LandOwner;
-import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.AccountHolder;
+import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.economy.ShopOwner;
 import net.zyuiop.rpmachine.economy.TaxPayer;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.common.Plot;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
