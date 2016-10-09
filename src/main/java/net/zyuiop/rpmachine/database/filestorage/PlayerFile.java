@@ -73,6 +73,7 @@ public class PlayerFile implements net.zyuiop.rpmachine.database.PlayerData {
 	public boolean withdrawMoney(double amount) {
 		if (data.getDouble("rpmoney", 0D) >= amount) {
 			data.set("rpmoney", data.getDouble("rpmoney", 0D) - amount);
+			save();
 			return true;
 		}
 		return false;

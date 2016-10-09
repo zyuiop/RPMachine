@@ -53,7 +53,7 @@ public class ZoneCommand implements CommandExecutor {
 	private void showHelp(CommandSender sender) {
 		sender.sendMessage(ChatColor.GOLD + "-----[ " + ChatColor.BOLD + "Commande de gestion de zones" + ChatColor.GOLD + " ]-----");
 		for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()) {
-			sender.sendMessage(ChatColor.GREEN + "- /plot " + entry.getKey() + " " + entry.getValue().getUsage() + " : " + ChatColor.YELLOW + entry.getValue().getDescription());
+			sender.sendMessage(ChatColor.GREEN + "- /zone " + entry.getKey() + " " + entry.getValue().getUsage() + " : " + ChatColor.YELLOW + entry.getValue().getDescription());
 		}
 	}
 
