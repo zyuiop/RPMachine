@@ -238,3 +238,16 @@ money:
 
 # database: net.zyuiop.rpmachine.database.bukkitbridge.BukkitBridgeDatabase
 database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
+
+citytp:
+  # If true, one can teleport to an other city only if he is himself in a city
+  fromCityOnly: false
+  # The teleport fee the player will have to pay to teleport himself to a city he's not a member of
+  cost: 1
+
+home:
+  # If true, one can teleport to his home only if he is in a city
+  fromCityOnly: false
+
+spawn:
+  fromCityOnly: false

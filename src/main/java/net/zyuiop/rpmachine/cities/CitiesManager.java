@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.cities.data.VirtualChunk;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import com.google.gson.Gson;
@@ -201,5 +202,14 @@ public class CitiesManager {
 		File file = new File(rpMachine.getDataFolder().getPath() + "/cities/" + city.getFileName());
 		file.delete();
 		cities.remove(city.getCityName());
+	}
+
+	public boolean checkCityTeleport(Player player) {
+		City current = getCityHere(player.getLocation().getChunk());
+		if (current == null) {
+			player.sendMessage(ChatColor.RED + "Vous devez vous trouver dans une ville pour vous téléporter !");
+			return false;
+		}
+		return true;
 	}
 }

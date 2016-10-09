@@ -17,9 +17,14 @@ import org.bukkit.entity.Player;
 public class TeleportCommand implements SubCommand {
 
 	private final CitiesManager citiesManager;
+	private final double price;
+	private final boolean fromCityOnly;
 
 	public TeleportCommand(CitiesManager citiesManager) {
 		this.citiesManager = citiesManager;
+
+		price = RPMachine.getInstance().getConfig().getDouble("citytp.cost", 1D);
+		fromCityOnly = RPMachine.getInstance().getConfig().getBoolean("citytp.fromCityOnly", false);
 	}
 
 
@@ -30,13 +35,18 @@ public class TeleportCommand implements SubCommand {
 
 	@Override
 	public String getDescription() {
-		return "Vous téléporte dans votre ville. Si [ville] est fourni, vous téléporte dans la ville [ville] pour un prix de 1" + EconomyManager.getMoneyName();
+		return "Vous téléporte dans votre ville. Si [ville] est fourni, vous téléporte dans la ville [ville] pour un prix de " + price + " " + EconomyManager.getMoneyName();
 	}
 
 	@Override
 	public void run(CommandSender sender, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+
+			if (fromCityOnly && !RPMachine.getInstance().getCitiesManager().checkCityTeleport(player)) {
+				return;
+			}
+
 			City playerCity = citiesManager.getPlayerCity(player.getUniqueId());
 			City target;
 			boolean pay = false;
@@ -70,15 +80,15 @@ public class TeleportCommand implements SubCommand {
 				spawn.getChunk().load();
 
 			if (pay) {
-				RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), 1, (newAmount, difference) -> {
+				RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), price, (newAmount, difference) -> {
 					if (difference == 0) {
 						player.sendMessage(ChatColor.RED + "Vous n'avez pas assez d'argent pour faire cela.");
 					} else {
-						target.setMoney(target.getMoney() + 1);
+						target.setMoney(target.getMoney() + price);
 						citiesManager.saveCity(target);
 						Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
 						ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);
-						player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté et 1" + EconomyManager.getMoneyName() + " vous a été débité.");
+						player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté et " + price + " " + EconomyManager.getMoneyName() + " vous a été débité.");
 					}
 				});
 			} else {
