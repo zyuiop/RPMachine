@@ -121,30 +121,6 @@ public class RPMachine extends JavaPlugin {
 		try {
 			Calendar calendar = new GregorianCalendar();
 			calendar.setTime(new Date());
-			if (calendar.get(Calendar.HOUR_OF_DAY) >= 4)
-				calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
-			calendar.set(Calendar.HOUR_OF_DAY, 4);
-			calendar.set(Calendar.MINUTE, 0);
-			Date sched = calendar.getTime();
-
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					Bukkit.getServer().savePlayers();
-					Bukkit.getWorld("world").save();
-					Bukkit.getServer().shutdown();
-				}
-			}, sched);
-			this.getLogger().info("Scheduled automatic reboot at : " + calendar.toString());
-		} catch (Exception e) {
-			this.getLogger().severe("CANNOT SCHEDULE AUTOMATIC SHUTDOWN.");
-			e.printStackTrace();
-		}
-
-		try {
-			Calendar calendar = new GregorianCalendar();
-			calendar.setTime(new Date());
 			if (calendar.get(Calendar.HOUR_OF_DAY) > 3 || (calendar.get(Calendar.HOUR_OF_DAY) == 3 && calendar.get(Calendar.MINUTE) >= 45))
 				calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
 			calendar.set(Calendar.HOUR_OF_DAY, 3);
