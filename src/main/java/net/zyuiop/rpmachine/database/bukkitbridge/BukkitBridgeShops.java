@@ -1,18 +1,14 @@
 package net.zyuiop.rpmachine.database.bukkitbridge;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 import net.bridgesapi.api.BukkitBridge;
 import net.zyuiop.rpmachine.database.ShopsManager;
 import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
-import net.zyuiop.rpmachine.economy.shops.ShopGsonHelper;
-import net.zyuiop.rpmachine.economy.shops.ShopSign;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import redis.clients.jedis.Jedis;
+
+import java.util.Map;
 
 public class BukkitBridgeShops extends ShopsManager {
 	public BukkitBridgeShops() {
@@ -28,25 +24,19 @@ public class BukkitBridgeShops extends ShopsManager {
 		}).start();
 	}
 
-	public void load()  {
-			Jedis jedis = BukkitBridge.get().getResource();
-			Map<String, String> map = jedis.hgetAll("rpshops");
-			jedis.close();
+	public void load() {
+		Jedis jedis = BukkitBridge.get().getResource();
+		Map<String, String> map = jedis.hgetAll("rpshops");
+		jedis.close();
 
-			Gson gson = new Gson();
-			for (Map.Entry<String, String> line : map.entrySet()) {
-				Location loc = locFromString(line.getKey());
-				ShopGsonHelper asign = gson.fromJson(line.getValue(), ShopGsonHelper.class);
-				try {
-					Class<? extends AbstractShopSign> clazz = (Class<? extends AbstractShopSign>) Class.forName(asign.getClassName());
-					AbstractShopSign sign = gson.fromJson(line.getValue(), clazz);
-					sign.display();
-					Bukkit.getLogger().info("Loaded shop " + sign.getLocation().toString());
-					signs.put(loc, sign);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
+		for (Map.Entry<String, String> line : map.entrySet()) {
+			Location loc = locFromString(line.getKey());
+
+			AbstractShopSign sign = gson.fromJson(line.getValue(), AbstractShopSign.class);
+			sign.display();
+			Bukkit.getLogger().info("Loaded shop " + sign.getLocation().toString());
+			signs.put(loc, sign);
+		}
 	}
 
 	@Override

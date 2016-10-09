@@ -1,18 +1,14 @@
 package net.zyuiop.rpmachine.database.filestorage;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import com.google.gson.Gson;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.ShopsManager;
 import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
-import net.zyuiop.rpmachine.economy.shops.ShopGsonHelper;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+
+import java.io.*;
 
 public class FileShops extends ShopsManager {
 
@@ -63,25 +59,20 @@ public class FileShops extends ShopsManager {
 		shopsDirectory.mkdir();
 
 		for (File file : shopsDirectory.listFiles()) {
-			if (file.isDirectory()) { continue; }
+			if (file.isDirectory()) {
+				continue;
+			}
 
-			if (!file.getName().endsWith(".json")) { continue; }
+			if (!file.getName().endsWith(".json")) {
+				continue;
+			}
 
-			Gson gson = new Gson();
 			Location loc = locFromString(file.getName().substring(0, -5));
-			ShopGsonHelper asign = null;
 			try {
-				asign = gson.fromJson(new FileReader(file), ShopGsonHelper.class);
-				try {
-					Class<? extends AbstractShopSign> clazz = (Class<? extends AbstractShopSign>) Class.forName(asign.getClassName());
-					AbstractShopSign sign = gson.fromJson(new FileReader(file), clazz);
-					sign.display();
-					Bukkit.getLogger().info("Loaded shop " + sign.getLocation().toString());
-					signs.put(loc, sign);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-
+				AbstractShopSign sign = gson.fromJson(new FileReader(file), AbstractShopSign.class);
+				sign.display();
+				Bukkit.getLogger().info("Loaded shop " + sign.getLocation().toString());
+				signs.put(loc, sign);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
