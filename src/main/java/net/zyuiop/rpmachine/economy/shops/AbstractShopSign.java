@@ -1,54 +1,34 @@
 package net.zyuiop.rpmachine.economy.shops;
 
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.UUID;
-
 public abstract class AbstractShopSign {
-
 	protected VirtualLocation location;
 	protected double price;
-	protected UUID ownerId;
-	protected String className;
+	protected TaxPayerToken owner;
 
 	public AbstractShopSign() {
 
 	}
 
-	public AbstractShopSign(Class<? extends AbstractShopSign> type) {
-		className = type.getName();
-	}
-
-	public AbstractShopSign(Class<? extends AbstractShopSign> type, Location location) {
-		this(type);
-		setLocation(location);
-	}
-
-	public String getClassName() {
-		return className;
-	}
-
-	public UUID getOwnerId() {
-		return ownerId;
-	}
-
-	public void setOwnerId(UUID ownerId) {
-		this.ownerId = ownerId;
+	public AbstractShopSign(Location location) {
+		this.location = new VirtualLocation(location);
 	}
 
 	public void setLocation(VirtualLocation location) {
 		this.location = location;
 	}
 
-	public void setClassName(String className) {
-		this.className = className;
+	public TaxPayerToken getOwner() {
+		return owner;
 	}
 
-	public AbstractShopSign(Location location) {
-		this.location = new VirtualLocation(location);
+	public void setOwner(TaxPayerToken owner) {
+		this.owner = owner;
 	}
 
 	public Location getLocation() {
@@ -69,13 +49,24 @@ public abstract class AbstractShopSign {
 
 	public abstract void display();
 
-	public abstract void rightClick(Player player, PlayerInteractEvent event);
+	public void rightClick(Player player, PlayerInteractEvent event) {
+		if (owner.getShopOwner() != null && owner.getShopOwner().canManageShop(player))
+			clickOwner(player, event);
+		else
+			clickUser(player, event);
+	}
 
-	public abstract boolean breakSign(Player player);
+	protected abstract void doBreakSign(Player authorizedBreaker);
+
+	public boolean breakSign(Player player) {
+		if (owner.getShopOwner() != null && owner.getShopOwner().canManageShop(player)) {
+			doBreakSign(player);
+			return true;
+		}
+		return false;
+	}
 
 	abstract void clickOwner(Player player, PlayerInteractEvent event);
 
 	abstract void clickUser(Player player, PlayerInteractEvent event);
-
-
 }

@@ -1,7 +1,6 @@
 package net.zyuiop.rpmachine.economy;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.LandOwner;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
@@ -36,15 +35,32 @@ public class TaxPayerToken {
 
 	public String displayable() {
 		if (isAdmin()) {
-			return ChatColor.RED + "Compte Admin";
+			return ChatColor.RED + "La Conférédation";
 		} else if (playerUuid != null) {
-			return ChatColor.YELLOW + "Joueur " + ChatColor.GOLD + RPMachine.database().getUUIDTranslator().getName(playerUuid);
+			return ChatColor.YELLOW + "(Joueur) " + ChatColor.GOLD + RPMachine.database().getUUIDTranslator().getName(playerUuid);
 		} else if (cityName != null) {
 			City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
 			if (city == null) {
 				return ChatColor.RED + "Ville supprimée";
 			} else {
-				return ChatColor.AQUA + "Ville " + ChatColor.DARK_AQUA + city.getCityName();
+				return ChatColor.AQUA + "(Ville) " + ChatColor.DARK_AQUA + city.getCityName();
+			}
+		}
+
+		return null;
+	}
+
+	public String shortDisplayable() {
+		if (isAdmin()) {
+			return ChatColor.RED + "Conférédation";
+		} else if (playerUuid != null) {
+			return ChatColor.GOLD + RPMachine.database().getUUIDTranslator().getName(playerUuid);
+		} else if (cityName != null) {
+			City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
+			if (city == null) {
+				return ChatColor.RED + "Ville";
+			} else {
+				return ChatColor.DARK_AQUA + city.getCityName();
 			}
 		}
 
@@ -125,5 +141,15 @@ public class TaxPayerToken {
 		result = 31 * result + (cityName != null ? cityName.hashCode() : 0);
 		result = 31 * result + (companyName != null ? companyName.hashCode() : 0);
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "TaxPayerToken{" +
+				"playerUuid=" + playerUuid +
+				", admin=" + admin +
+				", cityName='" + cityName + '\'' +
+				", companyName='" + companyName + '\'' +
+				'}';
 	}
 }

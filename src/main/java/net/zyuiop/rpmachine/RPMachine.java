@@ -8,6 +8,8 @@ import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.database.ShopsManager;
+import net.zyuiop.rpmachine.economy.TaxPayer;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import net.zyuiop.rpmachine.economy.TransactionsHelper;
 import net.zyuiop.rpmachine.economy.commands.*;
 import net.zyuiop.rpmachine.economy.jobs.JobsManager;
@@ -25,6 +27,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.google.common.collect.Lists;
 
@@ -81,6 +85,7 @@ public class RPMachine extends JavaPlugin {
 		getCommand("runtaxes").setExecutor(new CommandRuntaxes(citiesManager));
 		getCommand("bypass").setExecutor(new CommandBypass(citiesManager));
 		getCommand("myshops").setExecutor(new CommandShops(this));
+		getCommand("actas").setExecutor(new CommandActAs());
 
 		Bukkit.getPluginManager().registerEvents(selectionManager, this);
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
@@ -217,5 +222,18 @@ public class RPMachine extends JavaPlugin {
 
 	public static DatabaseManager database() {
 		return getInstance().getDatabaseManager();
+	}
+
+	public static TaxPayerToken getPlayerRoleToken(Player player) {
+		for (MetadataValue value : player.getMetadata("roleToken"))
+			if (value.getOwningPlugin().equals(RPMachine.getInstance()))
+				return (TaxPayerToken) value.value();
+		TaxPayerToken token = new TaxPayerToken();
+		token.setPlayerUuid(player.getUniqueId());
+		return token;
+	}
+
+	public static void setPlayerRoleToken(Player player, TaxPayerToken token) {
+		player.setMetadata("roleToken", new FixedMetadataValue(RPMachine.getInstance(), token));
 	}
 }

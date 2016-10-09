@@ -32,6 +32,7 @@ commands:
    createcity:
      description: Création de villes
      usage: /createcity
+     permission: rp.createcity
    plot:
      description: Commande de parcelles
      usage: /plot
@@ -57,8 +58,13 @@ commands:
      description: Exécute le paiement des impôts de force.
      usage: /runtaxes
      permission: rp.runtaxes
+   actas:
+     description: Agit en tant qu'une entité
+     usage: /actas
 permissions:
    rp.bypass:
      default: op
    rp.runtaxes:
      default: op
+   rp.createcity:
+     default: true

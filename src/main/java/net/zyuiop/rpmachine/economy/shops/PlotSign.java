@@ -23,11 +23,11 @@ public class PlotSign extends AbstractShopSign {
 	protected boolean citizensOnly;
 
 	public PlotSign() {
-		super(PlotSign.class);
+		super();
 	}
 
 	public PlotSign(Location location, String regionName, boolean citizensOnly, String cityName) {
-		super(PlotSign.class, location);
+		super(location);
 		this.plotName = regionName;
 		this.citizensOnly = citizensOnly;
 		this.cityName = cityName;
@@ -81,16 +81,8 @@ public class PlotSign extends AbstractShopSign {
 		RPMachine.getInstance().getShopsManager().save(this);
 	}
 
-	public boolean breakSign(Player player) {
-		if (!player.getUniqueId().equals(ownerId)) {
-			return false;
-		}
-
-		breakSign();
-		return true;
-	}
-
-	public void breakSign() {
+	@Override
+	protected void doBreakSign(Player ignored) {
 		location.getLocation().getBlock().breakNaturally();
 		RPMachine.getInstance().getShopsManager().remove(this);
 	}
@@ -149,6 +141,17 @@ public class PlotSign extends AbstractShopSign {
 			if (difference == 0) {
 				player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
 			} else {
+				if (getOwner().getCityName() == null) {
+					// Pas une ville, on check.
+					if (plot.getOwner() == null || !plot.getOwner().equals(getOwner())) {
+						// Un joueur peut pas vendre une parcelle random
+						breakSign(null);
+						player.sendMessage(ChatColor.RED + "Erreur : cette parcelle n'appartient plus à " + getOwner().shortDisplayable());
+						Bukkit.getLogger().info("Old plot sign found : " + plot.getOwner() + " / sign " + getOwner());
+						return;
+					}
+				}
+
 				if (plot.getOwner() == null) {
 					city.setMoney(city.getMoney() + price);
 				} else {
@@ -162,7 +165,7 @@ public class PlotSign extends AbstractShopSign {
 				city.getPlots().put(plotName, plot);
 				RPMachine.getInstance().getCitiesManager().saveCity(city);
 				Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
-					breakSign();
+					doBreakSign(null);
 					launchfw(location.getLocation(), FireworkEffect.builder().withColor(Color.WHITE, Color.GRAY, Color.BLACK).with(FireworkEffect.Type.STAR).build());
 				});
 				player.sendMessage(ChatColor.GREEN + "Vous êtes désormais propriétaire de cette parcelle.");
