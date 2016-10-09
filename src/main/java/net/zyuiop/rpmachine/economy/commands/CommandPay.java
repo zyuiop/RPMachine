@@ -48,7 +48,6 @@ public class CommandPay extends EconomixCommand {
 			}).start();
 		}
 
-		rpMachine.getTransactionsHelper().displayAmount((Player) commandSender);
 		return true;
 	}
 }
