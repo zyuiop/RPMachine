@@ -1,5 +1,7 @@
 package net.zyuiop.rpmachine.cities.data;
 
+import net.zyuiop.rpmachine.economy.TaxPayer;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -10,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Plot {
 	private String plotName;
 	private Area area;
-	private UUID owner = null;
+	private TaxPayerToken owner = null;
 	private PlotSettings plotSettings = new PlotSettings();
 	private CopyOnWriteArrayList<UUID> plotMembers = new CopyOnWriteArrayList<>();
 
@@ -38,12 +40,16 @@ public class Plot {
 		this.area = area;
 	}
 
-	public UUID getOwner() {
+	public TaxPayerToken getOwner() {
 		return owner;
 	}
 
-	public void setOwner(UUID owner) {
+	public void setOwner(TaxPayerToken owner) {
 		this.owner = owner;
+	}
+
+	public void setOwner(TaxPayer owner) {
+		setOwner(TaxPayerToken.fromPayer(owner));
 	}
 
 	public PlotSettings getPlotSettings() {
@@ -59,12 +65,7 @@ public class Plot {
 	}
 
 	public boolean canBuild(Player player, Location location) {
-		if (plotMembers.contains(player.getUniqueId()))
-			return true;
-
-		if (owner != null && owner.equals(player.getUniqueId()))
-			return true;
-
-		return false;
+		return plotMembers.contains(player.getUniqueId()) || // membre du plot
+				owner != null && owner.getLandOwner() != null && owner.getLandOwner().canManagePlot(player); // owner du plot
 	}
 }

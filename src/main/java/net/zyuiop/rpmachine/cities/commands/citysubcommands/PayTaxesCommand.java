@@ -51,14 +51,14 @@ public class PayTaxesCommand implements SubCommand {
 						RPMachine.getInstance().getEconomyManager().withdrawMoney(player.getUniqueId(), topay);
 						data.setUnpaidTaxes(city.getCityName(), 0D);
 						player.sendMessage(ChatColor.GREEN + "Vous ne devez plus rien à cette ville.");
-						city.pay(player.getUniqueId(), topay);
+						city.pay(data, topay);
 					} else {
 						RPMachine.getInstance().getEconomyManager().withdrawMoney(player.getUniqueId(), amount);
 						city.setMoney(city.getMoney() + amount);
 						topay = topay - amount;
 						data.setUnpaidTaxes(city.getCityName(), topay);
 						player.sendMessage(ChatColor.RED + "Vous devez encore " + topay + " " + EconomyManager.getMoneyName() + " à la ville.");
-						city.pay(player.getUniqueId(), amount);
+						city.pay(data, amount);
 					}
 					citiesManager.saveCity(city);
 				}

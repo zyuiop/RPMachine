@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.economy.shops;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.Plot;
+import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
@@ -143,18 +144,19 @@ public class PlotSign extends AbstractShopSign {
 			price *= -1;
 		}
 
-		manager.withdrawMoneyWithBalanceCheck(player.getUniqueId(), price, (newAmount, difference) -> {
+		PlayerData data = RPMachine.database().getPlayerData(player.getUniqueId());
+		manager.withdrawMoneyWithBalanceCheck(data, price, (newAmount, difference) -> {
 			if (difference == 0) {
 				player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
 			} else {
 				if (plot.getOwner() == null) {
 					city.setMoney(city.getMoney() + price);
 				} else {
-					manager.giveMoney(plot.getOwner(), price * 0.8);
-					city.setMoney(city.getMoney() + (price * 0.2));
+					plot.getOwner().getTaxPayer().creditMoney(price * 0.8D);
+					city.creditMoney(price * 0.2D);
 				}
 
-				plot.setOwner(player.getUniqueId());
+				plot.setOwner(data);
 				plot.setPlotMembers(new CopyOnWriteArrayList<>());
 
 				city.getPlots().put(plotName, plot);

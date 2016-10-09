@@ -46,14 +46,17 @@ public class EconomyManager {
 	}
 
 	public void withdrawMoneyWithBalanceCheck(UUID player, double amount, FinancialCallback callback) {
+		withdrawMoneyWithBalanceCheck(getData(player), amount, callback);
+	}
+
+	public void withdrawMoneyWithBalanceCheck(TaxPayer payer, double amount, FinancialCallback callback) {
 		new Thread(() -> {
-			PlayerData data = getData(player);
-			if (data.withdrawMoney(amount)) {
+			if (payer.withdrawMoney(amount)) {
 				if (callback != null)
-					callback.done(data.getMoney(), amount);
+					callback.done(payer.getMoney(), amount);
 			} else {
 				if (callback != null)
-					callback.done(data.getMoney(), 0);
+					callback.done(payer.getMoney(), 0);
 			}
 		}).start();
 	}

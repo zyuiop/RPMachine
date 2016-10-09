@@ -48,7 +48,7 @@ public class ListCommand implements SubCommand {
 					if (plot.getOwner() == null && empty)
 						player.sendMessage(ChatColor.YELLOW + " - " + plot.getPlotName() + ", " + ChatColor.RED + "Aucun proprio.");
 					else if (claimed) {
-						String prop = RPMachine.database().getUUIDTranslator().getName(plot.getOwner(), false);
+						String prop = plot.getOwner().displayable();
 						player.sendMessage(ChatColor.YELLOW + " - " + plot.getPlotName() + ", " + ChatColor.GREEN + ((prop == null) ? "Proprio inconnu" : "Proprio : " + prop));
 					}
 				}

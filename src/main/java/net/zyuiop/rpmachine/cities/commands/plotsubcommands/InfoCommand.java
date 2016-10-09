@@ -6,6 +6,7 @@ import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.Plot;
 import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
@@ -48,11 +49,11 @@ public class InfoCommand implements SubCommand {
 					player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
 					player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs");
 					player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " " + EconomyManager.getMoneyName());
-					UUID proprio = plot.getOwner();
+					TaxPayerToken proprio = plot.getOwner();
 					if (proprio == null) {
 						player.sendMessage(ChatColor.YELLOW + "Propriétaire : " + ChatColor.RED + "Aucun");
 					} else {
-						String name = RPMachine.database().getUUIDTranslator().getName(proprio, false);
+						String name = proprio.displayable();
 						if (name == null) {
 							player.sendMessage(ChatColor.YELLOW + "Propriétaire : " + ChatColor.GOLD + "Inconnu");
 						} else {

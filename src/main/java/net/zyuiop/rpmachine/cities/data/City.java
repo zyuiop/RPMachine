@@ -1,6 +1,7 @@
 package net.zyuiop.rpmachine.cities.data;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
@@ -9,6 +10,7 @@ import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.AccountHolder;
 import net.zyuiop.rpmachine.economy.ShopOwner;
 import net.zyuiop.rpmachine.economy.TaxPayer;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -23,7 +25,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	private HashMap<String, Plot> plots = new HashMap<>();
 	private ArrayList<UUID> inhabitants = new ArrayList<>();
 	private ArrayList<UUID> invitedUsers = new ArrayList<>();
-	private HashMap<UUID, Double> taxesToPay = new HashMap<>();
+	private HashMap<TaxPayerToken, Double> taxesToPay = new HashMap<>();
 
 	private CityTaxPayer taxPayer = new CityTaxPayer(); // loaded by Gson
 
@@ -52,11 +54,11 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		this.cityName = cityName;
 	}
 
-	public HashMap<UUID, Double> getTaxesToPay() {
+	public HashMap<TaxPayerToken, Double> getTaxesToPay() {
 		return taxesToPay;
 	}
 
-	public void setTaxesToPay(HashMap<UUID, Double> taxesToPay) {
+	public void setTaxesToPay(HashMap<TaxPayerToken, Double> taxesToPay) {
 		this.taxesToPay = taxesToPay;
 	}
 
@@ -179,11 +181,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 
 	public double countInhabitants() {
 		int inhabitants = getInhabitants().size();
-		HashSet<UUID> plotsInhabitants = new HashSet<>();
-		for (Plot plot : plots.values()) {
-			if (plot.getOwner() != null)
-				plotsInhabitants.add(plot.getOwner());
-		}
+		HashSet<TaxPayerToken> plotsInhabitants = plots.values().stream().filter(plot -> plot.getOwner() != null).map(Plot::getOwner).collect(Collectors.toCollection(HashSet::new));
 
 		int plinSize = plotsInhabitants.size();
 		return Math.max(inhabitants, ((inhabitants + plinSize) / 2D));
@@ -215,14 +213,15 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		}
 	}
 
-	public void pay(UUID player, double amt) {
-		Double total = taxesToPay.get(player);
+	public void pay(TaxPayer player, double amt) {
+		TaxPayerToken token = TaxPayerToken.fromPayer(player);
+		Double total = taxesToPay.get(token);
 		if (total != null) {
 			total -= amt;
 			if (total <= 0)
-				taxesToPay.remove(player);
+				taxesToPay.remove(token);
 			else
-				taxesToPay.put(player, total);
+				taxesToPay.put(token, total);
 		}
 	}
 
@@ -232,13 +231,13 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 
 		for (Plot plot : plots.values()) {
 			if (plot.getOwner() != null) {
-				UUID owner = plot.getOwner();
-				PlayerData ownerData = RPMachine.database().getPlayerData(owner);
+				TaxPayerToken owner = plot.getOwner();
+				TaxPayer ownerData = owner.getTaxPayer();
 				Date lastPaid = ownerData.getLastTaxes(getCityName());
 
 				if (force || lastPaid == null || !sameDay(lastPaid)) {
 					double toPay = plot.getArea().getSquareArea() * taxes;
-					RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(owner, toPay, (newAmount, difference) -> {
+					RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(ownerData, toPay, (newAmount, difference) -> {
 						if (difference != 0) {
 							money += toPay;
 						} else {
