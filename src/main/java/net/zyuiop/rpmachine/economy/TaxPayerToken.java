@@ -1,6 +1,7 @@
 package net.zyuiop.rpmachine.economy;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.cities.LandOwner;
 
 import java.util.UUID;
 
@@ -27,6 +28,16 @@ public class TaxPayerToken {
 		} else {
 			return null;
 		}
+	}
+
+	public LandOwner getLandOwner() {
+		TaxPayer tp = getTaxPayer();
+		return tp != null && tp instanceof LandOwner ? (LandOwner) tp : null;
+	}
+
+	public ShopOwner getShopOwner() {
+		TaxPayer tp = getTaxPayer();
+		return tp != null && tp instanceof ShopOwner ? (ShopOwner) tp : null;
 	}
 
 	public UUID getPlayerUuid() {

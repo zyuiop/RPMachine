@@ -11,5 +11,5 @@ public interface LandOwner {
 	 * @param player The player trying to interract
 	 * @return true if the player can manage the plot
 	 */
-	boolean canManage(Player player);
+	boolean canManagePlot(Player player);
 }

@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author zyuiop
  */
-public class AdminAccountHolder implements TaxPayer, LandOwner {
+public class AdminAccountHolder implements TaxPayer, LandOwner, ShopOwner {
 	public static final AdminAccountHolder INSTANCE = new AdminAccountHolder();
 
 	private AdminAccountHolder() {
@@ -63,7 +63,12 @@ public class AdminAccountHolder implements TaxPayer, LandOwner {
 	}
 
 	@Override
-	public boolean canManage(Player player) {
+	public boolean canManagePlot(Player player) {
 		return player.hasPermission("plots.manageAdminPlots");
+	}
+
+	@Override
+	public boolean canManageShop(Player player) {
+		return player.hasPermission("shops.manageAdminShops");
 	}
 }

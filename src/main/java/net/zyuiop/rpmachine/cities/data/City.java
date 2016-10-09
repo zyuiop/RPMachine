@@ -7,12 +7,13 @@ import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.LandOwner;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.AccountHolder;
+import net.zyuiop.rpmachine.economy.ShopOwner;
 import net.zyuiop.rpmachine.economy.TaxPayer;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class City implements TaxPayer, LandOwner {
+public class City implements TaxPayer, LandOwner, ShopOwner {
 	private String cityName;
 	private VirtualLocation spawn;
 	private String fileName;
@@ -306,7 +307,12 @@ public class City implements TaxPayer, LandOwner {
 	}
 
 	@Override
-	public boolean canManage(Player player) {
+	public boolean canManagePlot(Player player) {
+		return mayor.equals(player.getUniqueId());
+	}
+
+	@Override
+	public boolean canManageShop(Player player) {
 		return mayor.equals(player.getUniqueId());
 	}
 
