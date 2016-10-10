@@ -1,9 +1,10 @@
-package net.zyuiop.rpmachine.economy.commands;
+package net.zyuiop.rpmachine.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.economy.commands.EconomixCommand;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

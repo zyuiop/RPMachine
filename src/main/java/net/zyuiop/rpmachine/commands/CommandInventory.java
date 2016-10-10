@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.economy.commands;
+package net.zyuiop.rpmachine.commands;
 
 
 import org.bukkit.Bukkit;
@@ -8,10 +8,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandEnderchest implements CommandExecutor {
+public class CommandInventory implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-		if (!commandSender.hasPermission("rp.enderchest")) {
+		if (!commandSender.hasPermission("rp.inventory")) {
 			commandSender.sendMessage(ChatColor.RED + "Vous n'avez pas la permission !");
 			return true;
 		}
@@ -27,7 +27,7 @@ public class CommandEnderchest implements CommandExecutor {
 			return true;
 		}
 		Player player = (Player) commandSender;
-		player.openInventory(target.getEnderChest());
+		player.openInventory(target.getInventory());
 		return true;
 	}
 }

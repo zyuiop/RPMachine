@@ -25,6 +25,9 @@ commands:
    endsee:
      description: Affiche l'enderchest
      usage: /endsee <pseudo>
+   invsee:
+     description: Affiche l'inventaire
+     usage: /invsee <pseudo>
    city:
      description: Commande de villes
      usage: /city

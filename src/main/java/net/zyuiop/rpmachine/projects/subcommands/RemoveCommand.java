@@ -41,7 +41,7 @@ public class RemoveCommand implements SubCommand {
 			} else {
 				Project plot = manager.getZone(args[0]);
 				if (plot == null) {
-					player.sendMessage(ChatColor.RED + "Il n'existe aucun projet de ce nom. Merci d'en créer une.");
+					player.sendMessage(ChatColor.RED + "Il n'existe aucun projet de ce nom. Merci d'en créer un.");
 					return;
 				}
 
