@@ -1,6 +1,8 @@
 package net.zyuiop.rpmachine.projects.subcommands;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
+import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
@@ -42,6 +44,8 @@ public class RemoveCommand implements SubCommand {
 					player.sendMessage(ChatColor.RED + "Il n'existe aucun projet de ce nom. Merci d'en créer une.");
 					return;
 				}
+
+				RPMachine.getInstance().getShopsManager().getShops(plot).forEach(AbstractShopSign::breakSign);
 
 				manager.removeZone(plot);
 				player.sendMessage(ChatColor.GREEN + "Le projet a bien été supprimée.");

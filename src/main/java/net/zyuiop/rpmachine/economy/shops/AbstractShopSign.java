@@ -66,6 +66,8 @@ public abstract class AbstractShopSign {
 		return false;
 	}
 
+	public abstract void breakSign();
+
 	abstract void clickOwner(Player player, PlayerInteractEvent event);
 
 	abstract void clickUser(Player player, PlayerInteractEvent event);

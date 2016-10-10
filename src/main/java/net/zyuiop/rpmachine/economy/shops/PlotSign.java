@@ -87,6 +87,12 @@ public class PlotSign extends AbstractShopSign {
 		RPMachine.getInstance().getShopsManager().remove(this);
 	}
 
+	@Override
+	public void breakSign() {
+		location.getLocation().getBlock().breakNaturally();
+		RPMachine.getInstance().getShopsManager().remove(this);
+	}
+
 	void clickOwner(Player player, PlayerInteractEvent event) {
 	}
 

@@ -106,6 +106,11 @@ public class ItemShopSign extends AbstractShopSign {
 	}
 
 	public void doBreakSign(Player player) {
+		breakSign();
+	}
+
+	@Override
+	public void breakSign() {
 		for (; available > 0; available--) {
 			Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), new ItemStack(itemType, 1, damage));
 		}
