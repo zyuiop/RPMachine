@@ -1,17 +1,16 @@
-package net.zyuiop.rpmachine.zones.subcommands;
+package net.zyuiop.rpmachine.projects.subcommands;
 
-import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
-import net.zyuiop.rpmachine.zones.Zone;
-import net.zyuiop.rpmachine.zones.ZonesManager;
+import net.zyuiop.rpmachine.projects.Project;
+import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class RemoveCommand implements SubCommand {
-	private final ZonesManager manager;
+	private final ProjectsManager manager;
 
-	public RemoveCommand(ZonesManager manager) {
+	public RemoveCommand(ProjectsManager manager) {
 		this.manager = manager;
 	}
 
@@ -22,7 +21,7 @@ public class RemoveCommand implements SubCommand {
 
 	@Override
 	public String getDescription() {
-		return "Supprime la zone <nom>";
+		return "Supprime le projet <nom>";
 	}
 
 	@Override
@@ -38,14 +37,14 @@ public class RemoveCommand implements SubCommand {
 			if (args.length < 1) {
 				player.sendMessage(ChatColor.RED + "Argument manquant.");
 			} else {
-				Zone plot = manager.getZone(args[0]);
+				Project plot = manager.getZone(args[0]);
 				if (plot == null) {
-					player.sendMessage(ChatColor.RED + "Il n'existe aucune zone de ce nom. Merci d'en créer une.");
+					player.sendMessage(ChatColor.RED + "Il n'existe aucun projet de ce nom. Merci d'en créer une.");
 					return;
 				}
 
 				manager.removeZone(plot);
-				player.sendMessage(ChatColor.GREEN + "La zone a bien été supprimée.");
+				player.sendMessage(ChatColor.GREEN + "Le projet a bien été supprimée.");
 			}
 		} else {
 			sender.sendMessage(ChatColor.RED + "Commande réservée aux joueurs.");

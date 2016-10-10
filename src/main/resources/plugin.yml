@@ -61,9 +61,9 @@ commands:
    actas:
      description: Agit en tant qu'une entité
      usage: /actas
-   zones:
-     description: Gère les zones
-     aliases: [zone]
+   projects:
+     description: Gère les projets
+     aliases: [project, zone, projet, zones]
 permissions:
    rp.bypass:
      default: op

@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.zones.subcommands;
+package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import org.bukkit.ChatColor;
@@ -19,7 +19,7 @@ public class WandCommand implements SubCommand {
 
 	@Override
 	public String getDescription() {
-		return "Vous donne l'objet de sélection de zones.";
+		return "Vous donne l'objet de sélection de projets.";
 	}
 
 	@Override
@@ -37,10 +37,10 @@ public class WandCommand implements SubCommand {
 			} else {
 				ItemStack item = new ItemStack(Material.BLAZE_ROD, 1);
 				List<String> lores = new ArrayList<>();
-				lores.add("Permet de délimiter une zone");
+				lores.add("Permet de délimiter une zone de projet");
 				lores.add("Clic gauche pour le premier point");
 				lores.add("Clic droit pour le second point");
-				lores.add("Pour de l'aide : " + ChatColor.GREEN + "/zone help");
+				lores.add("Pour de l'aide : " + ChatColor.GREEN + "/projet help");
 				ItemMeta im = item.getItemMeta();
 				im.setLore(lores);
 				im.setDisplayName(ChatColor.RED + "Outil de Zones");

@@ -1,17 +1,18 @@
-package net.zyuiop.rpmachine.zones.subcommands;
+package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
+import net.zyuiop.rpmachine.economy.AdminAccountHolder;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
-import net.zyuiop.rpmachine.zones.Zone;
-import net.zyuiop.rpmachine.zones.ZonesManager;
+import net.zyuiop.rpmachine.projects.Project;
+import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class LeaveCommand implements SubCommand {
-	private final ZonesManager manager;
+	private final ProjectsManager manager;
 
-	public LeaveCommand(ZonesManager manager) {
+	public LeaveCommand(ProjectsManager manager) {
 		this.manager = manager;
 	}
 
@@ -22,7 +23,7 @@ public class LeaveCommand implements SubCommand {
 
 	@Override
 	public String getDescription() {
-		return "Quitte la zone choisie.";
+		return "Quitte le projet choisi.";
 	}
 
 	@Override
@@ -30,19 +31,19 @@ public class LeaveCommand implements SubCommand {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 			if (args.length < 1) {
-				player.sendMessage(ChatColor.RED + "Utilisation : /zone leave " + getUsage());
+				player.sendMessage(ChatColor.RED + "Utilisation : /project leave " + getUsage());
 				return;
 			}
 
-			Zone plot = manager.getZone(args[0]);
+			Project plot = manager.getZone(args[0]);
 			if (plot == null) {
-				player.sendMessage(ChatColor.RED + "Cette zone n'existe pas.");
+				player.sendMessage(ChatColor.RED + "Ce projet n'existe pas.");
 			} else if (!plot.getOwner().getLandOwner().canManagePlot(player)) {
-				player.sendMessage(ChatColor.RED + "Cette zone ne vous appartient pas.");
+				player.sendMessage(ChatColor.RED + "Ce projet ne vous appartient pas.");
 			} else {
-				plot.setOwner((TaxPayerToken) null);
+				plot.setOwner(AdminAccountHolder.INSTANCE);
 				manager.saveZone(plot);
-				player.sendMessage(ChatColor.RED + "Vous n'êtes plus propriétaire de cette zone");
+				player.sendMessage(ChatColor.RED + "Vous n'êtes plus propriétaire de ce projet");
 			}
 		} else {
 			sender.sendMessage(ChatColor.RED + "Commande réservée aux joueurs.");

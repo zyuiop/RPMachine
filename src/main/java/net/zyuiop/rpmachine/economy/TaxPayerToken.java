@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.LandOwner;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.projects.Project;
 import org.bukkit.ChatColor;
 
 import java.util.UUID;
@@ -16,6 +17,7 @@ public class TaxPayerToken {
 	private boolean admin;
 	private String cityName;
 	private String companyName;
+	private String projectName;
 
 	public TaxPayerToken() {
 
@@ -28,6 +30,8 @@ public class TaxPayerToken {
 			return RPMachine.database().getPlayerData(playerUuid);
 		} else if (cityName != null) {
 			return RPMachine.getInstance().getCitiesManager().getCity(cityName);
+		} else if (projectName != null) {
+			return RPMachine.getInstance().getProjectsManager().getZone(projectName);
 		} else {
 			return null;
 		}
@@ -45,6 +49,13 @@ public class TaxPayerToken {
 			} else {
 				return ChatColor.AQUA + "(Ville) " + ChatColor.DARK_AQUA + city.getCityName();
 			}
+		} else if (projectName != null) {
+			Project project = RPMachine.getInstance().getProjectsManager().getZone(projectName);
+			if (project == null) {
+				return ChatColor.RED + "Projet supprimé";
+			} else {
+				return ChatColor.GREEN + "(Projet) " + ChatColor.DARK_GREEN + project.getPlotName();
+			}
 		}
 
 		return null;
@@ -61,6 +72,13 @@ public class TaxPayerToken {
 				return ChatColor.RED + "Ville";
 			} else {
 				return ChatColor.DARK_AQUA + city.getCityName();
+			}
+		} else if (projectName != null) {
+			Project project = RPMachine.getInstance().getProjectsManager().getZone(projectName);
+			if (project == null) {
+				return ChatColor.RED + "Projet";
+			} else {
+				return ChatColor.DARK_GREEN + project.getPlotName();
 			}
 		}
 
@@ -117,8 +135,18 @@ public class TaxPayerToken {
 			tp.setAdmin(true);
 		else if (owner instanceof City)
 			tp.setCityName(((City) owner).getCityName());
+		else if (owner instanceof Project)
+			tp.setProjectName(((Project) owner).getPlotName());
 
 		return tp;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
 	}
 
 	@Override

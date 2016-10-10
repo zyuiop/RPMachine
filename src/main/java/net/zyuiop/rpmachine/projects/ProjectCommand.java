@@ -1,7 +1,7 @@
-package net.zyuiop.rpmachine.zones;
+package net.zyuiop.rpmachine.projects;
 
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
-import net.zyuiop.rpmachine.zones.subcommands.*;
+import net.zyuiop.rpmachine.projects.subcommands.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class ZoneCommand implements CommandExecutor {
-	public ZoneCommand(ZonesManager manager) {
+public class ProjectCommand implements CommandExecutor {
+	public ProjectCommand(ProjectsManager manager) {
 
 		// Enregistrement des commandes
 		registerSubCommand("create", new CreateCommand(manager));
@@ -51,9 +51,9 @@ public class ZoneCommand implements CommandExecutor {
 	}
 
 	private void showHelp(CommandSender sender) {
-		sender.sendMessage(ChatColor.GOLD + "-----[ " + ChatColor.BOLD + "Commande de gestion de zones" + ChatColor.GOLD + " ]-----");
+		sender.sendMessage(ChatColor.GOLD + "-----[ " + ChatColor.BOLD + "Commande de gestion de projets" + ChatColor.GOLD + " ]-----");
 		for (Map.Entry<String, SubCommand> entry : subCommands.entrySet()) {
-			sender.sendMessage(ChatColor.GREEN + "- /zone " + entry.getKey() + " " + entry.getValue().getUsage() + " : " + ChatColor.YELLOW + entry.getValue().getDescription());
+			sender.sendMessage(ChatColor.GREEN + "- /projects " + entry.getKey() + " " + entry.getValue().getUsage() + " : " + ChatColor.YELLOW + entry.getValue().getDescription());
 		}
 	}
 

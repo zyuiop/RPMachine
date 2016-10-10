@@ -1,19 +1,19 @@
-package net.zyuiop.rpmachine.zones.subcommands;
+package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Area;
 import net.zyuiop.rpmachine.common.Selection;
-import net.zyuiop.rpmachine.zones.Zone;
-import net.zyuiop.rpmachine.zones.ZonesManager;
+import net.zyuiop.rpmachine.projects.Project;
+import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class RedefineCommand implements SubCommand {
-	private final ZonesManager manager;
+	private final ProjectsManager manager;
 
-	public RedefineCommand(ZonesManager manager) {
+	public RedefineCommand(ProjectsManager manager) {
 		this.manager = manager;
 	}
 
@@ -24,7 +24,7 @@ public class RedefineCommand implements SubCommand {
 
 	@Override
 	public String getDescription() {
-		return "Redéfinit la zone avec la sélection actuelle.";
+		return "Redéfinit le projet avec la sélection actuelle.";
 	}
 
 	@Override
@@ -46,10 +46,10 @@ public class RedefineCommand implements SubCommand {
 				} else {
 					Area area = selection.getArea();
 					if (args.length < 1) {
-						player.sendMessage(ChatColor.RED + "Syntaxe invalide : /zone redefine " + getUsage());
+						player.sendMessage(ChatColor.RED + "Syntaxe invalide : /project redefine " + getUsage());
 					} else {
 						String name = args[0];
-						Zone plot = manager.getZone(name);
+						Project plot = manager.getZone(name);
 						if (plot == null) {
 							player.sendMessage(ChatColor.RED + "Il n'existe aucune zone de ce nom. Merci d'en créer une.");
 							return;
@@ -63,7 +63,7 @@ public class RedefineCommand implements SubCommand {
 						// Area check
 						if (plot.checkArea(area, manager, player)) {
 							manager.saveZone(plot);
-							player.sendMessage(ChatColor.GREEN + "La zone a bien été redéfinie.");
+							player.sendMessage(ChatColor.GREEN + "Le projet a bien été redéfinie.");
 						}
 					}
 				}

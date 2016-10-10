@@ -1,11 +1,7 @@
-package net.zyuiop.rpmachine.zones;
+package net.zyuiop.rpmachine.projects;
 
 import com.google.gson.Gson;
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.CitiesComparator;
-import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.CityFloor;
-import net.zyuiop.rpmachine.common.VirtualChunk;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -20,14 +16,14 @@ import java.util.stream.Collectors;
 /**
  * @author zyuiop
  */
-public class ZonesManager {
+public class ProjectsManager {
 	private final File zonesFolder;
 	private final RPMachine rpMachine;
-	private ConcurrentHashMap<String, Zone> zones = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, Project> zones = new ConcurrentHashMap<>();
 
-	public ZonesManager(RPMachine plugin) {
+	public ProjectsManager(RPMachine plugin) {
 		this.rpMachine = plugin;
-		zonesFolder = new File(plugin.getDataFolder().getPath() + "/zones");
+		zonesFolder = new File(plugin.getDataFolder().getPath() + "/projects");
 		if (!zonesFolder.isDirectory())
 			return;
 
@@ -36,28 +32,28 @@ public class ZonesManager {
 		for (File file : zonesFolder.listFiles()) {
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(file));
-				Zone zone = gson.fromJson(reader, Zone.class);
-				zones.put(zone.getPlotName(), zone);
-				plugin.getLogger().info("Loaded zone " + zone.getPlotName());
+				Project project = gson.fromJson(reader, Project.class);
+				zones.put(project.getPlotName(), project);
+				plugin.getLogger().info("Loaded project " + project.getPlotName());
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public Zone getZone(String name) {
+	public Project getZone(String name) {
 		return zones.get(name);
 	}
 
-	public ConcurrentHashMap<String, Zone> getZones() {
+	public ConcurrentHashMap<String, Project> getZones() {
 		return zones;
 	}
 
-	public boolean createZone(Zone zone) {
-		if (zones.containsKey(zone.getPlotName()))
+	public boolean createZone(Project project) {
+		if (zones.containsKey(project.getPlotName()))
 			return false;
 
-		String fileName = zone.getPlotName().replace("/", "_");
+		String fileName = project.getPlotName().replace("/", "_");
 		fileName = fileName.replace("\\", "_");
 		File file = new File(zonesFolder, fileName + ".json");
 		if (file.exists()) {
@@ -72,12 +68,12 @@ public class ZonesManager {
 		}
 
 		try {
-			zone.setFileName(file.getName());
-			this.zones.put(zone.getPlotName(), zone);
+			project.setFileName(file.getName());
+			this.zones.put(project.getPlotName(), project);
 			boolean create = file.createNewFile();
 			if (!create)
 				return false;
-			saveZone(zone);
+			saveZone(project);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -85,9 +81,9 @@ public class ZonesManager {
 		return false;
 	}
 
-	public void saveZone(Zone zone) {
+	public void saveZone(Project project) {
 		new Thread(() -> {
-			File file = new File(zonesFolder, zone.getFileName());
+			File file = new File(zonesFolder, project.getFileName());
 			if (!file.exists())
 				try {
 					file.createNewFile();
@@ -98,7 +94,7 @@ public class ZonesManager {
 			BufferedWriter writer = null;
 			try {
 				writer = new BufferedWriter(new FileWriter(file));
-				new Gson().toJson(zone, Zone.class, writer);
+				new Gson().toJson(project, Project.class, writer);
 				writer.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -107,30 +103,30 @@ public class ZonesManager {
 		}).start();
 	}
 
-	public Zone getZoneHere(Location location) {
-		for (Zone zone : zones.values()) {
-			if (zone.getArea().isInside(location))
-				return zone;
+	public Project getZoneHere(Location location) {
+		for (Project project : zones.values()) {
+			if (project.getArea().isInside(location))
+				return project;
 		}
 		return null;
 	}
 
 	public boolean canBuild(Player player, Location location) {
-		Zone zone = getZoneHere(location);
-		return zone == null || zone.canBuild(player, location);
+		Project project = getZoneHere(location);
+		return project == null || project.canBuild(player, location);
 	}
 
 	public boolean canInteractWithBlock(Player player, Location location) {
 		return canBuild(player, location);
 	}
 
-	public void removeZone(Zone zone) {
-		File file = new File(zonesFolder, zone.getFileName());
+	public void removeZone(Project project) {
+		File file = new File(zonesFolder, project.getFileName());
 		file.delete();
-		zones.remove(zone.getPlotName());
+		zones.remove(project.getPlotName());
 	}
 
-	public Collection<Zone> getZonesHere(Chunk chunk) {
+	public Collection<Project> getZonesHere(Chunk chunk) {
 		return zones.values().stream().filter(zone -> zone.getArea().hasCommonPositionsWith(chunk)).collect(Collectors.toList());
 	}
 }

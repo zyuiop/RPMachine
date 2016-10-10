@@ -1,15 +1,11 @@
-package net.zyuiop.rpmachine.zones.subcommands;
+package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
-import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Area;
-import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.Selection;
-import net.zyuiop.rpmachine.common.VirtualChunk;
-import net.zyuiop.rpmachine.zones.Zone;
-import net.zyuiop.rpmachine.zones.ZonesManager;
+import net.zyuiop.rpmachine.projects.Project;
+import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,9 +13,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CreateCommand implements SubCommand {
-	private final ZonesManager manager;
+	private final ProjectsManager manager;
 
-	public CreateCommand(ZonesManager manager) {
+	public CreateCommand(ProjectsManager manager) {
 		this.manager = manager;
 	}
 
@@ -71,7 +67,7 @@ public class CreateCommand implements SubCommand {
 						}
 
 						// Area check //
-						Zone plot = new Zone();
+						Project plot = new Project();
 						plot.setPlotName(name);
 						// Area check
 						if (plot.checkArea(area, manager, player)) {

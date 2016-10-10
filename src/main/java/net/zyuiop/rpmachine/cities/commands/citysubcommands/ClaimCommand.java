@@ -48,8 +48,8 @@ public class ClaimCommand implements SubCommand {
 					Chunk chunk = player.getLocation().getChunk();
 					if (citiesManager.getCityHere(chunk) != null) {
 						player.sendMessage(ChatColor.RED + "Ce chunk appartient déjà a une ville.");
-					} else if (RPMachine.getInstance().getZonesManager().getZonesHere(chunk).size() > 0) {
-						player.sendMessage(ChatColor.RED + "Il y a des zones de la Confédération dans ce chunk.");
+					} else if (RPMachine.getInstance().getProjectsManager().getZonesHere(chunk).size() > 0) {
+						player.sendMessage(ChatColor.RED + "Il y a des projets de la Confédération dans ce chunk.");
 					} else if (!city.isAdjacent(chunk)) {
 						player.sendMessage(ChatColor.RED + "Ce chunk n'est pas adjacent à votre ville.");
 					} else if (city.getMoney() < floor.getChunkPrice()) {

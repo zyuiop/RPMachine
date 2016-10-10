@@ -1,10 +1,10 @@
-package net.zyuiop.rpmachine.zones.subcommands;
+package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
-import net.zyuiop.rpmachine.zones.Zone;
-import net.zyuiop.rpmachine.zones.ZonesManager;
+import net.zyuiop.rpmachine.projects.Project;
+import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class InfoCommand implements SubCommand {
-	private final ZonesManager manager;
+	private final ProjectsManager manager;
 
-	public InfoCommand(ZonesManager manager) {
+	public InfoCommand(ProjectsManager manager) {
 		this.manager = manager;
 	}
 
@@ -27,7 +27,7 @@ public class InfoCommand implements SubCommand {
 
 	@Override
 	public String getDescription() {
-		return "Affiche des informations sur la zone dans laquelle vous vous trouvez.";
+		return "Affiche des informations sur le projet dans lequel vous vous trouvez.";
 	}
 
 	@Override
@@ -35,11 +35,11 @@ public class InfoCommand implements SubCommand {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
 
-			Zone plot = manager.getZoneHere(player.getLocation());
+			Project plot = manager.getZoneHere(player.getLocation());
 			if (plot == null) {
-				player.sendMessage(ChatColor.RED + "Vous ne vous trouvez pas dans une zone.");
+				player.sendMessage(ChatColor.RED + "Vous ne vous trouvez pas dans un proket.");
 			} else {
-				player.sendMessage(ChatColor.GOLD + "-----[ Informations Zone ]-----");
+				player.sendMessage(ChatColor.GOLD + "-----[ Informations Projet ]-----");
 				player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
 				player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs");
 				TaxPayerToken proprio = plot.getOwner();
