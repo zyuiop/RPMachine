@@ -23,6 +23,7 @@ public class ProjectCommand implements CommandExecutor {
 		registerSubCommand("wand", new WandCommand());
 		registerSubCommand("redefine", new RedefineCommand(manager));
 		registerSubCommand("info", new InfoCommand(manager));
+		registerSubCommand("setowner", new SetOwnerCommand(manager));
 
 		aliases.put("c", "create");
 		aliases.put("i", "info");
