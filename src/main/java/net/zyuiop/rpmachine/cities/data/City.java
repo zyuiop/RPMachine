@@ -26,6 +26,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	private ArrayList<UUID> inhabitants = new ArrayList<>();
 	private ArrayList<UUID> invitedUsers = new ArrayList<>();
 	private HashMap<TaxPayerToken, Double> taxesToPay = new HashMap<>();
+	private HashMap<TaxPayerToken, Loan> loans = new HashMap<>();
 
 	private CityTaxPayer taxPayer = new CityTaxPayer(); // loaded by Gson
 
@@ -322,6 +323,43 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		return mayor.equals(player.getUniqueId());
 	}
 
+	public Loan getLoan(TaxPayerToken token) {
+		return loans.get(token);
+	}
+
+	public double payLoan(TaxPayerToken token, double amount) {
+		Loan loan = getLoan(token);
+		if (loan == null) {
+			return -1;
+		}
+
+		if (loan.getAmountToPay() < amount) {
+			return -2;
+		}
+
+		double remaining = loan.pay(amount);
+		if (remaining < 0.01) {
+			loans.remove(token);
+			remaining = 0;
+		}
+
+		save();
+		return remaining;
+	}
+
+	public HashMap<TaxPayerToken, Loan> getLoans() {
+		return loans;
+	}
+
+	public Collection<Loan> getExpiredLoans() {
+		return getLoans().values().stream().filter(l -> l.getMaximumDate().before(new Date())).collect(Collectors.toList());
+	}
+
+	public void updateLoan(Loan loan) {
+		loans.put(loan.getBorrower(), loan);
+		save();
+	}
+
 	public static class CityTaxPayer {
 		private Map<String, Double> unpaidTaxes = new HashMap<>();
 		private Map<String, Date> lastPaidTaxes = new HashMap<>();
@@ -340,6 +378,73 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 
 		public void setLastPaidTaxes(Map<String, Date> lastPaidTaxes) {
 			this.lastPaidTaxes = lastPaidTaxes;
+		}
+	}
+
+	public static class Loan {
+		private TaxPayerToken borrower;
+		private double amountBorrowed;
+		private double interestRate;
+		private double amountPaid = 0;
+		private Date maximumDate;
+
+		public Loan(TaxPayerToken borrower, double amountBorrowed, double interestRate, Date maximumDate) {
+			this.borrower = borrower;
+			this.amountBorrowed = amountBorrowed;
+			this.interestRate = interestRate;
+			this.maximumDate = maximumDate;
+		}
+
+		public Loan() {
+		}
+
+		public TaxPayerToken getBorrower() {
+			return borrower;
+		}
+
+		public void setBorrower(TaxPayerToken borrower) {
+			this.borrower = borrower;
+		}
+
+		public double getAmountBorrowed() {
+			return amountBorrowed;
+		}
+
+		public void setAmountBorrowed(double amountBorrowed) {
+			this.amountBorrowed = amountBorrowed;
+		}
+
+		public double getInterestRate() {
+			return interestRate;
+		}
+
+		public void setInterestRate(double interestRate) {
+			this.interestRate = interestRate;
+		}
+
+		public double getAmountPaid() {
+			return amountPaid;
+		}
+
+		public void setAmountPaid(double amountPaid) {
+			this.amountPaid = amountPaid;
+		}
+
+		public double getAmountToPay() {
+			return (amountBorrowed * (1 + interestRate)) - getAmountPaid();
+		}
+
+		public double pay(double amount) {
+			amountPaid += amount;
+			return getAmountToPay();
+		}
+
+		public Date getMaximumDate() {
+			return maximumDate;
+		}
+
+		public void setMaximumDate(Date maximumDate) {
+			this.maximumDate = maximumDate;
 		}
 	}
 }
