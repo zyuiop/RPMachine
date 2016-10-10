@@ -181,7 +181,7 @@ public class CitiesManager {
 			City city = getCityHere(location.getChunk());
 			return city == null || city.canBuild(player, location);
 		} else {
-			return true;
+			return RPMachine.getInstance().getZonesManager().canBuild(player, location);
 		}
 	}
 
@@ -193,7 +193,7 @@ public class CitiesManager {
 			City city = getCityHere(location.getChunk());
 			return city == null || city.canInteractWithBlock(player, location);
 		} else {
-			return true;
+			return RPMachine.getInstance().getZonesManager().canInteractWithBlock(player, location);
 		}
 	}
 

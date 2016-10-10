@@ -116,11 +116,12 @@ public class ZonesManager {
 	}
 
 	public boolean canBuild(Player player, Location location) {
-		if (RPMachine.getInstance().getCitiesManager().isBypassing(player.getUniqueId()))
-			return true;
-
 		Zone zone = getZoneHere(location);
 		return zone == null || zone.canBuild(player, location);
+	}
+
+	public boolean canInteractWithBlock(Player player, Location location) {
+		return canBuild(player, location);
 	}
 
 	public void removeZone(Zone zone) {
