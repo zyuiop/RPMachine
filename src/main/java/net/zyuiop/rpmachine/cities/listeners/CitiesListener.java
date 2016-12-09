@@ -1,10 +1,10 @@
 package net.zyuiop.rpmachine.cities.listeners;
 
-import net.bridgesapi.api.BukkitBridge;
-
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.Plot;
+import net.zyuiop.rpmachine.common.Plot;
+import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -13,22 +13,17 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
 
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class CitiesListener implements Listener {
 
 	private final CitiesManager manager;
@@ -77,8 +72,8 @@ public class CitiesListener implements Listener {
 
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onInteract(PlayerInteractEvent event) {
-		if (event.getAction() == Action.RIGHT_CLICK_AIR)
-			return;
+		//if (event.getAction() == Action.RIGHT_CLICK_AIR)
+		//	return;
 
 		if (event.getAction() == Action.PHYSICAL) {
 			event.setCancelled(!manager.canBuild(event.getPlayer(), event.getClickedBlock().getLocation()));
@@ -96,29 +91,29 @@ public class CitiesListener implements Listener {
 		if (event.getClickedBlock() == null || !checkInteract.contains(event.getClickedBlock().getType()))
 			return;
 
-		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getClickedBlock().getLocation()));
+		event.setCancelled(!manager.canInteractWithBlock(event.getPlayer(), event.getClickedBlock().getLocation()));
 	}
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
 		new Thread(() -> {
 			Player player = event.getPlayer();
-			Set<String> dataKeys = BukkitBridge.get().getPlayerManager().getPlayerData(player.getUniqueId()).getValues().keySet();
-			for (String key : dataKeys) {
-				if (key.startsWith("topay.")) {
-					String city = key.split(".")[0];
-					double topay = BukkitBridge.get().getPlayerManager().getPlayerData(player.getUniqueId()).getDouble(key);
-					player.sendMessage(ChatColor.RED + "ATTENTION ! Votre compte ne contient pas assez d'argent pour payer vos impots.");
-					player.sendMessage(ChatColor.RED + "Vous devez " + ChatColor.AQUA + topay + ChatColor.RED + " à la ville de " + ChatColor.AQUA + city);
-					player.sendMessage(ChatColor.RED + "Payez les rapidement avec " + ChatColor.AQUA + "/city paytaxes " + city);
-				}
+			PlayerData data = RPMachine.database().getPlayerData(player.getUniqueId());
+			for (Map.Entry<String, Double> entry : data.getUnpaidTaxes().entrySet()) {
+				double topay = entry.getValue();
+				if (topay <= 0)
+					continue;
+
+				player.sendMessage(ChatColor.RED + "ATTENTION ! Votre compte ne contient pas assez d'argent pour payer vos impots.");
+				player.sendMessage(ChatColor.RED + "Vous devez " + ChatColor.AQUA + topay + ChatColor.RED + " à la ville de " + ChatColor.AQUA + entry.getKey());
+				player.sendMessage(ChatColor.RED + "Payez les rapidement avec " + ChatColor.AQUA + "/city paytaxes " + entry.getKey());
 			}
 		}).start();
 	}
 
 	@EventHandler
 	public void onGamemode(PlayerGameModeChangeEvent event) {
-		if (! BukkitBridge.get().getPermissionsManager().hasPermission(event.getPlayer(), "rp.gamemode") && event.getNewGameMode() != GameMode.SURVIVAL) {
+		if (! event.getPlayer().hasPermission("rp.gamemode") && event.getNewGameMode() != GameMode.SURVIVAL) {
 			event.getPlayer().setGameMode(GameMode.SURVIVAL);
 			event.setCancelled(true);
 			event.getPlayer().sendMessage(ChatColor.RED + "Vous n'avez pas le droit d'accéder au gamemode créatif.");
@@ -130,12 +125,22 @@ public class CitiesListener implements Listener {
 		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlock().getLocation()));
 	}
 
+	@EventHandler
+	public void onEntityExplodeEvent(EntityExplodeEvent entityExplodeEvent) {
+		entityExplodeEvent.blockList().clear();
+	}
+
+	@EventHandler
+	public void onBlockExplode(BlockExplodeEvent explodeEvent) {
+		explodeEvent.blockList().clear();
+	}
+
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBreak(BlockBreakEvent event) {
 		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlock().getLocation()));
 	}
 
-	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler (priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onInteractEntity(PlayerInteractEntityEvent event) {
 		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getRightClicked().getLocation()));
 	}
@@ -160,6 +165,8 @@ public class CitiesListener implements Listener {
 			if (!isSameChunk(event.getFrom(), event.getTo())) {
 				City c1 = manager.getCityHere(event.getFrom().getChunk());
 				City c2 = manager.getCityHere(event.getTo().getChunk());
+				boolean entering = false;
+				boolean leaving = false;
 
 				if (c1 != null && c2 != null && c1.getCityName().equals(c2.getCityName())) {
 
@@ -172,13 +179,15 @@ public class CitiesListener implements Listener {
 					boolean pOverride = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
 
 					if (plot != null && (id.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+						leaving = true;
 					} else if (pOverride && plot != null) {
 						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + plot.getPlotName());
 					}
 
 					if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+						entering = true;
 					} else if (pOverride && to != null) {
 						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
 					}
@@ -187,12 +196,13 @@ public class CitiesListener implements Listener {
 				}
 
 				if (c1 != null) {
-					event.getPlayer().sendMessage(ChatColor.GOLD + "Vous quittez la ville de " + ChatColor.YELLOW + c1.getCityName() + ChatColor.GOLD + " !");
+					event.getPlayer().sendMessage(ChatColor.GOLD + "Vous quittez " + ChatColor.YELLOW + c1.getCityName() + ChatColor.GOLD + " !");
 					boolean c1Override = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
 					Plot from = c1.getPlotHere(event.getFrom());
 
 					if (from != null && (id.equals(from.getOwner()) || from.getPlotMembers().contains(id))) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+						leaving = true;
 					} else if (c1Override && from != null) {
 						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + from.getPlotName());
 					}
@@ -205,10 +215,17 @@ public class CitiesListener implements Listener {
 					Plot to = c2.getPlotHere(event.getTo());
 
 					if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+						entering = true;
 					} else if (c2Override && to != null) {
 						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
 					}
+				}
+
+				if (entering && !leaving) {
+					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+				} else if (!entering && leaving) {
+					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
 				}
 			} else {
 				// Same chunk, same city.

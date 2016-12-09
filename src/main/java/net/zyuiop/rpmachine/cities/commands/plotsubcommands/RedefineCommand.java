@@ -4,19 +4,16 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.*;
+import net.zyuiop.rpmachine.common.Area;
+import net.zyuiop.rpmachine.common.Plot;
+import net.zyuiop.rpmachine.common.Selection;
+import net.zyuiop.rpmachine.common.VirtualChunk;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class RedefineCommand implements SubCommand {
 	private final CitiesManager citiesManager;
 
@@ -62,22 +59,22 @@ public class RedefineCommand implements SubCommand {
 						}
 
 						if (args.length > 1 && args[1].equalsIgnoreCase("groundtosky")) {
-							area.setMax_y(254);
-							area.setMin_y(1);
+							area.setMaxY(254);
+							area.setMinY(1);
 						}
 
 						// Area check //
-						int i_x = area.getMin_x();
-						while (i_x < area.getMax_x()) {
-							int i_z = area.getMin_z();
-							while (i_z < area.getMax_z()) {
+						int i_x = area.getMinX();
+						while (i_x < area.getMaxX()) {
+							int i_z = area.getMinZ();
+							while (i_z < area.getMaxZ()) {
 								if (!city.getChunks().contains(new VirtualChunk(new Location(Bukkit.getWorld("world"), i_x, 64, i_z).getChunk()))) {
 									player.sendMessage(ChatColor.RED + "Une partie de votre sélection est hors de la ville.");
 									return;
 								}
 
-								int i_y = area.getMin_y();
-								while (i_y < area.getMax_y()) {
+								int i_y = area.getMinY();
+								while (i_y < area.getMaxY()) {
 									Plot check = city.getPlotHere(new Location(Bukkit.getWorld("world"), i_x, i_y, i_z));
 									if (check != null && !check.getPlotName().equals(plot.getPlotName())) {
 										player.sendMessage(ChatColor.RED + "Une partie de votre sélection fait partie d'une autre parcelle.");

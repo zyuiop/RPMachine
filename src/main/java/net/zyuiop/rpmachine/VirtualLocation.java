@@ -3,13 +3,6 @@ package net.zyuiop.rpmachine;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class VirtualLocation {
 	private int x;
 	private int y;
@@ -64,19 +57,12 @@ public class VirtualLocation {
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
-		if (! (o instanceof VirtualLocation))
+		if (!(o instanceof VirtualLocation))
 			return false;
 
 		VirtualLocation that = (VirtualLocation) o;
+		return x == that.x && y == that.y && z == that.z;
 
-		if (x != that.x)
-			return false;
-		if (y != that.y)
-			return false;
-		if (z != that.z)
-			return false;
-
-		return true;
 	}
 
 	public String toString() {

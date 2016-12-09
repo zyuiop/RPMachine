@@ -1,8 +1,8 @@
 package net.zyuiop.rpmachine.cities;
 
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.Selection;
-import net.zyuiop.rpmachine.cities.data.VirtualChunk;
+import net.zyuiop.rpmachine.common.Selection;
+import net.zyuiop.rpmachine.common.VirtualChunk;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,13 +16,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class SelectionManager implements Listener {
 	private ConcurrentHashMap<UUID, Selection> selections = new ConcurrentHashMap<>();
 	private final CitiesManager citiesManager;
@@ -65,6 +58,34 @@ public class SelectionManager implements Listener {
 
 			setSelection(player.getUniqueId(), selection);
 			event.setCancelled(true);
+		} else if (event.getItem() != null && event.getItem().getType() == Material.BLAZE_ROD) {
+			if (player.hasPermission("zones.select")) {
+				Selection selection = getSelection(player.getUniqueId());
+				if (selection == null)
+					selection = new Selection();
+
+				Block block = event.getClickedBlock();
+				if (block == null || !block.getWorld().getName().equals("world"))
+					return;
+
+				if (citiesManager.getCityHere(block.getChunk()) != null) {
+					player.sendMessage(ChatColor.RED + "Ce point est dans une ville.");
+					return;
+				}
+
+				Location loc = block.getLocation();
+
+				if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+					selection.setLocation2(loc);
+					player.sendMessage(ChatColor.GREEN + "Position #2 définie aux coordonnées " + block.getX() +"; "+ block.getY() + "; " + block.getZ());
+				} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+					selection.setLocation1(loc);
+					player.sendMessage(ChatColor.GREEN + "Position #1 définie aux coordonnées " + block.getX() +"; "+ block.getY() + "; " + block.getZ());
+				}
+
+				setSelection(player.getUniqueId(), selection);
+				event.setCancelled(true);
+			}
 		}
 	}
 

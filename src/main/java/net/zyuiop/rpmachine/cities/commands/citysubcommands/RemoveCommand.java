@@ -1,21 +1,17 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.VirtualChunk;
+import net.zyuiop.rpmachine.common.VirtualChunk;
+import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
+import net.zyuiop.rpmachine.economy.shops.ItemShopSign;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class RemoveCommand implements SubCommand {
 
 	private final CitiesManager citiesManager;
@@ -50,6 +46,9 @@ public class RemoveCommand implements SubCommand {
 						}
 						player.sendMessage(ChatColor.RED + "Suppression de la configuration");
 						citiesManager.removeCity(city);
+
+						RPMachine.getInstance().getShopsManager().getShops(city).forEach(AbstractShopSign::breakSign);
+
 						player.sendMessage(ChatColor.RED + "Votre ville a été supprimée.");
 					} else {
 						player.sendMessage(ChatColor.RED + "ATTENTION ! Vous vous apprêtez à supprimer votre ville !");

@@ -1,9 +1,10 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -11,13 +12,6 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class UnpaidTaxesCommand implements SubCommand {
 
 	private final CitiesManager citiesManager;
@@ -47,9 +41,9 @@ public class UnpaidTaxesCommand implements SubCommand {
 				player.sendMessage(ChatColor.RED + "Vous ne pouvez pas gérer les impôts de cette ville.");
 			} else {
 				player.sendMessage(ChatColor.GOLD + "-----[ Impôts impayés ]-----");
-				for (Map.Entry<UUID, Double> entry : city.getTaxesToPay().entrySet()) {
-					String name = BukkitBridge.get().getUUIDTranslator().getName(entry.getKey(), true);
-					player.sendMessage(ChatColor.YELLOW + " - " + name + " doit " + ChatColor.RED + entry.getValue() + ChatColor.YELLOW + " à la ville.");
+				for (Map.Entry<TaxPayerToken, Double> entry : city.getTaxesToPay().entrySet()) {
+					String name = entry.getKey().displayable();
+					player.sendMessage(ChatColor.YELLOW + " - " + (name == null ? "§cInconnu§e" : name + "§e") + " doit " + ChatColor.RED + entry.getValue() + ChatColor.YELLOW + " à la ville.");
 				}
 			}
 		}

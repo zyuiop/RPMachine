@@ -3,7 +3,8 @@ package net.zyuiop.rpmachine.cities;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
-import net.zyuiop.rpmachine.cities.data.VirtualChunk;
+import net.zyuiop.rpmachine.common.VirtualChunk;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import com.google.gson.Gson;
@@ -16,13 +17,6 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class CitiesManager {
 
 	private final RPMachine rpMachine;
@@ -168,6 +162,9 @@ public class CitiesManager {
 	}
 
 	public City getCityHere(Chunk chunk) {
+		if (!chunk.getWorld().getName().equals("world"))
+			return null;
+
 		VirtualChunk vchunk = new VirtualChunk(chunk);
 		for (City city : cities.values()) {
 			if (city.getChunks().contains(vchunk))
@@ -182,9 +179,21 @@ public class CitiesManager {
 
 		if (location.getWorld().getName().equals("world")) {
 			City city = getCityHere(location.getChunk());
-			return city != null && city.canBuild(player, location);
+			return city == null || city.canBuild(player, location);
 		} else {
+			return RPMachine.getInstance().getProjectsManager().canBuild(player, location);
+		}
+	}
+
+	public boolean canInteractWithBlock(Player player, Location location) {
+		if (bypass.contains(player.getUniqueId()))
 			return true;
+
+		if (location.getWorld().getName().equals("world")) {
+			City city = getCityHere(location.getChunk());
+			return city == null || city.canInteractWithBlock(player, location);
+		} else {
+			return RPMachine.getInstance().getProjectsManager().canInteractWithBlock(player, location);
 		}
 	}
 
@@ -196,5 +205,14 @@ public class CitiesManager {
 		File file = new File(rpMachine.getDataFolder().getPath() + "/cities/" + city.getFileName());
 		file.delete();
 		cities.remove(city.getCityName());
+	}
+
+	public boolean checkCityTeleport(Player player) {
+		City current = getCityHere(player.getLocation().getChunk());
+		if (current == null) {
+			player.sendMessage(ChatColor.RED + "Vous devez vous trouver dans une ville pour vous téléporter !");
+			return false;
+		}
+		return true;
 	}
 }

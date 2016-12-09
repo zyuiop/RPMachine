@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -11,13 +11,6 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class InviteCommand implements SubCommand {
 
 	private final CitiesManager citiesManager;
@@ -53,7 +46,7 @@ public class InviteCommand implements SubCommand {
 					}
 
 					String name = args[0];
-					UUID id = BukkitBridge.get().getUUIDTranslator().getUUID(name, false);
+					UUID id = RPMachine.database().getUUIDTranslator().getUUID(name, false);
 					if (id == null) {
 						player.sendMessage(ChatColor.RED + "Ce joueur n'existe pas.");
 					} else if (city.getInvitedUsers().contains(id)) {

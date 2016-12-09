@@ -1,19 +1,16 @@
 package net.zyuiop.rpmachine.economy.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
+import java.util.UUID;
+
 public class CommandPay extends EconomixCommand {
 	public CommandPay(RPMachine economix) {
 		super(economix);
@@ -32,16 +29,25 @@ public class CommandPay extends EconomixCommand {
 			commandSender.sendMessage(ChatColor.RED + "Le joueur est actuellement hors ligne.");
 			return true;
 		} else {
+			TaxPayerToken token = RPMachine.getPlayerRoleToken(transactionFrom);
+			if (token.getCityName() != null) {
+				UUID targetId = target.getUniqueId();
+				City city = (City) token.getTaxPayer();
+				if (city.getMayor().equals(targetId)) {
+					transactionFrom.sendMessage(ChatColor.RED + "Vous ne pouvez pas vous donner d'argent à vous même.");
+					return true;
+				}
+			}
+
 			new Thread(() -> {
 				Double val = Double.valueOf(args[1]);
 				if (val < 0)
 					val = -val;
 
-				rpMachine.getTransactionsHelper().transaction(transactionFrom, target, val);
+				rpMachine.getTransactionsHelper().transaction(transactionFrom, token, target, val);
 			}).start();
 		}
 
-		rpMachine.getTransactionsHelper().displayAmount((Player) commandSender);
 		return true;
 	}
 }

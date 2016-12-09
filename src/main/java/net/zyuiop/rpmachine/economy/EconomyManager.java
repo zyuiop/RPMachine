@@ -1,23 +1,18 @@
 package net.zyuiop.rpmachine.economy;
 
-import net.bridgesapi.api.BukkitBridge;
-import net.bridgesapi.api.player.FinancialCallback;
-import net.bridgesapi.api.player.PlayerData;
-import net.zyuiop.rpmachine.Callback;
+import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.database.FinancialCallback;
+import net.zyuiop.rpmachine.database.PlayerData;
 
 import java.util.UUID;
+import java.util.function.Consumer;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class EconomyManager {
+	private static String moneyName = null;
+	private static double baseAmount = -1;
 
 	private PlayerData getData(UUID player) {
-		return BukkitBridge.get().getPlayerManager().getPlayerData(player);
+		return RPMachine.database().getPlayerData(player);
 	}
 
 	public boolean canPay(UUID player, double amount) {
@@ -26,19 +21,19 @@ public class EconomyManager {
 
 	public double getAmount(UUID player) {
 		PlayerData data = getData(player);
-		return data.getDouble("rpmoney", 0D);
+		return data.getMoney();
 	}
 
 	public void giveMoney(UUID player, double amount) {
 		giveMoney(player, amount, null);
 	}
 
-	public void giveMoney(UUID player, double amount, FinancialCallback<Double> callback) {
+	public void giveMoney(UUID player, double amount, FinancialCallback callback) {
 		new Thread(() -> {
 			PlayerData data = getData(player);
-			data.setDouble("rpmoney", data.getDouble("rpmoney", 0D) + amount);
+			data.creditMoney(amount);
 			if (callback != null)
-				callback.done(data.getDouble("rpmoney", 0D), amount, null);
+				callback.done(data.getMoney(), amount);
 		}).start();
 	}
 
@@ -46,24 +41,22 @@ public class EconomyManager {
 		withdrawMoney(player, amount, null);
 	}
 
-	public void withdrawMoney(UUID player, double amount, FinancialCallback<Double> callback) {
-		new Thread(() -> {
-			PlayerData data = getData(player);
-			data.setDouble("rpmoney", data.getDouble("rpmoney", 0D) - amount);
-			if (callback != null)
-				callback.done(data.getDouble("rpmoney", 0D), -amount, null);
-		}).start();
+	public void withdrawMoney(UUID player, double amount, FinancialCallback callback) {
+		giveMoney(player, -amount, callback); // Same thing with a negative amount
 	}
 
-	public void withdrawMoneyWithBalanceCheck(UUID player, double amount, FinancialCallback<Double> callback) {
+	public void withdrawMoneyWithBalanceCheck(UUID player, double amount, FinancialCallback callback) {
+		withdrawMoneyWithBalanceCheck(getData(player), amount, callback);
+	}
+
+	public void withdrawMoneyWithBalanceCheck(TaxPayer payer, double amount, FinancialCallback callback) {
 		new Thread(() -> {
-			PlayerData data = getData(player);
-			if (data.getDouble("rpmoney", 0D) >= amount) {
-				data.setDouble("rpmoney", data.getDouble("rpmoney", 0D) - amount);
+			if (payer.withdrawMoney(amount)) {
 				if (callback != null)
-					callback.done(data.getDouble("rpmoney", 0D), - amount, null);
-			} else if (callback != null) {
-				callback.done(data.getDouble("rpmoney", 0D), 0D, null);
+					callback.done(payer.getMoney(), amount);
+			} else {
+				if (callback != null)
+					callback.done(payer.getMoney(), 0);
 			}
 		}).start();
 	}
@@ -73,28 +66,41 @@ public class EconomyManager {
 			PlayerData fromData = getData(from);
 			PlayerData toData = getData(to);
 
-			fromData.setDouble("rpmoney", fromData.getDouble("rpmoney", 0D) - amount);
-			toData.setDouble("rpmoney", toData.getDouble("rpmoney", 0D) + amount);
+			fromData.creditMoney(-amount);
+			toData.creditMoney(amount);
 		}).start();
 	}
 
-	public void transferMoneyBalanceCheck(UUID from, UUID to, double amount, Callback<Boolean> result) {
+	public void transferMoneyBalanceCheck(UUID from, UUID to, double amount, Consumer<Boolean> result) {
+		PlayerData fromData = getData(from);
+		PlayerData toData = getData(to);
+
+		transferMoneyBalanceCheck(fromData, toData, amount, result);
+	}
+
+	public void transferMoneyBalanceCheck(AccountHolder fromData, AccountHolder toData, double amount, Consumer<Boolean> result) {
 		new Thread(() -> {
-			PlayerData fromData = getData(from);
-			PlayerData toData = getData(to);
+			if (fromData.withdrawMoney(amount)) {
+				toData.creditMoney(amount);
 
-			if (fromData.getDouble("rpmoney", 0D) < amount) {
 				if (result != null)
-					result.done(false);
-				return;
-			}
-
-			fromData.setDouble("rpmoney", fromData.getDouble("rpmoney", 0D) - amount);
-			toData.setDouble("rpmoney", toData.getDouble("rpmoney", 0D) + amount);
-
-			if (result != null)
-				result.done(true);
+					result.accept(true);
+			} else if (result != null)
+				result.accept(false);
 		}).start();
 	}
 
+	public static String getMoneyName() {
+		if (moneyName == null) {
+			moneyName = RPMachine.getInstance().getConfig().getString("money.symbol", "$");
+		}
+		return moneyName;
+	}
+
+	public static double getBaseAmount() {
+		if (baseAmount == -1) {
+			baseAmount = RPMachine.getInstance().getConfig().getDouble("money.baseAmount", 150D);
+		}
+		return baseAmount;
+	}
 }

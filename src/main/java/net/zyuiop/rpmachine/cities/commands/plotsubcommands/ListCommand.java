@@ -1,21 +1,13 @@
 package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.Plot;
+import net.zyuiop.rpmachine.common.Plot;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class ListCommand implements SubCommand {
 	private final CitiesManager citiesManager;
 
@@ -55,7 +47,7 @@ public class ListCommand implements SubCommand {
 					if (plot.getOwner() == null && empty)
 						player.sendMessage(ChatColor.YELLOW + " - " + plot.getPlotName() + ", " + ChatColor.RED + "Aucun proprio.");
 					else if (claimed) {
-						String prop = BukkitBridge.get().getUUIDTranslator().getName(plot.getOwner(), false);
+						String prop = plot.getOwner().displayable();
 						player.sendMessage(ChatColor.YELLOW + " - " + plot.getPlotName() + ", " + ChatColor.GREEN + ((prop == null) ? "Proprio inconnu" : "Proprio : " + prop));
 					}
 				}

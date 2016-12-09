@@ -3,17 +3,11 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class SetTaxesCommand implements SubCommand {
 
 	private final CitiesManager citiesManager;
@@ -29,7 +23,7 @@ public class SetTaxesCommand implements SubCommand {
 
 	@Override
 	public String getDescription() {
-		return "Modifie les taxes dans votre ville. Les taxes s'expriment en $/block : le montant payé par un joueur équivaut à la surface totale de ses terrains multipliée par le montant donné.";
+		return "Modifie les taxes dans votre ville. Les taxes s'expriment en " + EconomyManager.getMoneyName() + "/block : le montant payé par un joueur équivaut à la surface totale de ses terrains multipliée par le montant donné.";
 	}
 
 	@Override
@@ -51,7 +45,7 @@ public class SetTaxesCommand implements SubCommand {
 					}
 					city.setTaxes(value);
 					citiesManager.saveCity(city);
-					player.sendMessage(ChatColor.GREEN + "Les impôts sont désormais de " + value + " $/bloc");
+					player.sendMessage(ChatColor.GREEN + "Les impôts sont désormais de " + value + " " + EconomyManager.getMoneyName() + "/bloc");
 				} catch (Exception e) {
 					player.sendMessage(ChatColor.RED + "Le montant est incorrect.");
 				}

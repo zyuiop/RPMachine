@@ -3,19 +3,13 @@ package net.zyuiop.rpmachine.cities.commands;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.VirtualChunk;
+import net.zyuiop.rpmachine.common.VirtualChunk;
+import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class CreateCityCommand extends CitiesCommand {
 
 	public CreateCityCommand(CitiesManager citiesManager) {
@@ -33,7 +27,7 @@ public class CreateCityCommand extends CitiesCommand {
 					player.sendMessage(ChatColor.YELLOW + "/createcity <nom de la ville> <private|public> " + ChatColor.GOLD + "permet de créer une ville sur le chunk où vous vous trouvez.");
 					player.sendMessage(ChatColor.GOLD + "private signifie que seules les personnes invitées pourront rejoindre votre ville.");
 					player.sendMessage(ChatColor.GOLD + "public signifie que toute personne le souhaitant pourra rejoindre votre ville.");
-					player.sendMessage(ChatColor.GOLD + "La création d'une ville coûte actuellement " + ChatColor.YELLOW + citiesManager.getCreationPrice()+" $");
+					player.sendMessage(ChatColor.GOLD + "La création d'une ville coûte actuellement " + ChatColor.YELLOW + citiesManager.getCreationPrice() + " " + EconomyManager.getMoneyName());
 					player.sendMessage(ChatColor.RED + "Attention : un nom de ville ne peut contenir d'espaces.");
 				} else {
 					if (strings.length >= 2) {
@@ -49,10 +43,10 @@ public class CreateCityCommand extends CitiesCommand {
 						} else if (citiesManager.getCity(cityName) != null) {
 							player.sendMessage(ChatColor.RED + "Une ville de ce nom existe déjà.");
 						} else if (!confirm) {
-							player.sendMessage(ChatColor.GOLD + "Voulez vous vraiment créer une ville ici ? Cela vous coûtera " + ChatColor.YELLOW + citiesManager.getCreationPrice()+" $ ?");
+							player.sendMessage(ChatColor.GOLD + "Voulez vous vraiment créer une ville ici ? Cela vous coûtera " + ChatColor.YELLOW + citiesManager.getCreationPrice() + " " + EconomyManager.getMoneyName());
 							player.sendMessage(ChatColor.GOLD + "Pour confirmer, tapez /createcity " + cityName + " " + type + " confirm");
 						} else {
-							RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), citiesManager.getCreationPrice(), (newAmount, difference, error) -> {
+							RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), citiesManager.getCreationPrice(), (newAmount, difference) -> {
 								if (difference == 0) {
 									player.sendMessage(ChatColor.RED + "Erreur : vous n'avez pas assez d'argent pour cela.");
 								} else {

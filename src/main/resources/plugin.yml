@@ -1,5 +1,5 @@
 name: RPMachine
-main: net.zyuiop.RPMachine
+main: net.zyuiop.rpmachine.RPMachine
 version: 0.42
 authors: [zyuiop]
 softdepend: [BukkitBridge]
@@ -25,6 +25,9 @@ commands:
    endsee:
      description: Affiche l'enderchest
      usage: /endsee <pseudo>
+   invsee:
+     description: Affiche l'inventaire
+     usage: /invsee <pseudo>
    city:
      description: Commande de villes
      usage: /city
@@ -32,6 +35,7 @@ commands:
    createcity:
      description: Création de villes
      usage: /createcity
+     permission: rp.createcity
    plot:
      description: Commande de parcelles
      usage: /plot
@@ -42,6 +46,9 @@ commands:
    floors:
      description: Paliers de villes
      usage: /floors
+   myshops:
+     description: Affiche vos shops
+     usage: /myshops
    job:
      description: Choisit un job
      aliases: [jobs]
@@ -54,8 +61,16 @@ commands:
      description: Exécute le paiement des impôts de force.
      usage: /runtaxes
      permission: rp.runtaxes
+   actas:
+     description: Agit en tant qu'une entité
+     usage: /actas
+   projects:
+     description: Gère les projets
+     aliases: [project, zone, projet, zones]
 permissions:
    rp.bypass:
      default: op
    rp.runtaxes:
      default: op
+   rp.createcity:
+     default: true

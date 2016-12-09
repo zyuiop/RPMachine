@@ -1,23 +1,16 @@
 package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 
-import net.bridgesapi.api.BukkitBridge;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.SubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.Plot;
+import net.zyuiop.rpmachine.common.Plot;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class MembersCommand implements SubCommand {
 	private final CitiesManager citiesManager;
 
@@ -53,10 +46,10 @@ public class MembersCommand implements SubCommand {
 			Plot plot = city.getPlots().get(args[1]);
 			if (plot == null) {
 				player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
-			} else if (!city.getCouncils().contains(player.getUniqueId()) && !player.getUniqueId().equals(city.getMayor()) && !player.getUniqueId().equals(plot.getOwner())) {
+			} else if (!city.getCouncils().contains(player.getUniqueId()) && !player.getUniqueId().equals(city.getMayor()) && !plot.getOwner().getLandOwner().canManagePlot(player)) {
 				player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
 			} else {
-				UUID id = BukkitBridge.get().getUUIDTranslator().getUUID(args[3], true);
+				UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[3], true);
 				if (id == null) {
 					player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
 				} else {

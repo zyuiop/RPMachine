@@ -1,23 +1,15 @@
 package net.zyuiop.rpmachine.economy.commands;
 
-import net.bridgesapi.api.BukkitBridge;
-import net.bridgesapi.api.player.PlayerData;
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.jobs.Job;
-import net.zyuiop.rpmachine.economy.shops.ShopSign;
+import net.zyuiop.rpmachine.economy.shops.ItemShopSign;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/**
- * This file is a part of the SamaGames project
- * This code is absolutely confidential.
- * Created by zyuiop
- * (C) Copyright Elydra Network 2015
- * All rights reserved.
- */
 public class CommandJob extends EconomixCommand {
 	public CommandJob(RPMachine economix) {
 		super(economix);
@@ -68,11 +60,11 @@ public class CommandJob extends EconomixCommand {
 				}
 
 				new Thread(() -> {
-					PlayerData data = BukkitBridge.get().getPlayerManager().getPlayerData(((Player) commandSender).getUniqueId());
-					if (data.get("job") != null)
+					PlayerData data = RPMachine.database().getPlayerData(((Player) commandSender).getUniqueId());
+					if (data.getJob() != null)
 						commandSender.sendMessage(ChatColor.RED + "Vous avez déjà un métier.");
 					else {
-						data.set("job", j.getJobName());
+						data.setJob(j.getJobName());
 						commandSender.sendMessage(ChatColor.GREEN + "Vous avez bien choisi le métier " + ChatColor.DARK_GREEN + j.getJobName());
 					}
 				}).start();
@@ -82,14 +74,14 @@ public class CommandJob extends EconomixCommand {
 					return true;
 				} else if (strings[1].equalsIgnoreCase("confirm")) {
 					int i = 0;
-					for (ShopSign sign : rpMachine.getShopsManager().getPlayerShops(((Player) commandSender).getUniqueId())) {
+					for (ItemShopSign sign : rpMachine.getShopsManager().getPlayerShops(((Player) commandSender))) {
 						sign.breakSign((Player) commandSender);
 						i++;
 					}
 					commandSender.sendMessage(ChatColor.AQUA + "" + i + ChatColor.GOLD + " Shops ont été supprimés.");
 					new Thread(() -> {
-						PlayerData data = BukkitBridge.get().getPlayerManager().getPlayerData(((Player) commandSender).getUniqueId());
-						data.remove("job");
+						PlayerData data = RPMachine.database().getPlayerData(((Player) commandSender).getUniqueId());
+						data.setJob(null);
 						commandSender.sendMessage(ChatColor.GOLD + "Vous n'avez maintenant plus de métier.");
 					}).start();
 				}
