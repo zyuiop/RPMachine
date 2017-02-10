@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cp ../target/rpmachine-1.0-SNAPSHOT.jar ../rpmachine.jar
+cp ../target/rpmachine.jar ../rpmachine.jar
 
 # Then we deploy it using SSH because I still don't want to learn how to use rsync o/
 
