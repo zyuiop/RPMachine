@@ -7,6 +7,7 @@
     <groupId>net.zyuiop</groupId>
     <artifactId>rpmachine</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <repositories>
         <repository>
