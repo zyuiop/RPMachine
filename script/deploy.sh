@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pwd
+ls target/
 cp target/rpmachine.jar rpmachine.jar
 
 # Then we deploy it using SSH because I still don't want to learn how to use rsync o/
