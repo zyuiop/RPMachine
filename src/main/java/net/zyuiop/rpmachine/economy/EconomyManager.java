@@ -33,7 +33,7 @@ public class EconomyManager {
 			PlayerData data = getData(player);
 			data.creditMoney(amount);
 			if (callback != null)
-				callback.done(data.getMoney(), amount);
+				callback.done(data.getMoney(), true);
 		}).start();
 	}
 
@@ -53,10 +53,10 @@ public class EconomyManager {
 		new Thread(() -> {
 			if (payer.withdrawMoney(amount)) {
 				if (callback != null)
-					callback.done(payer.getMoney(), amount);
+					callback.done(payer.getMoney(), true);
 			} else {
 				if (callback != null)
-					callback.done(payer.getMoney(), 0);
+					callback.done(payer.getMoney(), false);
 			}
 		}).start();
 	}

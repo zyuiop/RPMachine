@@ -81,7 +81,7 @@ public class TeleportCommand implements SubCommand {
 
 			if (pay) {
 				RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), price, (newAmount, difference) -> {
-					if (difference == 0) {
+					if (!difference) {
 						player.sendMessage(ChatColor.RED + "Vous n'avez pas assez d'argent pour faire cela.");
 					} else {
 						target.setMoney(target.getMoney() + price);

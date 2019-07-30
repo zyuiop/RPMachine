@@ -240,7 +240,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 				if (force || lastPaid == null || !sameDay(lastPaid)) {
 					double toPay = plot.getArea().getSquareArea() * taxes;
 					RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(ownerData, toPay, (newAmount, difference) -> {
-						if (difference != 0) {
+						if (!difference) {
 							money += toPay;
 						} else {
 							double lateTaxes = ownerData.getUnpaidTaxes(getCityName());

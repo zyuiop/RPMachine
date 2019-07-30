@@ -144,7 +144,7 @@ public class PlotSign extends AbstractShopSign {
 
 		TaxPayer data = RPMachine.getPlayerRoleToken(player).getTaxPayer();
 		manager.withdrawMoneyWithBalanceCheck(data, price, (newAmount, difference) -> {
-			if (difference == 0) {
+			if (!difference) {
 				player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
 			} else {
 				if (getOwner().getCityName() == null) {

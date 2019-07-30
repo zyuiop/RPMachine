@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 /**
  * @author zyuiop
  */
+@Deprecated
 public interface ShopOwner {
 	/**
 	 * Called when a player tries to manage a shop

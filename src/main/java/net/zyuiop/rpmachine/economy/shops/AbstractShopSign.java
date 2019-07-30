@@ -1,6 +1,8 @@
 package net.zyuiop.rpmachine.economy.shops;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.economy.ShopOwner;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -50,7 +52,8 @@ public abstract class AbstractShopSign {
 	public abstract void display();
 
 	public void rightClick(Player player, PlayerInteractEvent event) {
-		if (owner.getShopOwner() != null && owner.getShopOwner().canManageShop(player))
+		TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
+		if (owner.equals(token))
 			clickOwner(player, event);
 		else
 			clickUser(player, event);
@@ -59,7 +62,8 @@ public abstract class AbstractShopSign {
 	protected abstract void doBreakSign(Player authorizedBreaker);
 
 	public boolean breakSign(Player player) {
-		if (owner.getShopOwner() != null && owner.getShopOwner().canManageShop(player)) {
+		TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
+		if (owner.equals(token)) {
 			doBreakSign(player);
 			return true;
 		}

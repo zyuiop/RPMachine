@@ -46,8 +46,8 @@ public class CreateCityCommand extends CitiesCommand {
 							player.sendMessage(ChatColor.GOLD + "Voulez vous vraiment créer une ville ici ? Cela vous coûtera " + ChatColor.YELLOW + citiesManager.getCreationPrice() + " " + EconomyManager.getMoneyName());
 							player.sendMessage(ChatColor.GOLD + "Pour confirmer, tapez /createcity " + cityName + " " + type + " confirm");
 						} else {
-							RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), citiesManager.getCreationPrice(), (newAmount, difference) -> {
-								if (difference == 0) {
+							RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), citiesManager.getCreationPrice(), (newAmount, success) -> {
+								if (!success) {
 									player.sendMessage(ChatColor.RED + "Erreur : vous n'avez pas assez d'argent pour cela.");
 								} else {
 									City city = new City();

@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.common.VirtualChunk;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -41,8 +42,12 @@ public class CitiesManager {
 	public CitiesManager(RPMachine plugin) {
 		this.rpMachine = plugin;
 		File cityFolder = new File(plugin.getDataFolder().getPath() + "/cities");
+
+		cityFolder.mkdirs();
+		cityFolder.mkdir();
+
 		if (!cityFolder.isDirectory())
-			return;
+			throw new RuntimeException("Cities folder doesn't exist. " + cityFolder);
 
 		Gson gson = new Gson();
 
@@ -58,6 +63,7 @@ public class CitiesManager {
 		}
 
 		// Load floors
+		RPMachine.getInstance().getLogger().info("Loading floors...");
 		for (Map<?, ?> floor : rpMachine.getConfig().getMapList("floors")) {
 			String name = (String) floor.get("name");
 			int inhabitants = (Integer) floor.get("inhabitants");

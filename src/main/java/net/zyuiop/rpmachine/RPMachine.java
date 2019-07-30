@@ -49,6 +49,7 @@ public class RPMachine extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		getLogger().info("Begin RPMachine enable...");
 		instance = this;
 
 		saveDefaultConfig();
