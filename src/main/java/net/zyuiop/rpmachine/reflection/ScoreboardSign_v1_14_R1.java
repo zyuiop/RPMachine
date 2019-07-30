@@ -1,8 +1,9 @@
 package net.zyuiop.rpmachine.reflection;
 
-import net.minecraft.server.v1_8_R2.*;
+import net.minecraft.server.v1_14_R1.*;
 import net.zyuiop.rpmachine.ScoreboardSign;
-import org.bukkit.craftbukkit.v1_8_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -10,13 +11,13 @@ import java.lang.reflect.Field;
 /**
  * @author zyuiop
  */
-public class ScoreboardSign_v1_8_R2 implements ScoreboardSign {
+public class ScoreboardSign_v1_14_R1 implements ScoreboardSign {
 	private boolean created = false;
 	private final String[] lines = new String[16];
 	private final Player player;
 	private String objectiveName;
 
-	public ScoreboardSign_v1_8_R2(Player player, String objectiveName) {
+	public ScoreboardSign_v1_14_R1(Player player, String objectiveName) {
 		this.player = player;
 		this.objectiveName = objectiveName;
 	}
@@ -113,7 +114,7 @@ public class ScoreboardSign_v1_8_R2 implements ScoreboardSign {
 			if (mode == 0 || mode == 2) {
 				Field displayNameField = packet.getClass().getDeclaredField("b");
 				displayNameField.setAccessible(true);
-				displayNameField.set(packet, displayName);
+				displayNameField.set(packet, CraftChatMessage.fromStringOrNull(displayName));
 
 				Field display = packet.getClass().getDeclaredField("c");
 				display.setAccessible(true);
@@ -145,27 +146,10 @@ public class ScoreboardSign_v1_8_R2 implements ScoreboardSign {
 	}
 
 	private PacketPlayOutScoreboardScore sendScore(String line, int score) {
-		PacketPlayOutScoreboardScore packet = new PacketPlayOutScoreboardScore(line);
-		try {
-			Field name = packet.getClass().getDeclaredField("b");
-			name.setAccessible(true);
-			name.set(packet, player.getName());
-
-			Field scoreField = packet.getClass().getDeclaredField("c");
-			scoreField.setAccessible(true);
-			scoreField.set(packet, score); // SideBar
-
-			Field action = packet.getClass().getDeclaredField("d");
-			action.setAccessible(true);
-			action.set(packet, PacketPlayOutScoreboardScore.EnumScoreboardAction.CHANGE);
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-
-		return packet;
+		return new PacketPlayOutScoreboardScore(ScoreboardServer.Action.CHANGE, player.getName(), line, score);
 	}
 
 	private PacketPlayOutScoreboardScore removeLine(String line) {
-		return new PacketPlayOutScoreboardScore(line);
+		return new PacketPlayOutScoreboardScore(ScoreboardServer.Action.REMOVE, null, line, 0);
 	}
 }

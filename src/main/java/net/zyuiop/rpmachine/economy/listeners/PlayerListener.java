@@ -7,10 +7,7 @@ import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.jobs.Job;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,6 +17,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.material.SpawnEgg;
 
 import java.util.Iterator;
@@ -52,7 +50,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (event.getBlockPlaced().getType() == Material.MOB_SPAWNER) {
+		if (event.getBlockPlaced().getType() == Material.SPAWNER) {
 			event.setCancelled(true);
 		}
 	}
@@ -60,8 +58,9 @@ public class PlayerListener implements Listener {
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onInteractEntity(PlayerInteractEntityEvent event) {
 		Player player = event.getPlayer();
-		ItemStack stack = player.getItemInHand();
-		if (stack != null && stack.getType() == Material.MOB_SPAWNER) {
+		boolean mainHand = player.getInventory().getItemInOffHand().getType() == Material.AIR;
+		ItemStack stack = mainHand ? player.getInventory().getItemInMainHand() : player.getInventory().getItemInOffHand();
+		if (stack.getType() == Material.SPAWNER) {
 			Job job = RPMachine.getInstance().getJobsManager().getJob(player.getUniqueId());
 			if (job != null && job.getJobName().equalsIgnoreCase("chasseur")) {
 				EntityType type = event.getRightClicked().getType();
@@ -72,12 +71,16 @@ public class PlayerListener implements Listener {
 
 						Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), () -> {
 							SpawnEgg egg = new SpawnEgg(type);
-							ItemStack hand = player.getInventory().getItemInHand();
+							ItemStack hand = stack;
 							if (hand.getAmount() > 1)
 								hand.setAmount(hand.getAmount() - 1);
 							else
 								hand = null;
-							player.setItemInHand(hand);
+
+							if (mainHand)
+								player.getInventory().setItemInOffHand(hand);
+							else player.getInventory().setItemInMainHand(hand);
+
 							player.getInventory().addItem(egg.toItemStack(1));
 						}, 3);
 					} else {
@@ -88,10 +91,6 @@ public class PlayerListener implements Listener {
 				}
 			} else {
 				player.sendMessage(ChatColor.RED + "Seuls les chasseurs peuvent attraper des entités !");
-			}
-		} else if (stack != null) {
-			if (stack.getType() == Material.MONSTER_EGG) {
-				event.setCancelled(true);
 			}
 		}
 	}

@@ -105,14 +105,14 @@ public class RPMachine extends JavaPlugin {
 			}
 		}, 100L, 3 * 60 * 20L);
 
-		ItemStack capturator = new ItemStack(Material.MOB_SPAWNER);
+		ItemStack capturator = new ItemStack(Material.SPAWNER);
 		ItemMeta meta = capturator.getItemMeta();
 		meta.setDisplayName(ChatColor.GOLD + "PokeBall");
 		meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Clic droit sur un animal pour le capturer !", ChatColor.RED + "Attention !", ChatColor.RED + "Les données de l'entité ne sont pas conservées"));
 		capturator.setItemMeta(meta);
 		ShapedRecipe recipe = new ShapedRecipe(capturator);
 		recipe.shape("XXX", "XCX", "XXX");
-		recipe.setIngredient('X', Material.IRON_FENCE);
+		recipe.setIngredient('X', Material.IRON_BARS);
 		recipe.setIngredient('C', Material.CHEST);
 
 		Bukkit.addRecipe(recipe);

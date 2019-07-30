@@ -7,7 +7,7 @@ import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
+import joptsimple.internal.Strings;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

@@ -6,6 +6,7 @@ import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.*;
+import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,7 +29,7 @@ public class CitiesListener implements Listener {
 
 	private final CitiesManager manager;
 	private final HashSet<EntityType> allowHurt;
-	private final HashSet<Material> checkInteract;
+	//private final HashSet<Material> checkInteract;
 	public CitiesListener(CitiesManager manager) {
 		this.manager = manager;
 		this.allowHurt = new HashSet<>();
@@ -41,7 +42,7 @@ public class CitiesListener implements Listener {
 		allowHurt.add(EntityType.SPIDER);
 		allowHurt.add(EntityType.CAVE_SPIDER);
 		allowHurt.add(EntityType.WITCH);
-		checkInteract = new HashSet<>();
+		/*checkInteract = new HashSet<>();
 		checkInteract.add(Material.ACACIA_DOOR);
 		checkInteract.add(Material.BIRCH_DOOR);
 		checkInteract.add(Material.DARK_OAK_DOOR);
@@ -67,7 +68,7 @@ public class CitiesListener implements Listener {
 		checkInteract.add(Material.HOPPER_MINECART);
 		checkInteract.add(Material.DROPPER);
 		checkInteract.add(Material.DISPENSER);
-		checkInteract.add(Material.BEACON);
+		checkInteract.add(Material.BEACON);*/
 	}
 
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -88,8 +89,11 @@ public class CitiesListener implements Listener {
 			}
 		}
 
-		if (event.getClickedBlock() == null || !checkInteract.contains(event.getClickedBlock().getType()))
+		if (event.getClickedBlock() == null || !event.getClickedBlock().getType().isInteractable())
 			return;
+
+		if (event.getClickedBlock().getBlockData() instanceof Sign)
+			return; // Signs are always interactable
 
 		event.setCancelled(!manager.canInteractWithBlock(event.getPlayer(), event.getClickedBlock().getLocation()));
 	}

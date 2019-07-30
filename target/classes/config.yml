@@ -1,0 +1,253 @@
+# Montant nécessaire pour créeer une ville :
+createcity:
+   price: 1500
+   incrfactor: 1000
+
+jobs:
+ - name: Mineur
+   description: "Le mineur vend des ressources essentielles à l'économie"
+   items:
+      - IRON_INGOT
+      - GOLD_INGOT
+      - DIAMOND
+      - COAL
+      - REDSTONE
+      - LAPIS_BLOCK
+      - GOLDEN_APPLE
+      - IRON_BLOCK
+      - GOLD_BLOCK
+      - DIAMOND_BLOCK
+      - COAL_BLOCK
+      - REDSTONE_BLOCK
+      - STONE
+      - MOSSY_COBBLESTONE
+      - COBBLESTONE
+      - OBSIDIAN
+      - INK_SACK
+      - QUARTZ
+      - QUARTZ_BLOCK
+      - ENDER_STONE
+ - name: Ingénieur
+   description: "L'ingénieur vend toutes sortes de choses utiles pour construire un système complèxe"
+   items:
+      - REDSTONE
+      - REDSTONE_BLOCK
+      - PISTON_BASE
+      - PISTON_STICKY_BASE
+      - DISPENSER
+      - TRIPWIRE_HOOK
+      - DIODE
+      - REDSTONE_COMPARATOR
+      - HOPPER
+      - DROPPER
+      - GOLD_PLATE
+      - IRON_PLATE
+      - DAYLIGHT_DETECTOR
+      - NOTE_BLOCK
+      - RAILS
+      - ACTIVATOR_RAIL
+      - DETECTOR_RAIL
+      - POWERED_RAIL
+ - name: Fermier
+   description: "Le fermier a l'immense honneur de nourrir le serveur."
+   items:
+      - GOLDEN_APPLE
+      - APPLE
+      - MUSHROOM_SOUP
+      - BREAD
+      - GRILLED_PORK
+      - PORK
+      - RAW_FISH
+      - COOKED_FISH
+      - CAKE
+      - WHEAT
+      - COOKIE
+      - MELON
+      - RAW_BEEF
+      - COOKED_BEEF
+      - SUGAR_CANE
+      - RAW_CHICKEN
+      - COOKED_CHICKEN
+      - CARROT_ITEM
+      - POTATO_ITEM
+      - BAKED_POTATO
+      - PUMPKIN_PIE
+      - RABBIT
+      - COOKED_RABBIT
+      - RABBIT_STEW
+      - MUTTON
+      - COOKED_MUTTON
+ - name: Menuisier
+   description: "Elément indispensable de toute construction !"
+   items:
+      - LOG
+      - LOG_2
+      - WOOD
+      - WOODEN_DOOR
+      - ACACIA_DOOR
+      - BIRCH_DOOR
+      - JUNGLE_DOOR
+      - SPRUCE_DOOR
+      - TRAP_DOOR
+      - WOOD_STEP
+      - WOOD_DOUBLE_STEP
+      - BOOKSHELF
+      - FENCE
+      - ACACIA_FENCE
+      - BIRCH_FENCE
+      - JUNGLE_FENCE
+      - SPRUCE_FENCE
+      - FENCE_GATE
+      - DARK_OAK_FENCE
+      - ACACIA_FENCE_GATE
+      - BIRCH_FENCE_GATE
+      - JUNGLE_FENCE_GATE
+      - SPRUCE_FENCE_GATE
+ - name: Forgeron
+   description: "Créez les outils indispensables à tous."
+   items:
+      - DIAMOND_AXE
+      - GOLD_AXE
+      - IRON_AXE
+      - DIAMOND_PICKAXE
+      - GOLD_PICKAXE
+      - IRON_PICKAXE
+      - DIAMOND_HOE
+      - GOLD_HOE
+      - IRON_HOE
+      - DIAMOND_SWORD
+      - GOLD_SWORD
+      - IRON_SWORD
+      - DIAMOND_SPADE
+      - GOLD_SPADE
+      - IRON_SPADE
+      - DIAMOND_HELMET
+      - GOLD_HELMET
+      - IRON_HELMET
+      - DIAMOND_CHESTPLATE
+      - GOLD_CHESTPLATE
+      - IRON_CHESTPLATE
+      - DIAMOND_LEGGINGS
+      - GOLD_LEGGINGS
+      - IRON_LEGGINGS
+      - DIAMOND_BOOTS
+      - GOLD_BOOTS
+      - IRON_BOOTS
+ - name: Chasseur
+   description: "Parcourez la terre à la recherche de loots"
+   items:
+      - BONE
+      - SKULL
+      - SKULL_ITEM
+      - GHAST_TEAR
+      - SULPHUR
+      - BLAZE_ROD
+      - BLAZE_POWDER
+      - STRING
+      - SPIDER_EYE
+      - EYE_OF_ENDER
+      - ENDER_PEARL
+      - SLIME_BALL
+      - NETHER_STAR
+      - LEATHER
+      - WOOL
+      - ROTTEN_FLESH
+      - ARROW
+      - FEATHER
+      - CHAINMAIL_HELMET
+      - CHAINMAIL_BOOTS
+      - CHAINMAIL_CHESTPLATE
+      - CHAINMAIL_LEGGINGS
+      - SADDLE
+      - DIAMOND_BARDING
+      - GOLD_BARDING
+      - IRON_BARDING
+      - NAME_TAG
+ - name: Constructeur
+   description: Vendez les matériaux essentiels à la construction
+   items:
+      - WOOL
+      - HARD_CLAY
+      - STAINED_CLAY
+      - BRICK
+      - BRICK_STAIRS
+      - WOODEN_DOOR
+      - ACACIA_DOOR
+      - BIRCH_DOOR
+      - JUNGLE_DOOR
+      - SPRUCE_DOOR
+      - TRAP_DOOR
+      - STEP
+      - DOUBLE_STEP
+      - SMOOTH_STAIRS
+      - COBBLESTONE_STAIRS
+      - SANDSTONE
+      - SANDSTONE_STAIRS
+      - SMOOTH_STAIRS
+      - GLASS
+      - THIN_GLASS
+      - STAINED_GLASS
+      - STAINED_GLASS_PANE
+      - STONE
+      - COBBLESTONE
+      - STONE_SLAB2
+      - DOUBLE_STONE_SLAB2
+      - 97
+      - 98
+      - 168
+      - 109
+
+
+# Paliers de villes :
+
+floors:
+    - name: Hameau
+      inhabitants: 0
+      max-chunks: 15
+      max-taxes: 0
+      chunk-price: 150
+    - name: Bourg
+      inhabitants: 4
+      max-chunks: 25
+      max-taxes: 1
+      chunk-price: 140
+    - name: Village
+      inhabitants: 8
+      max-chunks: 75
+      max-taxes: 3
+      chunk-price: 125
+    - name: Ville
+      inhabitants: 15
+      max-chunks: 200
+      max-taxes: 5
+      chunk-price: 110
+    - name: Métropole
+      inhabitants: 25
+      max-chunks: 400
+      max-taxes: 7
+      chunk-price: 100
+    - name: Capitale
+      inhabitants: 40
+      max-chunks: 1000
+      max-taxes: 10
+      chunk-price: 100
+
+money:
+  symbol: $
+  baseAmount: 150.0
+
+# database: net.zyuiop.rpmachine.database.bukkitbridge.BukkitBridgeDatabase
+database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
+
+citytp:
+  # If true, one can teleport to an other city only if he is himself in a city
+  fromCityOnly: false
+  # The teleport fee the player will have to pay to teleport himself to a city he's not a member of
+  cost: 1
+
+home:
+  # If true, one can teleport to his home only if he is in a city
+  fromCityOnly: false
+
+spawn:
+  fromCityOnly: false

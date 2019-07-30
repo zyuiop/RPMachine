@@ -21,9 +21,10 @@ public class JobsManager {
 				try {
 					Material mat = null;
 					if (material instanceof String) {
-						mat = Material.valueOf((String) material);
-					} else if (material instanceof  Integer) {
-						mat = Material.getMaterial((Integer)material);
+						if (((String) material).contains(":")) {
+							mat = Material.matchMaterial((String) material);
+						} else
+							mat = Material.getMaterial((String) material);
 					}
 
 					if (mat != null)

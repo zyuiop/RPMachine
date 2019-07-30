@@ -70,7 +70,7 @@ public class PlotSign extends AbstractShopSign {
 			}
 			sign.setLine(3, ChatColor.GOLD + "> Acheter <");
 
-			Bukkit.getScheduler().runTask(RPMachine.getInstance(), sign::update);
+			Bukkit.getScheduler().runTask(RPMachine.getInstance(), (Runnable) sign::update);
 		} else {
 			Bukkit.getLogger().info("Error : sign is not a sign, at " + location.toString());
 		}
