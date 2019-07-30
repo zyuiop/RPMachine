@@ -184,7 +184,7 @@ public class SignsListener implements Listener {
 
 	@EventHandler
 	public void onBreak(BlockBreakEvent event) {
-		if (event.getBlock().getType().getData().isAssignableFrom(org.bukkit.block.data.type.Sign.class)) {
+		if (event.getBlock().getBlockData() instanceof Sign) {
 			event.setCancelled(true);
 			AbstractShopSign sign = plugin.getShopsManager().get(event.getBlock().getLocation());
 			if (sign == null)
@@ -194,10 +194,10 @@ public class SignsListener implements Listener {
 		} else {
 			for (BlockFace face : BlockFace.values()) {
 				Block block = event.getBlock().getRelative(face);
-				if (block == null || block.isEmpty())
+				if (block.isEmpty())
 					continue;
 
-				if (event.getBlock().getType().getData().isAssignableFrom(org.bukkit.block.data.type.Sign.class)) {
+				if (event.getBlock().getBlockData() instanceof Sign) {
 					event.setCancelled(true);
 					AbstractShopSign sign = plugin.getShopsManager().get(event.getBlock().getLocation());
 					if (sign == null)

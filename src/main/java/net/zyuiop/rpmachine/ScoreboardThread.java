@@ -9,6 +9,7 @@ import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
+import net.zyuiop.rpmachine.utils.DirectionArrows;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -48,7 +49,8 @@ public class ScoreboardThread implements Runnable {
 			try {
 				Location location = homeData.getLocation();
 				double dist = location.distance(player.getLocation());
-				home = ChatColor.GREEN + "" + (Math.round(dist * 10)/10.0) + "m";
+				String arrow = DirectionArrows.getArrow(player.getLocation(), location);
+				home = ChatColor.GREEN + arrow + " " + (Math.round(dist * 10)/10.0) + "m";
 			} catch (Exception e) {
 				home = ChatColor.RED + "Erreur";
 			}

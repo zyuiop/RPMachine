@@ -16,7 +16,7 @@ public class ScoreboardManager {
 	}
 
 	public void addPlayer(Player player) {
-		scoreboards.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new ScoreboardThread(player), 4L, 4L));
+		scoreboards.put(player.getUniqueId(), Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new ScoreboardThread(player), 1L, 1L));
 	}
 
 	public void removePlayer(Player player) {
