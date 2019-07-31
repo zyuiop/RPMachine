@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.common.VirtualChunk;
-import net.zyuiop.rpmachine.economy.RoleToken;
+import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.entities.Ownable;
@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // TODO: finish implementing loans
-public class City implements LegalEntity {
+public class City implements LegalEntity, StoredEntity {
 	private String cityName;
 	private VirtualLocation spawn;
 	private String fileName;

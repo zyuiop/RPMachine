@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.json;
 
 import com.google.gson.*;
-import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
+import net.zyuiop.rpmachine.shops.AbstractShopSign;
 
 import java.lang.reflect.Type;
 

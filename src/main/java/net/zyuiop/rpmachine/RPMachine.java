@@ -8,20 +8,20 @@ import net.zyuiop.rpmachine.cities.commands.CommandBypass;
 import net.zyuiop.rpmachine.cities.commands.CommandRuntaxes;
 import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
-import net.zyuiop.rpmachine.common.commands.*;
+import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.database.ShopsManager;
+import net.zyuiop.rpmachine.shops.ShopsManager;
 import net.zyuiop.rpmachine.economy.EconomyManager;
-import net.zyuiop.rpmachine.economy.RoleToken;
+import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.economy.TransactionsHelper;
 import net.zyuiop.rpmachine.economy.commands.CommandJob;
 import net.zyuiop.rpmachine.economy.commands.CommandMoney;
 import net.zyuiop.rpmachine.economy.commands.CommandPay;
-import net.zyuiop.rpmachine.economy.commands.CommandShops;
+import net.zyuiop.rpmachine.shops.CommandShops;
 import net.zyuiop.rpmachine.economy.jobs.JobsManager;
 import net.zyuiop.rpmachine.economy.listeners.PlayerListener;
-import net.zyuiop.rpmachine.economy.listeners.SignsListener;
+import net.zyuiop.rpmachine.shops.SignsListener;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.gui.WindowsListener;
 import net.zyuiop.rpmachine.projects.ProjectCommand;
@@ -53,6 +53,7 @@ public class RPMachine extends JavaPlugin {
     private SelectionManager selectionManager;
     private ScoreboardManager scoreboardManager;
     private ProjectsManager projectsManager;
+    private ShopsManager shopsManager;
 
     public static RPMachine getInstance() {
         return instance;
@@ -106,10 +107,12 @@ public class RPMachine extends JavaPlugin {
 
         // Load DB
         if (!loadDatabase()) {
-            getLogger().severe("Cannot start DB, shutting down.");
+            getLogger().severe("Cannot load DB, shutting down.");
             Bukkit.shutdown();
             return;
         }
+
+        this.shopsManager = new ShopsManager();
 
         // Auto-registering commands
         new CityCommand(citiesManager);
@@ -118,6 +121,7 @@ public class RPMachine extends JavaPlugin {
         new CommandInventory(); // both invsee and endsee
         new CommandPay();
         new CommandActAs();
+        new CommandShops();
 
         // Classic commands
         getCommand("money").setExecutor(new CommandMoney(this));
@@ -129,7 +133,6 @@ public class RPMachine extends JavaPlugin {
         getCommand("info").setExecutor(new CommandHelp());
         getCommand("runtaxes").setExecutor(new CommandRuntaxes(citiesManager));
         getCommand("bypass").setExecutor(new CommandBypass(citiesManager));
-        getCommand("myshops").setExecutor(new CommandShops(this));
 
         Bukkit.getPluginManager().registerEvents(selectionManager, this);
         Bukkit.getPluginManager().registerEvents(new WindowsListener(), this);
@@ -226,7 +229,7 @@ public class RPMachine extends JavaPlugin {
     }
 
     public ShopsManager getShopsManager() {
-        return getDatabaseManager().getShopsManager();
+        return shopsManager;
     }
 
     @Override

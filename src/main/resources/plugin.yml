@@ -23,9 +23,6 @@ commands:
    info:
      description: Commande d'aide
      usage: /help
-   myshops:
-     description: Affiche vos shops
-     usage: /myshops
    job:
      description: Choisit un job
      aliases: [jobs]

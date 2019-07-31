@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.economy;
 
+import net.zyuiop.rpmachine.entities.RoleToken;
 import org.bukkit.entity.Player;
 
 public class TransactionsHelper {

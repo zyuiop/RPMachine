@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.projects;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.common.Area;
 import net.zyuiop.rpmachine.common.Plot;
+import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import net.zyuiop.rpmachine.permissions.ProjectPermissions;
@@ -18,7 +19,7 @@ import java.util.*;
  * A zone is a kind of plot located outside of any city. It can only be created with administrative permissions.<br/>
  * A zone has no taxes as it doesn't depend of any city.
  */
-public class Project extends Plot implements LegalEntity {
+public class Project extends Plot implements LegalEntity, StoredEntity {
     private final Map<UUID, Set<DelegatedPermission>> admins = new HashMap<>();
     private String welcomeMessage;
     private String goodByeMessage;
@@ -185,7 +186,7 @@ public class Project extends Plot implements LegalEntity {
         if (owner().hasDelegatedPermission(player, ProjectPermissions.ACT_AS_PROJECT))
             return true;
 
-        // Joueur admin du projet
+            // Joueur admin du projet
         else if (admins.containsKey(player.getUniqueId()))
             return true;
 

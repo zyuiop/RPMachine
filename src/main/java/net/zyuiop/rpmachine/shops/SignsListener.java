@@ -1,20 +1,18 @@
-package net.zyuiop.rpmachine.economy.listeners;
+package net.zyuiop.rpmachine.shops;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
-import net.zyuiop.rpmachine.economy.RoleToken;
-import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
-import net.zyuiop.rpmachine.economy.shops.ItemShopSign;
-import net.zyuiop.rpmachine.economy.shops.PlotSign;
-import net.zyuiop.rpmachine.economy.shops.ShopAction;
+import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Sign;
+import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -36,8 +34,8 @@ public class SignsListener implements Listener {
         RoleToken tt = RPMachine.getPlayerRoleToken(event.getPlayer());
 
         String line0 = event.getLine(0);
-        if (line0 == null || line0.equalsIgnoreCase(""))
-            line0 = ((Sign) event.getBlock().getState()).getLine(0);
+        if (line0 == null)
+            return;
 
         if (line0.equalsIgnoreCase("Shop")) {
             String price = event.getLine(1);
@@ -187,7 +185,7 @@ public class SignsListener implements Listener {
             sign.rightClick(event.getPlayer(), event);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onBreak(BlockBreakEvent event) {
         if (event.getBlock().getBlockData() instanceof Sign) {
             event.setCancelled(true);
@@ -208,7 +206,7 @@ public class SignsListener implements Listener {
                     if (sign == null)
                         event.setCancelled(false);
                     else
-                        sign.breakSign(event.getPlayer());
+                        event.setCancelled(!sign.breakSign(event.getPlayer()));
                 }
             }
         }

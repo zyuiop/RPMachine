@@ -2,7 +2,7 @@ package net.zyuiop.rpmachine.cities.commands;
 
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.plotsubcommands.*;
-import net.zyuiop.rpmachine.common.commands.CompoundCommand;
+import net.zyuiop.rpmachine.commands.CompoundCommand;
 
 
 public class PlotCommand extends CompoundCommand {

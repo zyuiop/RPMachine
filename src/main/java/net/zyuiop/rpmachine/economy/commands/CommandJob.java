@@ -3,7 +3,7 @@ package net.zyuiop.rpmachine.economy.commands;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.jobs.Job;
-import net.zyuiop.rpmachine.economy.shops.ItemShopSign;
+import net.zyuiop.rpmachine.shops.ItemShopSign;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;

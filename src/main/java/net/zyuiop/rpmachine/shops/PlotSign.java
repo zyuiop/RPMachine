@@ -1,11 +1,11 @@
-package net.zyuiop.rpmachine.economy.shops;
+package net.zyuiop.rpmachine.shops;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
-import net.zyuiop.rpmachine.economy.RoleToken;
+import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;

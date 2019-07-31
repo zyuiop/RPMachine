@@ -2,13 +2,11 @@ package net.zyuiop.rpmachine.database.filestorage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.database.ShopsManager;
+import net.zyuiop.rpmachine.shops.ShopsManager;
 import net.zyuiop.rpmachine.database.UUIDTranslator;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -19,7 +17,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class FileStorageDatabase implements DatabaseManager, LegalEntityRepository<PlayerData> {
 	private File playersDirectory;
 	private FileUUIDTranslator translator;
-	private FileShops fileShops;
 
 	public FileStorageDatabase() throws IOException {
 	}
@@ -27,7 +24,6 @@ public class FileStorageDatabase implements DatabaseManager, LegalEntityReposito
 	@Override
 	public void load() throws IOException {
 		translator = new FileUUIDTranslator();
-		fileShops = new FileShops();
 
 		playersDirectory = new File(RPMachine.getInstance().getDataFolder(), "players");
 
@@ -57,11 +53,6 @@ public class FileStorageDatabase implements DatabaseManager, LegalEntityReposito
 	@Override
 	public UUIDTranslator getUUIDTranslator() {
 		return translator;
-	}
-
-	@Override
-	public ShopsManager getShopsManager() {
-		return fileShops;
 	}
 
 	@Override

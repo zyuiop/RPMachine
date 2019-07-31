@@ -3,7 +3,6 @@ package net.zyuiop.rpmachine.entities;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.AdminLegalEntity;
 import net.zyuiop.rpmachine.projects.Project;
 
 import java.util.function.Supplier;

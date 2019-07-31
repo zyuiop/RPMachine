@@ -10,7 +10,6 @@ that the server supported BukkitBridge as a DB backend, and supported two Minecr
 
 Because I revived this project mostly for personal use, and also because no-one will ever want to setup
 BukkitBridge to run this server, I dropped BukkitBridge from the dependencies, and dropped the backend from the code.
-Adapting it from an old commit shouldn't be too hard, but I really don't think it's useful.
 
 An other important update is that I dropped previous MC versions compatibility. I intend to play in 1.14.4 for now, and 
 so that's the version this plugin will support. If I ever update, the plugin will be updated and no backward compat will 

@@ -2,7 +2,7 @@ package net.zyuiop.rpmachine.projects.subcommands;
 
 import joptsimple.internal.Strings;
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.common.commands.SubCommand;
+import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;

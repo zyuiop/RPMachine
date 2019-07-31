@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.projects;
 
 import com.google.gson.Gson;
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
 import net.zyuiop.rpmachine.json.Json;
 import org.bukkit.Chunk;
@@ -16,27 +17,16 @@ import java.util.stream.Collectors;
 /**
  * @author zyuiop
  */
-public class ProjectsManager implements LegalEntityRepository<Project> {
-	private final File zonesFolder;
+public class ProjectsManager extends FileEntityStore<Project> implements LegalEntityRepository<Project> {
 	private final RPMachine rpMachine;
 	private ConcurrentHashMap<String, Project> zones = new ConcurrentHashMap<>();
 
 	public ProjectsManager(RPMachine plugin) {
-		this.rpMachine = plugin;
-		zonesFolder = new File(plugin.getDataFolder().getPath() + "/projects");
-		if (!zonesFolder.isDirectory())
-			return;
+		super(Project.class, "projects");
 
-		for (File file : zonesFolder.listFiles()) {
-			try {
-				BufferedReader reader = new BufferedReader(new FileReader(file));
-				Project project = Json.GSON.fromJson(reader, Project.class);
-				zones.put(project.getPlotName(), project);
-				plugin.getLogger().info("Loaded project " + project.getPlotName());
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
+		this.rpMachine = plugin;
+
+		super.load();
 	}
 
 	public Project getZone(String name) {
@@ -53,52 +43,12 @@ public class ProjectsManager implements LegalEntityRepository<Project> {
 
 		String fileName = project.getPlotName().replace("/", "_");
 		fileName = fileName.replace("\\", "_");
-		File file = new File(zonesFolder, fileName + ".json");
-		if (file.exists()) {
-			int i = 1;
-			while (i <= 100 && file.exists()) {
-				file = new File(zonesFolder, fileName + "(" + i + ").json");
-				i++;
-			}
 
-			if (file.exists())
-				return false;
-		}
-
-		try {
-			project.setFileName(file.getName());
-			this.zones.put(project.getPlotName(), project);
-			boolean create = file.createNewFile();
-			if (!create)
-				return false;
-			saveZone(project);
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
+		return super.createEntity(fileName, project);
 	}
 
 	public void saveZone(Project project) {
-		new Thread(() -> {
-			File file = new File(zonesFolder, project.getFileName());
-			if (!file.exists())
-				try {
-					file.createNewFile();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-			BufferedWriter writer = null;
-			try {
-				writer = new BufferedWriter(new FileWriter(file));
-				Json.GSON.toJson(project, Project.class, writer);
-				writer.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-		}).start();
+		super.saveEntity(project);
 	}
 
 	public Project getZoneHere(Location location) {
@@ -119,8 +69,7 @@ public class ProjectsManager implements LegalEntityRepository<Project> {
 	}
 
 	public void removeZone(Project project) {
-		File file = new File(zonesFolder, project.getFileName());
-		file.delete();
+		super.removeEntity(project);
 		zones.remove(project.getPlotName());
 	}
 
@@ -136,5 +85,10 @@ public class ProjectsManager implements LegalEntityRepository<Project> {
 	@Override
 	public String getTag(Project entity) {
 		return entity.getPlotName();
+	}
+
+	@Override
+	protected void loadedEntity(Project project) {
+		zones.put(project.getPlotName(), project);
 	}
 }

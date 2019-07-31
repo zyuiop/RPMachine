@@ -1,8 +1,8 @@
 package net.zyuiop.rpmachine.economy.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.common.commands.AbstractCommand;
-import net.zyuiop.rpmachine.economy.RoleToken;
+import net.zyuiop.rpmachine.commands.AbstractCommand;
+import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.permissions.EconomyPermissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

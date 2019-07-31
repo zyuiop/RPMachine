@@ -1,7 +1,5 @@
-package net.zyuiop.rpmachine.economy;
+package net.zyuiop.rpmachine.entities;
 
-import net.zyuiop.rpmachine.entities.LegalEntity;
-import net.zyuiop.rpmachine.entities.LegalEntityRepository;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import static org.bukkit.entity.EntityType.*;
 
+@Deprecated // TODO Try to split this
 public class PlayerListener implements Listener {
 
 	private final RPMachine plugin;

@@ -4,7 +4,7 @@ import joptsimple.internal.Strings;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.common.commands.SubCommand;
+import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.entities.LegalEntity;

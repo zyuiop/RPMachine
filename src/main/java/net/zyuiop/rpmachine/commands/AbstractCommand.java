@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.common.commands;
+package net.zyuiop.rpmachine.commands;
 
 import com.google.common.collect.Lists;
 import net.md_5.bungee.api.ChatColor;

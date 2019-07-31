@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.common.commands;
+package net.zyuiop.rpmachine.commands;
 
 import org.bukkit.entity.Player;
 

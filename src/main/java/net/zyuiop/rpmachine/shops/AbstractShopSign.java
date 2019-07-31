@@ -1,20 +1,23 @@
-package net.zyuiop.rpmachine.economy.shops;
+package net.zyuiop.rpmachine.shops;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
-import net.zyuiop.rpmachine.economy.RoleToken;
+import net.zyuiop.rpmachine.database.StoredEntity;
+import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import javax.annotation.Nullable;
 
-public abstract class AbstractShopSign implements Ownable {
+public abstract class AbstractShopSign implements Ownable, StoredEntity {
     protected VirtualLocation location;
     protected double price;
     protected String owner;
+    protected String fileName;
 
     public AbstractShopSign() {
 
@@ -72,6 +75,11 @@ public abstract class AbstractShopSign implements Ownable {
     protected abstract void doBreakSign(Player authorizedBreaker);
 
     public boolean breakSign(Player player) {
+        if (player == null) {
+            doBreakSign(null);
+            return true;
+        }
+
         RoleToken token = RPMachine.getPlayerRoleToken(player);
         if (owner.equals(token.getTag())) {
             if (!token.checkDelegatedPermission(ShopPermissions.DESTROY_SHOP))
@@ -80,6 +88,7 @@ public abstract class AbstractShopSign implements Ownable {
             doBreakSign(player);
             return true;
         }
+
         return false;
     }
 
@@ -88,4 +97,14 @@ public abstract class AbstractShopSign implements Ownable {
     abstract void clickPrivileged(Player player, RoleToken token, PlayerInteractEvent event);
 
     abstract void clickUser(Player player, PlayerInteractEvent event);
+
+    @Override
+    public String getFileName() {
+        return fileName;
+    }
+
+    @Override
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 }

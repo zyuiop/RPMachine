@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.projects;
 
-import net.zyuiop.rpmachine.common.commands.CompoundCommand;
+import net.zyuiop.rpmachine.commands.CompoundCommand;
 import net.zyuiop.rpmachine.projects.subcommands.*;
 
 
