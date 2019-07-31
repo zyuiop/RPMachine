@@ -7,6 +7,8 @@ import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.permissions.CityPermissions;
+import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
@@ -32,8 +34,8 @@ public class ClaimCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean requiresCouncilPrivilege() {
-        return true;
+    public Permission requiresPermission() {
+        return CityPermissions.EXPAND_CITY;
     }
 
     @Override

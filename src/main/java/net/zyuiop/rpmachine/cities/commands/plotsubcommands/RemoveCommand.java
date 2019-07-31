@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
+import net.zyuiop.rpmachine.permissions.CityPermissions;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -43,8 +44,18 @@ public class RemoveCommand implements CityMemberSubCommand {
             else {
                 if (plot.getOwner() != null && (args.length < 2 || !args[1].equalsIgnoreCase("override"))) {
                     player.sendMessage(ChatColor.RED + "Cette parcelle est habitée !");
-                    player.sendMessage(ChatColor.RED + "Pour supprimer quand même, ajoutez 'override' aux arguments de la commande.");
+
+                    if (city.hasPermission(player, CityPermissions.DELETE_OCCUPIED_PLOT))
+                        player.sendMessage(ChatColor.RED + "Pour supprimer quand même, ajoutez 'override' aux arguments de la commande.");
+                    return true;
+                } else if (plot.getOwner() != null && !city.hasPermission(player, CityPermissions.DELETE_OCCUPIED_PLOT)) {
+                    player.sendMessage(ChatColor.RED + "Vous ne pouvez pas supprimer une parcelle occupée.");
+                    return true;
+                } else if (plot.getOwner() == null && !city.hasPermission(player, CityPermissions.DELETE_EMPTY_PLOT)) {
+                    player.sendMessage(ChatColor.RED + "Vous ne pouvez pas supprimer une parcelle vide.");
+                    return true;
                 }
+
                 city.getPlots().remove(plot.getPlotName());
                 citiesManager.saveCity(city);
                 player.sendMessage(ChatColor.GREEN + "La parcelle a bien été supprimée.");

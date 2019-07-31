@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.permissions.CityPermissions;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -19,7 +20,7 @@ public class CouncilCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean requiresMayorPrivilege() {
+    public boolean requiresCouncilPrivilege() {
         return true;
     }
 
@@ -50,15 +51,15 @@ public class CouncilCommand implements CityMemberSubCommand {
             } else if (id == city.getMayor()) {
                 player.sendMessage(ChatColor.RED + "Impossible d'affecter le maire de la ville !");
             } else {
-                if (type.equalsIgnoreCase("add")) {
+                if (type.equalsIgnoreCase("add") && city.hasPermission(player, CityPermissions.ADD_COUNCIL)) {
                     city.addCouncil(id);
                     player.sendMessage(ChatColor.GREEN + "Ce joueur est désormais conseiller !");
                     citiesManager.saveCity(city);
-                } else {
+                } else if (city.hasPermission(player, CityPermissions.REMOVE_COUNCIL)) {
                     city.removeCouncil(id);
                     player.sendMessage(ChatColor.GREEN + "Ce joueur n'est désormais plus conseiller !");
                     citiesManager.saveCity(city);
-                }
+                } else player.sendMessage(ChatColor.RED + "Vous n'avez pas la permission de faire cela.");
             }
             return true;
         }

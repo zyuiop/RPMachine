@@ -3,6 +3,8 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.permissions.CityPermissions;
+import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -51,8 +53,7 @@ public class SetTypeCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean requiresCouncilPrivilege() {
-        return false;
+    public Permission requiresPermission() {
+        return CityPermissions.SET_PRIVACY;
     }
-
 }

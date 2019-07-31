@@ -3,6 +3,8 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.permissions.CityPermissions;
+import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -19,10 +21,9 @@ public class SimulateTaxesCommand implements CityMemberSubCommand {
         return "affiche les bénéfices prévus des taxes";
     }
 
-
     @Override
-    public boolean requiresCouncilPrivilege() {
-        return true;
+    public Permission requiresPermission() {
+        return CityPermissions.SET_TAXES;
     }
 
     @Override

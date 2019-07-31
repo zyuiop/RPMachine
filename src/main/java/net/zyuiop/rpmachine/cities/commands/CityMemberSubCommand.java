@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.cities.commands;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
@@ -24,6 +25,9 @@ public interface CityMemberSubCommand extends SubCommand {
         if (requiresCouncilPrivilege())
             return city.getCouncils().contains(player.getUniqueId()) || city.getMayor().equals(player.getUniqueId());
 
+        if (requiresPermission() != null)
+            return city.hasPermission(player, requiresPermission());
+
         return true;
     }
 
@@ -31,6 +35,10 @@ public interface CityMemberSubCommand extends SubCommand {
     default boolean run(Player player, String[] args) {
         City city = RPMachine.getInstance().getCitiesManager().getPlayerCity(player.getUniqueId());
         return run(player, city, args);
+    }
+
+    default Permission requiresPermission() {
+        return null;
     }
 
     default boolean requiresCouncilPrivilege() {

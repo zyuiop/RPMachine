@@ -9,6 +9,7 @@ import net.zyuiop.rpmachine.common.Area;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.Selection;
 import net.zyuiop.rpmachine.common.VirtualChunk;
+import net.zyuiop.rpmachine.permissions.CityPermissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -57,6 +58,14 @@ public class RedefineCommand implements CityMemberSubCommand {
 					Plot plot = city.getPlots().get(name);
 					if (plot == null) {
 						player.sendMessage(ChatColor.RED + "Il n'existe aucune parcelle de ce nom. Merci d'en créer une.");
+						return true;
+					}
+
+					if (plot.getOwner() != null && !city.hasPermission(player, CityPermissions.REDEFINE_OCCUPIED_PLOT)) {
+						player.sendMessage(ChatColor.RED + "Vous ne pouvez pas redéfinir de plot occupé.");
+						return true;
+					} else if (plot.getOwner() == null && !city.hasPermission(player, CityPermissions.REDEFINE_EMPTY_PLOT)) {
+						player.sendMessage(ChatColor.RED + "Vous ne pouvez pas redéfinir de plot vide.");
 						return true;
 					}
 

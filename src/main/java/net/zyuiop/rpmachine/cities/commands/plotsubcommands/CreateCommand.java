@@ -8,6 +8,8 @@ import net.zyuiop.rpmachine.common.Area;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.Selection;
 import net.zyuiop.rpmachine.common.VirtualChunk;
+import net.zyuiop.rpmachine.permissions.CityPermissions;
+import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -34,8 +36,8 @@ public class CreateCommand implements CityMemberSubCommand {
 	}
 
 	@Override
-	public boolean requiresCouncilPrivilege() {
-		return true;
+	public Permission requiresPermission() {
+		return CityPermissions.CREATE_PLOT;
 	}
 
 	@Override
