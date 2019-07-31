@@ -24,6 +24,11 @@ public class BukkitBridgeUUIDTranslator implements UUIDTranslator {
 	}
 
 	@Override
+	public void cachePair(UUID uuid, String playerName) {
+		// Drop
+	}
+
+	@Override
 	public String getName(UUID uuid, boolean b) {
 		return translator.getName(uuid, b);
 	}

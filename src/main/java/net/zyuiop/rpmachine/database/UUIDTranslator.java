@@ -19,4 +19,5 @@ public interface UUIDTranslator {
 		return getUUID(name, true);
 	}
 
+	void cachePair(UUID uuid, String playerName);
 }

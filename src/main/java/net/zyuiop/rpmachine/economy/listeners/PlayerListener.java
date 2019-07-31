@@ -41,6 +41,8 @@ public class PlayerListener implements Listener {
 			d.setMoney(EconomyManager.getBaseAmount());
 			event.setJoinMessage(ChatColor.YELLOW + "" + ChatColor.ITALIC + "Bienvenue à " + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "" + ChatColor.ITALIC + " !");
 		}
+
+		RPMachine.database().getUUIDTranslator().cachePair(event.getPlayer().getUniqueId(), event.getPlayer().getName());
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

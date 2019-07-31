@@ -34,6 +34,11 @@ public abstract class UUIDTranslatorBase implements UUIDTranslator {
 	protected abstract void save(String name, UUID uuid);
 
 	@Override
+	public void cachePair(UUID uuid, String playerName) {
+		this.save(playerName, uuid);
+	}
+
+	@Override
 	public UUID getUUID(String name, boolean allowMojangCheck) {
 		// If the player is online, give them their UUID.
 		// Remember, local data > remote data.
