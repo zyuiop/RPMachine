@@ -52,21 +52,21 @@ public class DirectionArrows {
             yaw += 360;
 
         if (yaw <= 22.5 || yaw > 337.5)
-            result = SymbolBank.ARROW_UP;
+            result = Symbols.ARROW_UP;
         else if (yaw <= 337.5 && yaw > 292.5)
-            result = SymbolBank.ARROW_UP_RIGHT;
+            result = Symbols.ARROW_UP_RIGHT;
         else if (yaw <= 292.5 && yaw > 247.5)
-            result = SymbolBank.ARROW_RIGHT;
+            result = Symbols.ARROW_RIGHT;
         else if (yaw <= 247.5 && yaw > 202.5)
-            result = SymbolBank.ARROW_DOWN_RIGHT;
+            result = Symbols.ARROW_DOWN_RIGHT;
         else if (yaw <= 202.5 && yaw > 157.5)
-            result = SymbolBank.ARROW_DOWN;
+            result = Symbols.ARROW_DOWN;
         else if (yaw <= 157.5 && yaw > 112.5)
-            result = SymbolBank.ARROW_DOWN_LEFT;
+            result = Symbols.ARROW_DOWN_LEFT;
         else if (yaw <= 112.5 && yaw > 67.5)
-            result = SymbolBank.ARROW_LEFT;
+            result = Symbols.ARROW_LEFT;
         else if (yaw <= 67.5 && yaw > 22.5)
-            result = SymbolBank.ARROW_UP_LEFT;
+            result = Symbols.ARROW_UP_LEFT;
         return result;
     }
 }

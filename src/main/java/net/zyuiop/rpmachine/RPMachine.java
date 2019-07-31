@@ -35,7 +35,7 @@ import java.util.*;
 public class RPMachine extends JavaPlugin {
 
 	private static RPMachine instance;
-	private DatabaseManager databaseManager; // TODO : init
+	private DatabaseManager databaseManager;
 	private TransactionsHelper transactionsHelper;
 	private EconomyManager economyManager;
 	private JobsManager jobsManager;
