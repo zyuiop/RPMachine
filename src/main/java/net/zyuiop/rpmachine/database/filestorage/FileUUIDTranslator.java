@@ -84,7 +84,7 @@ public class FileUUIDTranslator extends UUIDTranslatorBase {
 
 	@Override
 	protected void save(String name, UUID uuid) {
-		namesConf.set(name + ".uuid", uuid);
+		namesConf.set(name + ".uuid", uuid.toString());
 		namesConf.set(name + ".date", System.currentTimeMillis());
 
 		uuidsConf.set(uuid.toString() + ".name", name);
