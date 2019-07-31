@@ -23,12 +23,6 @@ commands:
    fly:
      description: Active/Désactive le fly
      usage: /fly
-   endsee:
-     description: Affiche l'enderchest
-     usage: /endsee <pseudo>
-   invsee:
-     description: Affiche l'inventaire
-     usage: /invsee <pseudo>
    info:
      description: Commande d'aide
      usage: /help

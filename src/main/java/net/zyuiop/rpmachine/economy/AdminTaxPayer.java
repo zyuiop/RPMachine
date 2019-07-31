@@ -10,10 +10,10 @@ import java.util.Map;
 /**
  * @author zyuiop
  */
-public class AdminAccountHolder implements TaxPayer, LandOwner, ShopOwner {
-	public static final AdminAccountHolder INSTANCE = new AdminAccountHolder();
+public class AdminTaxPayer implements TaxPayer, LandOwner, ShopOwner {
+	public static final AdminTaxPayer INSTANCE = new AdminTaxPayer();
 
-	private AdminAccountHolder() {
+	private AdminTaxPayer() {
 
 	}
 

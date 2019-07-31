@@ -4,30 +4,27 @@ package net.zyuiop.rpmachine.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandInventory implements CommandExecutor {
-	@Override
-	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-		if (!commandSender.hasPermission("rp.inventory")) {
-			commandSender.sendMessage(ChatColor.RED + "Vous n'avez pas la permission !");
-			return true;
-		}
+public class CommandInventory extends AbstractCommand {
+    public CommandInventory() {
+        super("invsee", "rp.inventory", "endsee");
+    }
 
-		if (strings.length < 1) {
-			commandSender.sendMessage(ChatColor.RED + "Erreur : pseudo manquant.");
-			return true;
-		}
+    @Override
+    protected boolean onPlayerCommand(Player player, String command, String[] strings) {
+        if (strings.length < 1) {
+            player.sendMessage(ChatColor.RED + "Erreur : pseudo manquant.");
+            return true;
+        }
 
-		Player target = Bukkit.getPlayerExact(strings[0]);
-		if (target == null) {
-			commandSender.sendMessage(ChatColor.RED + "Joueur introuvable.");
-			return true;
-		}
-		Player player = (Player) commandSender;
-		player.openInventory(target.getInventory());
-		return true;
-	}
+        Player target = Bukkit.getPlayerExact(strings[0]);
+        if (target == null) {
+            player.sendMessage(ChatColor.RED + "Joueur introuvable.");
+            return true;
+        }
+        player.openInventory(command.toLowerCase().equalsIgnoreCase("endsee") ? target.getEnderChest() : target.getInventory());
+        return true;
+    }
 }

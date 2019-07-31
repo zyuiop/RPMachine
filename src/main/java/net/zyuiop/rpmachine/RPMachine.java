@@ -71,6 +71,7 @@ public class RPMachine extends JavaPlugin {
 		new CityCommand(citiesManager);
 		new PlotCommand(citiesManager);
 		new ProjectCommand(projectsManager);
+		new CommandInventory(); // both invsee and endsee
 
 		// Classic commands
 		getCommand("pay").setExecutor(new CommandPay(this));
@@ -78,8 +79,6 @@ public class RPMachine extends JavaPlugin {
 		getCommand("fly").setExecutor(new CommandFly());
 		getCommand("home").setExecutor(new CommandHome(this));
 		getCommand("sethome").setExecutor(new CommandSethome());
-		getCommand("endsee").setExecutor(new CommandEnderchest());
-		getCommand("invsee").setExecutor(new CommandInventory());
 		getCommand("jobs").setExecutor(new CommandJob(this));
 		getCommand("spawn").setExecutor(new CommandSpawn());
 		getCommand("info").setExecutor(new CommandHelp());

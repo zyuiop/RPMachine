@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.economy.AdminAccountHolder;
+import net.zyuiop.rpmachine.economy.AdminTaxPayer;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
@@ -37,7 +37,7 @@ public class LeaveCommand implements SubCommand {
         } else if (!plot.getOwner().getLandOwner().canManagePlot(player)) {
             player.sendMessage(ChatColor.RED + "Ce projet ne vous appartient pas.");
         } else {
-            plot.setOwner(AdminAccountHolder.INSTANCE);
+            plot.setOwner(AdminTaxPayer.INSTANCE);
             manager.saveZone(plot);
             player.sendMessage(ChatColor.RED + "Vous n'êtes plus propriétaire de ce projet");
         }

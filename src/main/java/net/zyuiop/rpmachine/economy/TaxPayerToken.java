@@ -25,7 +25,7 @@ public class TaxPayerToken {
 
 	public TaxPayer getTaxPayer() {
 		if (isAdmin()) {
-			return AdminAccountHolder.INSTANCE;
+			return AdminTaxPayer.INSTANCE;
 		} else if (playerUuid != null) {
 			return RPMachine.database().getPlayerData(playerUuid);
 		} else if (cityName != null) {
@@ -131,7 +131,7 @@ public class TaxPayerToken {
 		TaxPayerToken tp = new TaxPayerToken();
 		if (owner instanceof PlayerData)
 			tp.setPlayerUuid(((PlayerData) owner).getUuid());
-		else if (owner instanceof AdminAccountHolder)
+		else if (owner instanceof AdminTaxPayer)
 			tp.setAdmin(true);
 		else if (owner instanceof City)
 			tp.setCityName(((City) owner).getCityName());
