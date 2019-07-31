@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -183,9 +184,9 @@ public class TaxPayerToken {
 		TaxPayerToken token = (TaxPayerToken) o;
 
 		if (admin != token.admin) return false;
-		if (playerUuid != null ? !playerUuid.equals(token.playerUuid) : token.playerUuid != null) return false;
-		if (cityName != null ? !cityName.equals(token.cityName) : token.cityName != null) return false;
-		return companyName != null ? companyName.equals(token.companyName) : token.companyName == null;
+		if (!Objects.equals(playerUuid, token.playerUuid)) return false;
+		if (!Objects.equals(cityName, token.cityName)) return false;
+		return Objects.equals(companyName, token.companyName);
 	}
 
 	@Override

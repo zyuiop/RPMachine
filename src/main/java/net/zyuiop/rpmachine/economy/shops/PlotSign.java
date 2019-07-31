@@ -6,6 +6,8 @@ import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.economy.TaxPayer;
+import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -93,7 +95,8 @@ public class PlotSign extends AbstractShopSign {
 		RPMachine.getInstance().getShopsManager().remove(this);
 	}
 
-	void clickOwner(Player player, PlayerInteractEvent event) {
+	@Override
+	void clickPrivileged(Player player, TaxPayerToken token, PlayerInteractEvent event) {
 	}
 
 	void clickUser(Player player, PlayerInteractEvent event) {
@@ -130,7 +133,12 @@ public class PlotSign extends AbstractShopSign {
 			price *= -1;
 		}
 
-		TaxPayer data = RPMachine.getPlayerRoleToken(player).getTaxPayer();
+		TaxPayerToken tt = RPMachine.getPlayerRoleToken(player);
+
+		if (!tt.checkDelegatedPermission(player, ShopPermissions.BUY_PLOTS))
+			return;
+
+		TaxPayer data = tt.getTaxPayer();
 		manager.withdrawMoneyWithBalanceCheck(data, price, (newAmount, difference) -> {
 			if (!difference) {
 				player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());

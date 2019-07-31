@@ -11,6 +11,7 @@ public enum CityPermissions implements DirectPermission {
     REDEFINE_OCCUPIED_PLOT("redéfinir des parcelles habitées"),
     DELETE_EMPTY_PLOT("supprimer des parcelles inhabitées"),
     DELETE_OCCUPIED_PLOT("supprimer des parcelles habitées"),
+    CHANGE_PLOT_MEMBERS("changer les membres d'une parcelle"),
 
     // Territory
     EXPAND_CITY("agrandir la ville"),

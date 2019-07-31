@@ -10,8 +10,7 @@ public enum ShopPermissions implements DelegatedPermission {
     CREATE_PLOT_SHOPS("créer des shops de vente de parcelles"),
     REFILL_SHOP("remplir un shop"),
     GET_SHOP_STOCK("récupérer le stock d'un shop"),
-    DESTROY_ITEM_SHOP("détruire un shop d'items"),
-    DESTROY_PLOT_SHOP("détruire un shop de parcelles"),
+    DESTROY_SHOP("détruire un shop"),
 
     // ActAs shops user
     BUY_ITEMS("acheter des items dans un shop"),

@@ -8,6 +8,7 @@ import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
 import net.zyuiop.rpmachine.economy.shops.ItemShopSign;
 import net.zyuiop.rpmachine.economy.shops.PlotSign;
 import net.zyuiop.rpmachine.economy.shops.ShopAction;
+import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -32,6 +33,8 @@ public class SignsListener implements Listener {
 	public void onSignPlace(SignChangeEvent event) {
 		if (!event.getPlayer().getWorld().getName().equals("world"))
 			return;
+
+		TaxPayerToken tt = RPMachine.getPlayerRoleToken(event.getPlayer());
 
 		String line0 = event.getLine(0);
 		if (line0 == null || line0.equalsIgnoreCase(""))
@@ -67,14 +70,17 @@ public class SignsListener implements Listener {
 					}
 
 					if (action.equalsIgnoreCase("achat")) {
+						if (!tt.checkDelegatedPermission(event.getPlayer(), ShopPermissions.CREATE_BUY_SHOPS))
+							return;
 						sign.setAction(ShopAction.BUY);
 					} else if (action.equalsIgnoreCase("vente")) {
+						if (!tt.checkDelegatedPermission(event.getPlayer(), ShopPermissions.CREATE_SELL_SHOPS))
+							return;
 						sign.setAction(ShopAction.SELL);
 					} else {
 						showSignsRules(event.getPlayer());
 					}
-
-					sign.setOwner(RPMachine.getPlayerRoleToken(event.getPlayer()));
+					sign.setOwner(tt);
 					event.getPlayer().sendMessage(ChatColor.AQUA + "[" + ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] " + ChatColor.GREEN + "Votre boutique est presque prête à l'emploi. Cliquez droit avec l'item que vous souhaitez vendre pour terminer la configuration.");
 
 					plugin.getShopsManager().create(sign);
@@ -86,6 +92,9 @@ public class SignsListener implements Listener {
 			String price = event.getLine(1);
 			String restrict = event.getLine(2);
 			Plot plot;
+
+			if (!tt.checkDelegatedPermission(event.getPlayer(), ShopPermissions.CREATE_PLOT_SHOPS))
+				return;
 
 			City city = RPMachine.getInstance().getCitiesManager().getCityHere(event.getBlock().getChunk());
 			if (city != null) {

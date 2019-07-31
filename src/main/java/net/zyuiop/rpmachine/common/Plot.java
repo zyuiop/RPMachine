@@ -16,6 +16,7 @@ public class Plot {
 	private Area area;
 	private TaxPayerToken owner = null;
 	private PlotSettings plotSettings = new PlotSettings();
+	// TODO: replace with TaxPayerToken
 	private CopyOnWriteArrayList<UUID> plotMembers = new CopyOnWriteArrayList<>();
 
 	public CopyOnWriteArrayList<UUID> getPlotMembers() {

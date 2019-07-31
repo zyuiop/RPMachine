@@ -1,10 +1,12 @@
 package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.permissions.PlotPermissions;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -26,6 +28,11 @@ public class LeaveCommand implements SubCommand {
     }
 
     @Override
+    public boolean canUse(Player player) {
+        return RPMachine.getPlayerRoleToken(player).checkDelegatedPermission(player, PlotPermissions.LEAVE_PLOT);
+    }
+
+    @Override
     public boolean run(Player player, String[] args) {
         if (args.length < 2) {
             player.sendMessage(ChatColor.RED + "Utilisation : /plot leave " + getUsage());
@@ -42,7 +49,7 @@ public class LeaveCommand implements SubCommand {
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
             return true;
-        } else if (!plot.getOwner().getLandOwner().canManagePlot(player)) {
+        } else if (!plot.getOwner().equals(RPMachine.getPlayerRoleToken(player))) {
             player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
             return true;
         } else {

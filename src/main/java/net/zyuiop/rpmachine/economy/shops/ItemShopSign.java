@@ -5,6 +5,7 @@ import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import net.zyuiop.rpmachine.economy.jobs.Job;
+import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -119,7 +120,7 @@ public class ItemShopSign extends AbstractShopSign {
 		RPMachine.getInstance().getShopsManager().remove(this);
 	}
 
-	void clickOwner(Player player, PlayerInteractEvent event) {
+	void clickPrivileged(Player player, TaxPayerToken tt, PlayerInteractEvent event) {
 		if (itemType == null) {
 			if (event.getItem() == null)
 				return;
@@ -127,6 +128,9 @@ public class ItemShopSign extends AbstractShopSign {
 			Material type = event.getItem().getType();
 
 			if (action == ShopAction.SELL) {
+				if (!tt.checkDelegatedPermission(player, ShopPermissions.CREATE_SELL_SHOPS))
+					return;
+
 				Job job = RPMachine.getInstance().getJobsManager().getJob(player.getUniqueId());
 				if (job == null) {
 					player.sendMessage(ChatColor.RED + "Vous n'avez pas de métier pour le moment.");
@@ -137,7 +141,8 @@ public class ItemShopSign extends AbstractShopSign {
 					player.sendMessage(ChatColor.RED + "Votre job ne vous permet pas de vendre cela.");
 					return;
 				}
-			}
+			} else if (!tt.checkDelegatedPermission(player, ShopPermissions.CREATE_BUY_SHOPS))
+				return;
 
 			itemType = type;
 			damage = event.getItem().getDurability();
@@ -157,6 +162,9 @@ public class ItemShopSign extends AbstractShopSign {
 
 			if (action == ShopAction.SELL && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				if (isItemValid(event.getItem())) {
+					if (!tt.checkDelegatedPermission(player, ShopPermissions.REFILL_SHOP))
+						return;
+
 					int amt = event.getItem().getAmount();
 					available += amt;
 					event.getPlayer().setItemInHand(new ItemStack(Material.AIR, 1));
@@ -165,6 +173,9 @@ public class ItemShopSign extends AbstractShopSign {
 					event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.YELLOW + "Il y a actuellement " + ChatColor.GOLD + this.available + ChatColor.YELLOW + " items dans la réserve de ce shop.");
 				}
 			} else {
+				if (!tt.checkDelegatedPermission(player, ShopPermissions.GET_SHOP_STOCK))
+					return;
+
 				if (player.getInventory().firstEmpty() == -1) {
 					player.sendMessage(ChatColor.RED + "Vous n'avez pas assez de place dans votre inventaire.");
 				} else {
@@ -186,6 +197,9 @@ public class ItemShopSign extends AbstractShopSign {
 		if (itemType == null) {
 			player.sendMessage(ChatColor.RED + "Le créateur de ce shop n'a pas terminé sa configuration.");
 		} else if (action == ShopAction.BUY) {
+			if (!token.checkDelegatedPermission(player, ShopPermissions.SELL_ITEMS))
+				return;
+
 			ItemStack click = event.getItem();
 			if (isItemValid(click) && click.getAmount() >= amountPerPackage) {
 				EconomyManager manager = RPMachine.getInstance().getEconomyManager();
@@ -203,6 +217,9 @@ public class ItemShopSign extends AbstractShopSign {
 				player.sendMessage(ChatColor.RED + "Vous devez cliquer sur la panneau en tenant " + ChatColor.AQUA + itemType.toString() + ChatColor.RED + " en main.");
 			}
 		} else if (action == ShopAction.SELL) {
+			if (!token.checkDelegatedPermission(player, ShopPermissions.BUY_ITEMS))
+				return;
+
 			if (available < amountPerPackage && !owner.isAdmin() /* Admin shop : unlimited resources */) {
 				player.sendMessage(ChatColor.RED + "Il n'y a pas assez d'items à vendre.");
 				return;
