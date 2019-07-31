@@ -189,7 +189,7 @@ public class ItemShopSign extends AbstractShopSign {
 			ItemStack click = event.getItem();
 			if (isItemValid(click) && click.getAmount() >= amountPerPackage) {
 				EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-				manager.transferMoneyBalanceCheck(token.getTaxPayer(), RPMachine.database().getPlayerData(player.getUniqueId()), price, result -> {
+				manager.transferMoneyBalanceCheck(owner.getTaxPayer(), token.getTaxPayer(), price, result -> {
 					if (result) {
 						available += amountPerPackage;
 						player.sendMessage(Messages.RECEIVED_MONEY.getMessage().replace("{AMT}", "" + price).replace("{FROM}", owner.displayable()));
@@ -212,7 +212,7 @@ public class ItemShopSign extends AbstractShopSign {
 			}
 
 			EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-			manager.transferMoneyBalanceCheck(RPMachine.database().getPlayerData(player.getUniqueId()), token.getTaxPayer(), price, result -> {
+			manager.transferMoneyBalanceCheck(token.getTaxPayer(), owner.getTaxPayer(), price, result -> {
 				if (result) {
 					player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + itemType.toString() + " pour " + price + " " + EconomyManager.getMoneyName());
 					available -= amountPerPackage;

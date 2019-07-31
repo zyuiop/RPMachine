@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.economy.shops;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.economy.ShopOwner;
+import net.zyuiop.rpmachine.economy.TaxPayer;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
