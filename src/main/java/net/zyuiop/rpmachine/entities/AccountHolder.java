@@ -20,4 +20,17 @@ public interface AccountHolder {
 	default boolean canPay(double amount) {
 		return getBalance() > amount;
 	}
+
+	default boolean transfer(double amount, AccountHolder target) {
+		if (amount < 0)
+			return false;
+
+		if (canPay(amount)) {
+			withdrawMoney(amount);
+			target.creditMoney(amount);
+			return true;
+		}
+
+		return false;
+	}
 }

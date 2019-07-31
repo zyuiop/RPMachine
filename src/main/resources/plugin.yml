@@ -5,12 +5,6 @@ api-version: "1.14"
 authors: [zyuiop]
 softdepend: [BukkitBridge]
 commands:
-   money:
-     description: Obtient votre monnaie actuelle
-     usage: /money
-   home:
-     description: Vous téléporte à votre home
-     usage: /home
    spawn:
      description: Vous téléporte au spawn du monde
      usage: /spawn
@@ -23,10 +17,6 @@ commands:
    info:
      description: Commande d'aide
      usage: /help
-   job:
-     description: Choisit un job
-     aliases: [jobs]
-     usage: /job [list] [info <nom>] [choose <nom>]
    bypass:
      description: Autorise le bypass des zones de villes
      usage: /bypass

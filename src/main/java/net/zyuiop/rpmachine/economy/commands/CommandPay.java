@@ -20,6 +20,8 @@ public class CommandPay extends AbstractCommand {
 			return true;
 		}
 
+		// TODO: handle payment to other entities
+
 		RoleToken transactionFrom = RPMachine.getPlayerRoleToken(player);
 		Player target = Bukkit.getPlayerExact(args[0]);
 		if (!transactionFrom.hasDelegatedPermission(EconomyPermissions.PAY_MONEY_TO_PLAYER)) {
@@ -31,13 +33,14 @@ public class CommandPay extends AbstractCommand {
 			player.sendMessage(ChatColor.RED + "Vous ne pouvez pas vous donner d'argent à vous même.");
 			return true;
 		} else {
-			new Thread(() -> {
-				Double val = Double.valueOf(args[1]);
-				if (val < 0)
-					val = -val;
+			double val = Double.parseDouble(args[1]);
+			if (val < 0) {
+				player.sendMessage(ChatColor.RED + "Impossible d'envoyer une somme négative.");
+				return true;
+			}
 
-				RPMachine.getInstance().getTransactionsHelper().transaction(player, transactionFrom, target, val);
-			}).start();
+			new Thread(() ->
+					RPMachine.getInstance().getTransactionsHelper().transaction(player, transactionFrom, target, val)).start();
 		}
 
 		return true;

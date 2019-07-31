@@ -122,13 +122,13 @@ public class RPMachine extends JavaPlugin {
         new CommandPay();
         new CommandActAs();
         new CommandShops();
+        new CommandMoney();
+        new CommandHome();
+        new CommandJob();
 
         // Classic commands
-        getCommand("money").setExecutor(new CommandMoney(this));
         getCommand("fly").setExecutor(new CommandFly());
-        getCommand("home").setExecutor(new CommandHome(this));
         getCommand("sethome").setExecutor(new CommandSethome());
-        getCommand("jobs").setExecutor(new CommandJob(this));
         getCommand("spawn").setExecutor(new CommandSpawn());
         getCommand("info").setExecutor(new CommandHelp());
         getCommand("runtaxes").setExecutor(new CommandRuntaxes(citiesManager));

@@ -1,6 +1,7 @@
 package net.zyuiop.rpmachine.economy.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.commands.AbstractCommand;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.jobs.Job;
 import net.zyuiop.rpmachine.shops.ItemShopSign;
@@ -10,19 +11,20 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandJob extends EconomixCommand {
-	public CommandJob(RPMachine economix) {
-		super(economix);
+public class CommandJob extends AbstractCommand {
+	public CommandJob() {
+		super("job", null, "jobs");
 	}
 
 	@Override
-	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+	public boolean onPlayerCommand(Player commandSender, String command, String[] strings) {
 		if (strings.length == 0) {
 			commandSender.sendMessage(ChatColor.GOLD + "Un métier définit les types d'items que vous pouvez vendre.");
 			commandSender.sendMessage(ChatColor.GOLD + "Listez les métiers disponibles : " + ChatColor.AQUA + "/jobs list");
 			commandSender.sendMessage(ChatColor.GOLD + "Informations sur un métier : " + ChatColor.AQUA + "/jobs info <métier>");
 			commandSender.sendMessage(ChatColor.GOLD + "Choisissez un métier : " + ChatColor.AQUA + "/jobs choose <métier>");
 		} else {
+			RPMachine rpMachine = RPMachine.getInstance();
 			String com = strings[0];
 			if (com.equalsIgnoreCase("list")) {
 				commandSender.sendMessage(ChatColor.GOLD + "Voici la liste des métiers que vous pouvez choisir :");
