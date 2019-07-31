@@ -11,10 +11,9 @@ import org.bukkit.Location;
 import java.io.*;
 
 public class FileShops extends ShopsManager {
+	private final File shopsDirectory = new File(RPMachine.getInstance().getDataFolder(), "shops");
 
 	public FileShops() throws IOException {
-		File shopsDirectory = new File(RPMachine.getInstance().getDataFolder(), "shops");
-
 		shopsDirectory.mkdirs();
 		shopsDirectory.mkdir();
 
@@ -44,7 +43,7 @@ public class FileShops extends ShopsManager {
 	private void write(File file, AbstractShopSign sign) {
 		try {
 			FileWriter writer = new FileWriter(file);
-			new Gson().toJson(sign, writer);
+			gson.toJson(sign, writer);
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {
@@ -53,27 +52,22 @@ public class FileShops extends ShopsManager {
 	}
 
 	public void load() {
-		File shopsDirectory = new File(RPMachine.getInstance().getDataFolder(), "/shops/");
-
-		shopsDirectory.mkdirs();
-		shopsDirectory.mkdir();
+		RPMachine.getInstance().getLogger().info("Loading shops...");
 
 		for (File file : shopsDirectory.listFiles()) {
+			RPMachine.getInstance().getLogger().info("... " + file);
 			if (file.isDirectory()) {
 				continue;
 			}
 
-			if (!file.getName().endsWith(".json")) {
-				continue;
-			}
-
-			Location loc = locFromString(file.getName().substring(0, -5));
 			try {
+				Location loc = locFromString(file.getName());
+
 				AbstractShopSign sign = gson.fromJson(new FileReader(file), AbstractShopSign.class);
 				sign.display();
 				Bukkit.getLogger().info("Loaded shop " + sign.getLocation().toString());
 				signs.put(loc, sign);
-			} catch (FileNotFoundException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

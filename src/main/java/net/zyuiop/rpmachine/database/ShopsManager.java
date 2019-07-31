@@ -19,10 +19,6 @@ public abstract class ShopsManager implements JsonDeserializer<AbstractShopSign>
 	protected final ConcurrentHashMap<Location, AbstractShopSign> signs = new ConcurrentHashMap<>();
 	protected final Gson gson = new GsonBuilder().registerTypeAdapter(AbstractShopSign.class, this).create();
 
-	public ShopsManager() {
-		load();
-	}
-
 	public final void create(AbstractShopSign sign) {
 		signs.put(sign.getLocation(), sign);
 		sign.display();
