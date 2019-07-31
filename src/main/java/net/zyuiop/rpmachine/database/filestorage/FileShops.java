@@ -43,7 +43,7 @@ public class FileShops extends ShopsManager {
 	private void write(File file, AbstractShopSign sign) {
 		try {
 			FileWriter writer = new FileWriter(file);
-			gson.toJson(sign, writer);
+			gson.toJson(sign, AbstractShopSign.class, writer);
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {

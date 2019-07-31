@@ -29,6 +29,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.google.common.collect.Lists;
 
+import java.io.IOException;
 import java.util.*;
 
 public class RPMachine extends JavaPlugin {
@@ -151,8 +152,9 @@ public class RPMachine extends JavaPlugin {
 		try {
 			Class<? extends DatabaseManager> clazz = (Class<? extends DatabaseManager>) Class.forName(managerClass);
 			databaseManager = clazz.newInstance();
+			databaseManager.load();
 			return true;
-		} catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException e) {
+		} catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException | IOException e) {
 			getLogger().severe("Cannot load Database Manager. Cancelling start.");
 			e.printStackTrace();
 			return false;

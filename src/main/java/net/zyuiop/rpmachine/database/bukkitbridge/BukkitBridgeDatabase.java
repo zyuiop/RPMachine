@@ -11,11 +11,16 @@ import net.zyuiop.rpmachine.database.UUIDTranslator;
  * @author zyuiop
  */
 public class BukkitBridgeDatabase implements DatabaseManager {
-	private final BukkitBridgeUUIDTranslator translator = new BukkitBridgeUUIDTranslator(BukkitBridge.get().getUUIDTranslator());
-	private final ShopsManager manager = new BukkitBridgeShops();
+	private BukkitBridgeUUIDTranslator translator;
+	private ShopsManager manager;
 
 	public BukkitBridgeDatabase() {
 
+	}
+
+	public void load() {
+		translator = new BukkitBridgeUUIDTranslator(BukkitBridge.get().getUUIDTranslator());
+		manager = new BukkitBridgeShops();
 	}
 
 	@Override

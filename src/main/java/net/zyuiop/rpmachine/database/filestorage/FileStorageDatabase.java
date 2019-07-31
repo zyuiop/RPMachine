@@ -14,11 +14,18 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author zyuiop
  */
 public class FileStorageDatabase implements DatabaseManager {
-	private final File playersDirectory;
-	private final FileUUIDTranslator translator = new FileUUIDTranslator();
-	private final FileShops fileShops = new FileShops();
+	private File playersDirectory;
+	private FileUUIDTranslator translator;
+	private FileShops fileShops;
 
 	public FileStorageDatabase() throws IOException {
+	}
+
+	@Override
+	public void load() throws IOException {
+		translator = new FileUUIDTranslator();
+		fileShops = new FileShops();
+
 		playersDirectory = new File(RPMachine.getInstance().getDataFolder(), "players");
 
 		playersDirectory.mkdirs();
