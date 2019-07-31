@@ -22,7 +22,7 @@ public class CitiesManager {
 
 	private final RPMachine rpMachine;
 	private ConcurrentHashMap<String, City> cities = new ConcurrentHashMap<>();
-	private TreeSet<CityFloor> floors = new TreeSet<>(new CitiesComparator());
+	private TreeSet<CityFloor> floors = new TreeSet<>((floor1, floor2) -> Integer.compare(floor2.getInhabitants(), floor1.getInhabitants()));
 	private HashSet<UUID> bypass = new HashSet<>();
 	private int creationPrice;
 	private int increaseFactor;

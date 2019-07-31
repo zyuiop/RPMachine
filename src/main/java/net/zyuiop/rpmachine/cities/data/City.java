@@ -15,6 +15,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+// TODO: finish implementing loans
 public class City implements TaxPayer, LandOwner, ShopOwner {
 	private String cityName;
 	private VirtualLocation spawn;

@@ -3,7 +3,6 @@ package net.zyuiop.rpmachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.SelectionManager;
 import net.zyuiop.rpmachine.cities.commands.*;
-import net.zyuiop.rpmachine.cities.commands.citysubcommands.CreateCityCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.database.DatabaseManager;

@@ -8,6 +8,7 @@ import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.*;
 import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,20 +29,10 @@ import java.util.UUID;
 public class CitiesListener implements Listener {
 
 	private final CitiesManager manager;
-	private final HashSet<EntityType> allowHurt;
 	//private final HashSet<Material> checkInteract;
 	public CitiesListener(CitiesManager manager) {
 		this.manager = manager;
-		this.allowHurt = new HashSet<>();
-		allowHurt.add(EntityType.SKELETON);
-		allowHurt.add(EntityType.WITHER);
-		allowHurt.add(EntityType.SLIME);
-		allowHurt.add(EntityType.ZOMBIE);
-		allowHurt.add(EntityType.PIG_ZOMBIE);
-		allowHurt.add(EntityType.ENDERMAN);
-		allowHurt.add(EntityType.SPIDER);
-		allowHurt.add(EntityType.CAVE_SPIDER);
-		allowHurt.add(EntityType.WITCH);
+
 		/*checkInteract = new HashSet<>();
 		checkInteract.add(Material.ACACIA_DOOR);
 		checkInteract.add(Material.BIRCH_DOOR);
@@ -158,7 +149,7 @@ public class CitiesListener implements Listener {
 
 	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageByEntityEvent event) {
-		if (event.getDamager() instanceof Player && !allowHurt.contains(event.getEntityType()))
+		if (event.getDamager() instanceof Player && !(event.getEntity() instanceof Monster))
 			event.setCancelled(!manager.canBuild((Player) event.getDamager(), event.getEntity().getLocation()));
 	}
 

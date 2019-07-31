@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.commands;
+package net.zyuiop.rpmachine.cities.commands;
 
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CitiesCommand;
