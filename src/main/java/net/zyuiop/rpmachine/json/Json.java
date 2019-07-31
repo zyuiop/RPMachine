@@ -11,7 +11,7 @@ import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 public class Json {
     public static final Gson GSON =
             new GsonBuilder()
-                    .registerTypeHierarchyAdapter(AbstractShopSign.class, new ShopSerializer())
+                    .registerTypeAdapter(AbstractShopSign.class, new ShopSerializer())
                     .registerTypeHierarchyAdapter(DelegatedPermission.class, new PermissionSerializer())
                     .create();
 

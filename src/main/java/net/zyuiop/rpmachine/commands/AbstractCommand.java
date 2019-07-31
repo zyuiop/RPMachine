@@ -11,24 +11,32 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
  * @author Louis Vialar
  */
 public abstract class AbstractCommand implements TabCompleter, CommandExecutor {
-    private static Throwable instanciationContext = null;
+    private static Map<Class<? extends AbstractCommand>, Throwable> instanciationContexts = new HashMap<>();
     private final String requiredPerms;
+
+    private void checkUnique(String command) {
+        if (instanciationContexts.containsKey(getClass())) {
+            Bukkit.getLogger().log(Level.SEVERE, "Failed registering command (already instanciated) " + command + ". Previously registered at ", instanciationContexts.get(getClass()));
+            throw new IllegalStateException("Command already instanciated.");
+        } else {
+            instanciationContexts.put(getClass(), new Throwable());
+        }
+    }
 
     protected AbstractCommand(String command, String permission, String... aliases) {
         this.requiredPerms = permission;
 
-        if (instanciationContext != null) {
-            Bukkit.getLogger().log(Level.SEVERE, "Failed registering command (already instanciated) " + command + ". Previously registered at ", instanciationContext);
-            throw new IllegalStateException("Command already instanciated.");
-        }
-        
+        checkUnique(command);
+
         try {
             JavaPlugin plugin = RPMachine.getInstance();
             Class<PluginCommand> clazz = PluginCommand.class;
@@ -41,8 +49,6 @@ public abstract class AbstractCommand implements TabCompleter, CommandExecutor {
             ((CraftServer) Bukkit.getServer()).getCommandMap().register(plugin.getName(), com);
 
             Bukkit.getLogger().info("Registered command " + command);
-
-            instanciationContext = new Throwable();
         } catch (ReflectiveOperationException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "Failed registering command " + command, ex);
         }
@@ -90,9 +96,9 @@ public abstract class AbstractCommand implements TabCompleter, CommandExecutor {
     /**
      * Overide to set the tabComplete result
      *
-     * @param player The player who sent the command
+     * @param player  The player who sent the command
      * @param command The command sent
-     * @param args The already defined arguments
+     * @param args    The already defined arguments
      * @return A list of possible completions for the last given argument
      */
     protected List<String> onPlayerTabComplete(Player player, String command, String... args) {
@@ -102,9 +108,9 @@ public abstract class AbstractCommand implements TabCompleter, CommandExecutor {
     /**
      * Overide to set the tabComplete result
      *
-     * @param player The player who sent the command
+     * @param player  The player who sent the command
      * @param command The command sent
-     * @param args The already defined arguments
+     * @param args    The already defined arguments
      * @return A list of possible completions for the last given argument
      */
     protected List<String> onNonPlayerTabComplete(CommandSender player, String command, String... args) {

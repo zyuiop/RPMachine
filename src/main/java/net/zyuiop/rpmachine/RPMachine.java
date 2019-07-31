@@ -82,11 +82,8 @@ public class RPMachine extends JavaPlugin {
         instance = this;
 
         saveDefaultConfig();
-        if (!loadDatabase()) {
-            setEnabled(false);
-            return;
-        }
 
+        // Load useful and non db dependent managers
         this.economyManager = new EconomyManager();
         this.transactionsHelper = new TransactionsHelper(this.economyManager);
         this.jobsManager = new JobsManager(this);
@@ -95,12 +92,19 @@ public class RPMachine extends JavaPlugin {
         this.scoreboardManager = new ScoreboardManager(this);
         this.projectsManager = new ProjectsManager(this);
 
+        // Load DB
+        if (!loadDatabase()) {
+            setEnabled(false);
+            return;
+        }
+
         // Auto-registering commands
         new CityCommand(citiesManager);
         new PlotCommand(citiesManager);
         new ProjectCommand(projectsManager);
         new CommandInventory(); // both invsee and endsee
         new CommandPay();
+        new CommandActAs();
 
         // Classic commands
         getCommand("money").setExecutor(new CommandMoney(this));
@@ -113,7 +117,6 @@ public class RPMachine extends JavaPlugin {
         getCommand("runtaxes").setExecutor(new CommandRuntaxes(citiesManager));
         getCommand("bypass").setExecutor(new CommandBypass(citiesManager));
         getCommand("myshops").setExecutor(new CommandShops(this));
-        getCommand("actas").setExecutor(new CommandActAs());
 
         Bukkit.getPluginManager().registerEvents(selectionManager, this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);

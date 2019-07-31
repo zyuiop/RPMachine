@@ -164,12 +164,12 @@ public class City implements LegalEntity {
 	}
 
 	@Override
-	public String displayable() {
+	public String shortDisplayable() {
 		return ChatColor.DARK_AQUA + getCityName();
 	}
 
 	@Override
-	public String shortDisplayable() {
+	public String displayable() {
 		return ChatColor.AQUA + "(Ville) " + ChatColor.DARK_AQUA + getCityName();
 	}
 
@@ -358,7 +358,17 @@ public class City implements LegalEntity {
 		save();
 	}
 
-	public static class CityTaxPayer {
+	public boolean canActAs(Player p) {
+		if (mayor.equals(p.getUniqueId()))
+			return true;
+
+		if (councils.containsKey(p.getUniqueId()))
+			return true;
+
+		return false;
+	}
+
+    public static class CityTaxPayer {
 		private Map<String, Double> unpaidTaxes = new HashMap<>();
 		private Map<String, Date> lastPaidTaxes = new HashMap<>();
 

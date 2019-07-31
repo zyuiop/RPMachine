@@ -73,7 +73,7 @@ public class CompoundCommand extends AbstractCommand {
             return true;
         }
 
-        SubCommand subCommand = subCommands.get(command);
+        SubCommand subCommand = subCommands.get(args[0].toLowerCase());
         if (subCommand == null) {
             player.sendMessage(ChatColor.RED + "Commande introuvable. Essayez " + ChatColor.DARK_RED + "/" + command + " help" + ChatColor.RED + " pour plus d'informations.");
             return false;
@@ -93,16 +93,16 @@ public class CompoundCommand extends AbstractCommand {
     }
 
     protected void printHelp(Player player) {
-        subCommands.values().stream()
-                .filter(SubCommand::hasHelp)
-                .filter(subCommand -> subCommand.canUse(player))
+        subCommands.entrySet().stream()
+                .filter(p -> p.getValue().hasHelp())
+                .filter(subCommand -> subCommand.getValue().canUse(player))
                 .forEach(subCommand -> {
                     StringBuilder help = new StringBuilder("§e/").append(commandName);
-                    String usage = subCommand.getUsage();
-                    String helpText = subCommand.getDescription();
+                    String usage = subCommand.getValue().getUsage();
+                    String helpText = subCommand.getValue().getDescription();
 
                     if (usage != null) {
-                        help.append(" ").append(usage);
+                        help.append(" ").append(subCommand.getKey()).append(" ").append(usage);
                     }
 
                     if (helpText != null) {

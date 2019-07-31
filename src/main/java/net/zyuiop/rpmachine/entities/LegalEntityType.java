@@ -12,15 +12,17 @@ import java.util.function.Supplier;
  * @author Louis Vialar
  */
 public enum LegalEntityType {
-    PLAYER(PlayerData.class, RPMachine::database),
-    CITY(City.class, () -> RPMachine.getInstance().getCitiesManager()),
-    PROJECT(Project.class, () -> RPMachine.getInstance().getProjectsManager()),
-    ADMIN(AdminLegalEntity.class, () -> AdminLegalEntity.INSTANCE);
+    PLAYER(PlayerData.class, RPMachine::database, "joueur"),
+    CITY(City.class, () -> RPMachine.getInstance().getCitiesManager(), "ville"),
+    PROJECT(Project.class, () -> RPMachine.getInstance().getProjectsManager(), "projet"),
+    ADMIN(AdminLegalEntity.class, () -> AdminLegalEntity.INSTANCE, "admin");
 
     private final EntityAndRepoHolder<? extends LegalEntity> holder;
+    public final String name;
 
-    <T extends LegalEntity> LegalEntityType(Class<T> clazz, Supplier<LegalEntityRepository<T>> repository) {
+    <T extends LegalEntity> LegalEntityType(Class<T> clazz, Supplier<LegalEntityRepository<T>> repository, String name) {
         this.holder = new EntityAndRepoHolder<>(clazz, repository);
+        this.name = name;
     }
 
     public static LegalEntityType get(LegalEntity entity) {
