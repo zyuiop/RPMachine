@@ -5,8 +5,7 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Plot;
-import net.zyuiop.rpmachine.economy.TaxPayer;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.economy.RoleToken;
 import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
 import org.bukkit.ChatColor;
@@ -33,10 +32,10 @@ public class MembersCommand implements SubCommand {
 
     @Override
     public boolean canUse(Player player) {
-        TaxPayerToken tt = RPMachine.getPlayerRoleToken(player);
+        RoleToken tt = RPMachine.getPlayerRoleToken(player);
 
-        return tt.hasDelegatedPermission(player, PlotPermissions.ADD_NEW_MEMBER) ||
-                tt.hasDelegatedPermission(player, PlotPermissions.REMOVE_MEMBER) || (
+        return tt.hasDelegatedPermission(PlotPermissions.ADD_NEW_MEMBER) ||
+                tt.hasDelegatedPermission(PlotPermissions.REMOVE_MEMBER) || (
                         citiesManager.getPlayerCity(player) != null && citiesManager.getPlayerCity(player).hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS));
     }
 
@@ -54,7 +53,7 @@ public class MembersCommand implements SubCommand {
         }
 
         Plot plot = city.getPlots().get(args[1]);
-        TaxPayerToken tt = RPMachine.getPlayerRoleToken(player);
+        RoleToken tt = RPMachine.getPlayerRoleToken(player);
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
         } else if (!city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) && !plot.getOwner().equals(tt)) {
@@ -64,7 +63,7 @@ public class MembersCommand implements SubCommand {
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
             } else {
-                if (args[2].equalsIgnoreCase("add") && (city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) || tt.checkDelegatedPermission(player, PlotPermissions.ADD_NEW_MEMBER))) {
+                if (args[2].equalsIgnoreCase("add") && (city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) || tt.checkDelegatedPermission(PlotPermissions.ADD_NEW_MEMBER))) {
                     if (plot.getPlotMembers().contains(id)) {
                         player.sendMessage(ChatColor.GREEN + "Ce joueur est déjà dans la parcelle.");
                         return true;
@@ -72,7 +71,7 @@ public class MembersCommand implements SubCommand {
                     plot.getPlotMembers().add(id);
                     citiesManager.saveCity(city);
                     player.sendMessage(ChatColor.GREEN + "Le joueur a été ajouté dans la parcelle.");
-                } else if (args[2].equalsIgnoreCase("remove") && (city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) || tt.checkDelegatedPermission(player, PlotPermissions.REMOVE_MEMBER))) {
+                } else if (args[2].equalsIgnoreCase("remove") && (city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) || tt.checkDelegatedPermission(PlotPermissions.REMOVE_MEMBER))) {
                     if (!plot.getPlotMembers().contains(id)) {
                         player.sendMessage(ChatColor.GREEN + "Ce joueur n'est pas dans la parcelle.");
                         return true;

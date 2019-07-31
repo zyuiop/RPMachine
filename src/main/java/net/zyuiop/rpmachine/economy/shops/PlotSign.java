@@ -5,8 +5,8 @@ import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
-import net.zyuiop.rpmachine.economy.TaxPayer;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.economy.RoleToken;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.*;
@@ -20,163 +20,160 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class PlotSign extends AbstractShopSign {
-	protected String plotName;
-	protected String cityName;
-	protected boolean citizensOnly;
+    protected String plotName;
+    protected String cityName;
+    protected boolean citizensOnly;
 
-	public PlotSign() {
-		super();
-	}
+    public PlotSign() {
+        super();
+    }
 
-	public PlotSign(Location location, String regionName, boolean citizensOnly, String cityName) {
-		super(location);
-		this.plotName = regionName;
-		this.citizensOnly = citizensOnly;
-		this.cityName = cityName;
-	}
+    public PlotSign(Location location, String regionName, boolean citizensOnly, String cityName) {
+        super(location);
+        this.plotName = regionName;
+        this.citizensOnly = citizensOnly;
+        this.cityName = cityName;
+    }
 
-	public String getPlotName() {
-		return plotName;
-	}
+    public static void launchfw(final Location loc, final FireworkEffect effect) {
+        ReflectionUtils.getVersion().launchfw(loc, effect);
+    }
 
-	public void setPlotName(String plotName) {
-		this.plotName = plotName;
-	}
+    public String getPlotName() {
+        return plotName;
+    }
 
-	public String getCityName() {
-		return cityName;
-	}
+    public void setPlotName(String plotName) {
+        this.plotName = plotName;
+    }
 
-	public void setCityName(String cityName) {
-		this.cityName = cityName;
-	}
+    public String getCityName() {
+        return cityName;
+    }
 
-	public boolean isCitizensOnly() {
-		return citizensOnly;
-	}
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
 
-	public void setCitizensOnly(boolean citizensOnly) {
-		this.citizensOnly = citizensOnly;
-	}
+    public boolean isCitizensOnly() {
+        return citizensOnly;
+    }
 
-	public void display() {
-		Block block = location.getLocation().getBlock();
-		if (block.getState() instanceof Sign) {
-			Sign sign = (Sign) block.getState();
-			sign.setLine(0, ChatColor.GREEN + "[Terrain]");
-			sign.setLine(1, ChatColor.BLUE + "Prix : " + price);
-			if (citizensOnly) {
-				sign.setLine(2, ChatColor.RED + "Citoyens");
-			} else {
-				sign.setLine(2, ChatColor.GREEN + "Public");
-			}
-			sign.setLine(3, ChatColor.GOLD + "> Acheter <");
+    public void setCitizensOnly(boolean citizensOnly) {
+        this.citizensOnly = citizensOnly;
+    }
 
-			Bukkit.getScheduler().runTask(RPMachine.getInstance(), (Runnable) sign::update);
-		} else {
-			Bukkit.getLogger().info("Error : sign is not a sign, at " + location.toString());
-		}
-	}
+    public void display() {
+        Block block = location.getLocation().getBlock();
+        if (block.getState() instanceof Sign) {
+            Sign sign = (Sign) block.getState();
+            sign.setLine(0, ChatColor.GREEN + "[Terrain]");
+            sign.setLine(1, ChatColor.BLUE + "Prix : " + price);
+            if (citizensOnly) {
+                sign.setLine(2, ChatColor.RED + "Citoyens");
+            } else {
+                sign.setLine(2, ChatColor.GREEN + "Public");
+            }
+            sign.setLine(3, ChatColor.GOLD + "> Acheter <");
 
-	public void rightClick(Player player, PlayerInteractEvent event) {
-		clickUser(player, event);
-		RPMachine.getInstance().getShopsManager().save(this);
-	}
+            Bukkit.getScheduler().runTask(RPMachine.getInstance(), (Runnable) sign::update);
+        } else {
+            Bukkit.getLogger().info("Error : sign is not a sign, at " + location.toString());
+        }
+    }
 
-	@Override
-	protected void doBreakSign(Player ignored) {
-		location.getLocation().getBlock().breakNaturally();
-		RPMachine.getInstance().getShopsManager().remove(this);
-	}
+    public void rightClick(Player player, PlayerInteractEvent event) {
+        clickUser(player, event);
+        RPMachine.getInstance().getShopsManager().save(this);
+    }
 
-	@Override
-	public void breakSign() {
-		location.getLocation().getBlock().breakNaturally();
-		RPMachine.getInstance().getShopsManager().remove(this);
-	}
+    @Override
+    protected void doBreakSign(Player ignored) {
+        location.getLocation().getBlock().breakNaturally();
+        RPMachine.getInstance().getShopsManager().remove(this);
+    }
 
-	@Override
-	void clickPrivileged(Player player, TaxPayerToken token, PlayerInteractEvent event) {
-	}
+    @Override
+    public void breakSign() {
+        location.getLocation().getBlock().breakNaturally();
+        RPMachine.getInstance().getShopsManager().remove(this);
+    }
 
-	void clickUser(Player player, PlayerInteractEvent event) {
-		City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
-		if (city == null) {
-			player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la ville n'existe pas.");
-			return;
-		}
+    @Override
+    void clickPrivileged(Player player, RoleToken token, PlayerInteractEvent event) {
+    }
 
-		Plot plot = city.getPlots().get(plotName);
-		if (plot == null) {
-			player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la parcelle n'existe pas.");
-			return;
-		}
+    void clickUser(Player player, PlayerInteractEvent event) {
+        City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
+        if (city == null) {
+            player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la ville n'existe pas.");
+            return;
+        }
 
-		if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
-			player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
-			player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
-			player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs²");
-			player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().getVolume() + " blocs³");
-			player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " $");
-			return;
-		}
+        Plot plot = city.getPlots().get(plotName);
+        if (plot == null) {
+            player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la parcelle n'existe pas.");
+            return;
+        }
 
-		EconomyManager manager = RPMachine.getInstance().getEconomyManager();
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
+            player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
+            player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
+            player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs²");
+            player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().getVolume() + " blocs³");
+            player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " $");
+            return;
+        }
 
-		if (citizensOnly && !city.getInhabitants().contains(player.getUniqueId())) {
-			player.sendMessage(ChatColor.RED + "Vous n'êtes pas citoyen de cette ville.");
-			return;
-		}
+        EconomyManager manager = RPMachine.getInstance().getEconomyManager();
 
-		if (price < 0) {
-			price *= -1;
-		}
+        if (citizensOnly && !city.getInhabitants().contains(player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "Vous n'êtes pas citoyen de cette ville.");
+            return;
+        }
 
-		TaxPayerToken tt = RPMachine.getPlayerRoleToken(player);
+        if (price < 0) {
+            price *= -1;
+        }
 
-		if (!tt.checkDelegatedPermission(player, ShopPermissions.BUY_PLOTS))
-			return;
+        RoleToken tt = RPMachine.getPlayerRoleToken(player);
 
-		TaxPayer data = tt.getTaxPayer();
-		manager.withdrawMoneyWithBalanceCheck(data, price, (newAmount, difference) -> {
-			if (!difference) {
-				player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
-			} else {
-				if (getOwner().getCityName() == null) {
-					// Pas une ville, on check.
-					if (plot.getOwner() == null || !plot.getOwner().equals(getOwner())) {
-						// Un joueur peut pas vendre une parcelle random
-						breakSign(null);
-						player.sendMessage(ChatColor.RED + "Erreur : cette parcelle n'appartient plus à " + getOwner().shortDisplayable());
-						Bukkit.getLogger().info("Old plot sign found : " + plot.getOwner() + " / sign " + getOwner());
-						return;
-					}
-				}
+        if (!tt.checkDelegatedPermission(ShopPermissions.BUY_PLOTS))
+            return;
 
-				if (plot.getOwner() == null) {
-					city.setMoney(city.getMoney() + price);
-				} else {
-					// On crédite à l'owner du panneau
-					getOwner().getTaxPayer().creditMoney(price * 0.8D);
-					city.creditMoney(price * 0.2D);
-				}
+        LegalEntity data = tt.getLegalEntity();
+        manager.withdrawMoneyWithBalanceCheck(data, price, (newAmount, difference) -> {
+            if (!difference) {
+                player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
+            } else {
+                if (plot.ownerTag() != null && ownerTag() != null && !ownerTag().equals(plot.ownerTag())) {
+                    // Un joueur peut pas vendre une parcelle random
+                    breakSign(null);
+                    player.sendMessage(ChatColor.RED + "Erreur : cette parcelle n'appartient plus à " + owner().shortDisplayable());
+                    Bukkit.getLogger().info("Old plot sign found : " + plot.getOwner() + " / sign " + ownerTag());
+                    return;
+                }
 
-				plot.setOwner(data);
-				plot.setPlotMembers(new CopyOnWriteArrayList<>());
+                if (plot.getOwner() == null) {
+                    city.creditMoney(price);
+                } else {
+                    // On crédite à l'owner du panneau
+                    owner().creditMoney(price * 0.8D);
+                    city.creditMoney(price * 0.2D);
+                }
 
-				city.getPlots().put(plotName, plot);
-				RPMachine.getInstance().getCitiesManager().saveCity(city);
-				Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
-					doBreakSign(null);
-					launchfw(location.getLocation(), FireworkEffect.builder().withColor(Color.WHITE, Color.GRAY, Color.BLACK).with(FireworkEffect.Type.STAR).build());
-				});
-				player.sendMessage(ChatColor.GREEN + "Vous êtes désormais propriétaire de cette parcelle.");
-			}
-		});
-	}
+                plot.setOwner(data);
+                plot.setPlotMembers(new CopyOnWriteArrayList<>());
 
-	public static void launchfw(final Location loc, final FireworkEffect effect) {
-		ReflectionUtils.getVersion().launchfw(loc, effect);
-	}
+                city.getPlots().put(plotName, plot);
+                RPMachine.getInstance().getCitiesManager().saveCity(city);
+                Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
+                    doBreakSign(null);
+                    launchfw(location.getLocation(), FireworkEffect.builder().withColor(Color.WHITE, Color.GRAY, Color.BLACK).with(FireworkEffect.Type.STAR).build());
+                });
+                player.sendMessage(ChatColor.GREEN + "Vous êtes désormais propriétaire de cette parcelle.");
+            }
+        });
+    }
 }

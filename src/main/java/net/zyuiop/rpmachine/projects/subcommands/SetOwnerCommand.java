@@ -3,7 +3,7 @@ package net.zyuiop.rpmachine.projects.subcommands;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.economy.AdminTaxPayer;
+import net.zyuiop.rpmachine.economy.AdminLegalEntity;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
@@ -51,7 +51,7 @@ public class SetOwnerCommand implements SubCommand {
         }
 
         if (ownerType.equalsIgnoreCase("admin")) {
-            project.setOwner(AdminTaxPayer.INSTANCE);
+            project.setOwner(AdminLegalEntity.INSTANCE);
         } else if (ownerData == null) {
             player.sendMessage(ChatColor.RED + "Vous devez fournir le nom d'une entité.");
             return false;

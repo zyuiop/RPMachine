@@ -7,7 +7,7 @@ import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.economy.EconomyManager;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -47,7 +47,8 @@ public class InfoCommand implements SubCommand {
                 player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
                 player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs");
                 player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " " + EconomyManager.getMoneyName());
-                TaxPayerToken proprio = plot.getOwner();
+
+                LegalEntity proprio = plot.owner();
                 if (proprio == null) {
                     player.sendMessage(ChatColor.YELLOW + "Propriétaire : " + ChatColor.RED + "Aucun");
                 } else {

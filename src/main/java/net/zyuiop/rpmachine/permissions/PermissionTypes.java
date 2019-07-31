@@ -12,13 +12,13 @@ public enum PermissionTypes {
     PROJECTS(ProjectPermissions.class),
     SHOPS(ShopPermissions.class);
 
-    private final Class<? extends Enum<? extends DelegatedPermission>> clazz;
+    private final Class<? extends Enum<? extends Permission>> clazz;
 
-    PermissionTypes(Class<? extends Enum<? extends DelegatedPermission>> clazz) {
+    PermissionTypes(Class<? extends Enum<? extends Permission>> clazz) {
         this.clazz = clazz;
     }
 
-    public static PermissionTypes get(DelegatedPermission permission) throws NoClassDefFoundError {
+    public static PermissionTypes get(Permission permission) throws NoClassDefFoundError {
         for (PermissionTypes v : values())
             if (v.clazz.isInstance(permission))
                 return v;
@@ -26,7 +26,7 @@ public enum PermissionTypes {
         throw new NoClassDefFoundError(permission.getClass().getName());
     }
 
-    public DelegatedPermission getPermission(String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return (DelegatedPermission) clazz.getMethod("valueOf", String.class).invoke(null, name);
+    public Permission getPermission(String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        return (Permission) clazz.getMethod("valueOf", String.class).invoke(null, name);
     }
 }

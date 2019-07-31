@@ -1,20 +1,28 @@
 package net.zyuiop.rpmachine;
 
+import com.google.common.collect.Lists;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.SelectionManager;
-import net.zyuiop.rpmachine.cities.commands.*;
+import net.zyuiop.rpmachine.cities.commands.CityCommand;
+import net.zyuiop.rpmachine.cities.commands.CommandBypass;
+import net.zyuiop.rpmachine.cities.commands.CommandRuntaxes;
+import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.database.ShopsManager;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.RoleToken;
 import net.zyuiop.rpmachine.economy.TransactionsHelper;
-import net.zyuiop.rpmachine.economy.commands.*;
+import net.zyuiop.rpmachine.economy.commands.CommandJob;
+import net.zyuiop.rpmachine.economy.commands.CommandMoney;
+import net.zyuiop.rpmachine.economy.commands.CommandPay;
+import net.zyuiop.rpmachine.economy.commands.CommandShops;
 import net.zyuiop.rpmachine.economy.jobs.JobsManager;
 import net.zyuiop.rpmachine.economy.listeners.PlayerListener;
 import net.zyuiop.rpmachine.economy.listeners.SignsListener;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.projects.ProjectCommand;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.Bukkit;
@@ -27,194 +35,197 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.google.common.collect.Lists;
 
 import java.io.IOException;
 import java.util.*;
 
 public class RPMachine extends JavaPlugin {
 
-	private static RPMachine instance;
-	private DatabaseManager databaseManager;
-	private TransactionsHelper transactionsHelper;
-	private EconomyManager economyManager;
-	private JobsManager jobsManager;
-	private CitiesManager citiesManager;
-	private SelectionManager selectionManager;
-	private ScoreboardManager scoreboardManager;
-	private ProjectsManager projectsManager;
+    private static RPMachine instance;
+    private DatabaseManager databaseManager;
+    private TransactionsHelper transactionsHelper;
+    private EconomyManager economyManager;
+    private JobsManager jobsManager;
+    private CitiesManager citiesManager;
+    private SelectionManager selectionManager;
+    private ScoreboardManager scoreboardManager;
+    private ProjectsManager projectsManager;
 
-	public static RPMachine getInstance() {
-		return instance;
-	}
+    public static RPMachine getInstance() {
+        return instance;
+    }
 
-	@Override
-	public void onEnable() {
-		getLogger().info("Begin RPMachine enable...");
-		instance = this;
+    public static DatabaseManager database() {
+        return getInstance().getDatabaseManager();
+    }
 
-		saveDefaultConfig();
-		if (!loadDatabase()) {
-			setEnabled(false);
-			return;
-		}
+    public static RoleToken getPlayerRoleToken(Player player) {
+        for (MetadataValue value : player.getMetadata("roleToken"))
+            if (value.getOwningPlugin().equals(RPMachine.getInstance()))
+                return (RoleToken) value.value();
 
-		this.economyManager = new EconomyManager();
-		this.transactionsHelper = new TransactionsHelper(this.economyManager);
-		this.jobsManager = new JobsManager(this);
-		this.citiesManager = new CitiesManager(this);
-		this.selectionManager = new SelectionManager(citiesManager);
-		this.scoreboardManager = new ScoreboardManager(this);
-		this.projectsManager = new ProjectsManager(this);
+        setPlayerRoleToken(player, database().getPlayerData(player.getUniqueId()));
+        return getPlayerRoleToken(player);
+    }
 
-		// Auto-registering commands
-		new CityCommand(citiesManager);
-		new PlotCommand(citiesManager);
-		new ProjectCommand(projectsManager);
-		new CommandInventory(); // both invsee and endsee
-		new CommandPay();
+    public static LegalEntity getPlayerActAs(Player player) {
+        return getPlayerRoleToken(player).getLegalEntity();
+    }
 
-		// Classic commands
-		getCommand("money").setExecutor(new CommandMoney(this));
-		getCommand("fly").setExecutor(new CommandFly());
-		getCommand("home").setExecutor(new CommandHome(this));
-		getCommand("sethome").setExecutor(new CommandSethome());
-		getCommand("jobs").setExecutor(new CommandJob(this));
-		getCommand("spawn").setExecutor(new CommandSpawn());
-		getCommand("info").setExecutor(new CommandHelp());
-		getCommand("runtaxes").setExecutor(new CommandRuntaxes(citiesManager));
-		getCommand("bypass").setExecutor(new CommandBypass(citiesManager));
-		getCommand("myshops").setExecutor(new CommandShops(this));
-		getCommand("actas").setExecutor(new CommandActAs());
+    public static void setPlayerRoleToken(Player player, LegalEntity token) {
+        player.setMetadata("roleToken", new FixedMetadataValue(RPMachine.getInstance(), new RoleToken(player, token)));
+    }
 
-		Bukkit.getPluginManager().registerEvents(selectionManager, this);
-		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
-		Bukkit.getPluginManager().registerEvents(new SignsListener(this), this);
-		Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
+    @Override
+    public void onEnable() {
+        getLogger().info("Begin RPMachine enable...");
+        instance = this;
 
-		Bukkit.getScheduler().runTaskTimer(this, () -> {
-			Bukkit.getLogger().info("Saving world...");
-			Bukkit.getWorld("world").save();
-			Bukkit.getLogger().info("Done !");
-		}, 20 * 60, 20 * 20 * 60);
+        saveDefaultConfig();
+        if (!loadDatabase()) {
+            setEnabled(false);
+            return;
+        }
 
-		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				PlayerData data = databaseManager.getPlayerData(player.getUniqueId());
-				if (data.getJob() == null)
-					player.sendMessage(ChatColor.GOLD + "Vous n'avez pas encore choisi de métier. Tapez /job pour plus d'infos.");
-			}
-		}, 100L, 3 * 60 * 20L);
+        this.economyManager = new EconomyManager();
+        this.transactionsHelper = new TransactionsHelper(this.economyManager);
+        this.jobsManager = new JobsManager(this);
+        this.citiesManager = new CitiesManager(this);
+        this.selectionManager = new SelectionManager(citiesManager);
+        this.scoreboardManager = new ScoreboardManager(this);
+        this.projectsManager = new ProjectsManager(this);
 
-		ItemStack capturator = new ItemStack(Material.SPAWNER);
-		ItemMeta meta = capturator.getItemMeta();
-		meta.setDisplayName(ChatColor.GOLD + "PokeBall");
-		meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Clic droit sur un animal pour le capturer !", ChatColor.RED + "Attention !", ChatColor.RED + "Les données de l'entité ne sont pas conservées"));
-		capturator.setItemMeta(meta);
-		ShapedRecipe recipe = new ShapedRecipe(capturator);
-		recipe.shape("XXX", "XCX", "XXX");
-		recipe.setIngredient('X', Material.IRON_BARS);
-		recipe.setIngredient('C', Material.CHEST);
+        // Auto-registering commands
+        new CityCommand(citiesManager);
+        new PlotCommand(citiesManager);
+        new ProjectCommand(projectsManager);
+        new CommandInventory(); // both invsee and endsee
+        new CommandPay();
 
-		Bukkit.addRecipe(recipe);
+        // Classic commands
+        getCommand("money").setExecutor(new CommandMoney(this));
+        getCommand("fly").setExecutor(new CommandFly());
+        getCommand("home").setExecutor(new CommandHome(this));
+        getCommand("sethome").setExecutor(new CommandSethome());
+        getCommand("jobs").setExecutor(new CommandJob(this));
+        getCommand("spawn").setExecutor(new CommandSpawn());
+        getCommand("info").setExecutor(new CommandHelp());
+        getCommand("runtaxes").setExecutor(new CommandRuntaxes(citiesManager));
+        getCommand("bypass").setExecutor(new CommandBypass(citiesManager));
+        getCommand("myshops").setExecutor(new CommandShops(this));
+        getCommand("actas").setExecutor(new CommandActAs());
 
-		try {
-			Calendar calendar = new GregorianCalendar();
-			calendar.setTime(new Date());
-			if (calendar.get(Calendar.HOUR_OF_DAY) > 3 || (calendar.get(Calendar.HOUR_OF_DAY) == 3 && calendar.get(Calendar.MINUTE) >= 45))
-				calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
-			calendar.set(Calendar.HOUR_OF_DAY, 3);
-			calendar.set(Calendar.MINUTE, 45);
-			Date sched = calendar.getTime();
+        Bukkit.getPluginManager().registerEvents(selectionManager, this);
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new SignsListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
 
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Le serveur redémarrera à 4h du matin soit dans précisément 15 minutes.");
-				}
-			}, sched);
-			this.getLogger().info("Scheduled automatic reboot at : " + calendar.toString());
-		} catch (Exception e) {
-			this.getLogger().severe("CANNOT SCHEDULE AUTOMATIC SHUTDOWN.");
-			e.printStackTrace();
-		}
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            Bukkit.getLogger().info("Saving world...");
+            Bukkit.getWorld("world").save();
+            Bukkit.getLogger().info("Done !");
+        }, 20 * 60, 20 * 20 * 60);
 
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(new Date());
-		if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
-			citiesManager.payTaxes(false);
-	}
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                PlayerData data = databaseManager.getPlayerData(player.getUniqueId());
+                if (data.getJob() == null)
+                    player.sendMessage(ChatColor.GOLD + "Vous n'avez pas encore choisi de métier. Tapez /job pour plus d'infos.");
+            }
+        }, 100L, 3 * 60 * 20L);
 
-	private boolean loadDatabase() {
-		String managerClass = getConfig().getString("database", "net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase");
-		try {
-			Class<? extends DatabaseManager> clazz = (Class<? extends DatabaseManager>) Class.forName(managerClass);
-			databaseManager = clazz.newInstance();
-			databaseManager.load();
-			return true;
-		} catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException | IOException e) {
-			getLogger().severe("Cannot load Database Manager. Cancelling start.");
-			e.printStackTrace();
-			return false;
-		}
-	}
+        ItemStack capturator = new ItemStack(Material.SPAWNER);
+        ItemMeta meta = capturator.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "PokeBall");
+        meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Clic droit sur un animal pour le capturer !", ChatColor.RED + "Attention !", ChatColor.RED + "Les données de l'entité ne sont pas conservées"));
+        capturator.setItemMeta(meta);
+        ShapedRecipe recipe = new ShapedRecipe(capturator);
+        recipe.shape("XXX", "XCX", "XXX");
+        recipe.setIngredient('X', Material.IRON_BARS);
+        recipe.setIngredient('C', Material.CHEST);
 
-	public SelectionManager getSelectionManager() {
-		return selectionManager;
-	}
+        Bukkit.addRecipe(recipe);
 
-	public CitiesManager getCitiesManager() {
-		return citiesManager;
-	}
+        try {
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(new Date());
+            if (calendar.get(Calendar.HOUR_OF_DAY) > 3 || (calendar.get(Calendar.HOUR_OF_DAY) == 3 && calendar.get(Calendar.MINUTE) >= 45))
+                calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
+            calendar.set(Calendar.HOUR_OF_DAY, 3);
+            calendar.set(Calendar.MINUTE, 45);
+            Date sched = calendar.getTime();
 
-	public JobsManager getJobsManager() {
-		return jobsManager;
-	}
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Le serveur redémarrera à 4h du matin soit dans précisément 15 minutes.");
+                }
+            }, sched);
+            this.getLogger().info("Scheduled automatic reboot at : " + calendar.toString());
+        } catch (Exception e) {
+            this.getLogger().severe("CANNOT SCHEDULE AUTOMATIC SHUTDOWN.");
+            e.printStackTrace();
+        }
 
-	public TransactionsHelper getTransactionsHelper() {
-		return transactionsHelper;
-	}
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date());
+        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+            citiesManager.payTaxes(false);
+    }
 
-	public EconomyManager getEconomyManager() {
-		return economyManager;
-	}
+    private boolean loadDatabase() {
+        String managerClass = getConfig().getString("database", "net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase");
+        try {
+            Class<? extends DatabaseManager> clazz = (Class<? extends DatabaseManager>) Class.forName(managerClass);
+            databaseManager = clazz.newInstance();
+            databaseManager.load();
+            return true;
+        } catch (ClassNotFoundException | ClassCastException | InstantiationException | IllegalAccessException | IOException e) {
+            getLogger().severe("Cannot load Database Manager. Cancelling start.");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	public ShopsManager getShopsManager() {
-		return getDatabaseManager().getShopsManager();
-	}
+    public SelectionManager getSelectionManager() {
+        return selectionManager;
+    }
 
-	@Override
-	public void onDisable() {
-		super.onDisable();
-	}
+    public CitiesManager getCitiesManager() {
+        return citiesManager;
+    }
 
-	public ScoreboardManager getScoreboardManager() {
-		return scoreboardManager;
-	}
+    public JobsManager getJobsManager() {
+        return jobsManager;
+    }
 
-	public DatabaseManager getDatabaseManager() {
-		return databaseManager;
-	}
+    public TransactionsHelper getTransactionsHelper() {
+        return transactionsHelper;
+    }
 
-	public ProjectsManager getProjectsManager() {
-		return projectsManager;
-	}
+    public EconomyManager getEconomyManager() {
+        return economyManager;
+    }
 
-	public static DatabaseManager database() {
-		return getInstance().getDatabaseManager();
-	}
+    public ShopsManager getShopsManager() {
+        return getDatabaseManager().getShopsManager();
+    }
 
-	public static TaxPayerToken getPlayerRoleToken(Player player) {
-		for (MetadataValue value : player.getMetadata("roleToken"))
-			if (value.getOwningPlugin().equals(RPMachine.getInstance()))
-				return (TaxPayerToken) value.value();
-		TaxPayerToken token = new TaxPayerToken();
-		token.setPlayerUuid(player.getUniqueId());
-		return token;
-	}
+    @Override
+    public void onDisable() {
+        super.onDisable();
+    }
 
-	public static void setPlayerRoleToken(Player player, TaxPayerToken token) {
-		player.setMetadata("roleToken", new FixedMetadataValue(RPMachine.getInstance(), token));
-	}
+    public ScoreboardManager getScoreboardManager() {
+        return scoreboardManager;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    public ProjectsManager getProjectsManager() {
+        return projectsManager;
+    }
 }

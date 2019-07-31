@@ -2,7 +2,8 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.economy.RoleToken;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -28,8 +29,8 @@ public class UnpaidTaxesCommand implements CityMemberSubCommand {
     @Override
     public boolean run(Player player, @Nonnull City city, String[] args) {
         player.sendMessage(ChatColor.GOLD + "-----[ Impôts impayés ]-----");
-        for (Map.Entry<TaxPayerToken, Double> entry : city.getTaxesToPay().entrySet()) {
-            String name = entry.getKey().displayable();
+        for (Map.Entry<String, Double> entry : city.getTaxesToPay().entrySet()) {
+            String name = LegalEntity.getEntity(entry.getKey()).displayable();
             player.sendMessage(ChatColor.YELLOW + " - " + (name == null ? "§cInconnu§e" : name + "§e") + " doit " + ChatColor.RED + entry.getValue() + ChatColor.YELLOW + " à la ville.");
         }
 

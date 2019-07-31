@@ -4,11 +4,9 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
-import net.zyuiop.rpmachine.permissions.DelegatedPermission;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.EconomyPermissions;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class GiveMoneyCommand implements SubCommand {
@@ -31,7 +29,7 @@ public class GiveMoneyCommand implements SubCommand {
 
 	@Override
 	public boolean canUse(Player player) {
-		return RPMachine.getPlayerRoleToken(player).hasDelegatedPermission(player, EconomyPermissions.PAY_MONEY_TO_CITY);
+		return RPMachine.getPlayerRoleToken(player).hasDelegatedPermission(EconomyPermissions.PAY_MONEY_TO_CITY);
 	}
 
 	@Override
@@ -59,13 +57,13 @@ public class GiveMoneyCommand implements SubCommand {
 						player.sendMessage(ChatColor.RED + "Montant trop faible.");
 					}
 
-					TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
+					LegalEntity le = RPMachine.getPlayerActAs(player);
 
-					if (!token.getTaxPayer().canPay(amt)) {
+					if (!le.canPay(amt)) {
 						player.sendMessage(ChatColor.RED + "Vous ne pouvez pas payer ce montant.");
 					} else {
 						City finalCity = city;
-						RPMachine.getInstance().getEconomyManager().transferMoneyBalanceCheck(token.getTaxPayer(), city, amt, result -> {
+						RPMachine.getInstance().getEconomyManager().transferMoneyBalanceCheck(le, city, amt, result -> {
 							if (result) {
 								player.sendMessage(ChatColor.GREEN + "L'argent a bien été transféré.");
 							} else {

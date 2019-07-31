@@ -7,6 +7,8 @@ package net.zyuiop.rpmachine.permissions;
 public enum ProjectPermissions implements DelegatedPermission {
     ADD_NEW_MEMBER("ajouter un membre au projet"),
     REMOVE_MEMBER("supprimer un membre du projet"),
+    ACT_AS_PROJECT("agir en tant que projet"),
+    BUILD_ON_PROJECT("construire sur le projet"),
     LEAVE_PLOT("quitter le projet");
 
     private final String description;

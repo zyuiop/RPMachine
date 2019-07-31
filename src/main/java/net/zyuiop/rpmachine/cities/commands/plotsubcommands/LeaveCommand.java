@@ -5,7 +5,7 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Plot;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.economy.RoleToken;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -29,7 +29,7 @@ public class LeaveCommand implements SubCommand {
 
     @Override
     public boolean canUse(Player player) {
-        return RPMachine.getPlayerRoleToken(player).checkDelegatedPermission(player, PlotPermissions.LEAVE_PLOT);
+        return RPMachine.getPlayerRoleToken(player).checkDelegatedPermission(PlotPermissions.LEAVE_PLOT);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class LeaveCommand implements SubCommand {
             player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
             return true;
         } else {
-            plot.setOwner((TaxPayerToken) null);
+            plot.setOwner((String) null);
             citiesManager.saveCity(city);
             player.sendMessage(ChatColor.GREEN + "Vous n'êtes plus propriétaire de cette parcelle.");
             return true;

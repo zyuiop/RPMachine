@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.common.VirtualChunk;
+import net.zyuiop.rpmachine.entities.LegalEntityRepository;
 import net.zyuiop.rpmachine.json.Json;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,7 +20,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class CitiesManager {
+public class CitiesManager implements LegalEntityRepository<City> {
 
 	private final RPMachine rpMachine;
 	private ConcurrentHashMap<String, City> cities = new ConcurrentHashMap<>();
@@ -223,5 +224,15 @@ public class CitiesManager {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public City findEntity(String tag) {
+		return getCity(tag);
+	}
+
+	@Override
+	public String getTag(City entity) {
+		return entity.getCityName();
 	}
 }

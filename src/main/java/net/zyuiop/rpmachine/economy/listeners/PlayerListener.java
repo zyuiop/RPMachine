@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.material.SpawnEgg;
 
 import java.util.Iterator;
@@ -38,7 +37,7 @@ public class PlayerListener implements Listener {
 
 		PlayerData d = RPMachine.database().getPlayerData(event.getPlayer().getUniqueId());
 		if (d.isNew()) {
-			d.setMoney(EconomyManager.getBaseAmount());
+			d.setBalance(EconomyManager.getBaseAmount());
 			event.setJoinMessage(ChatColor.YELLOW + "" + ChatColor.ITALIC + "Bienvenue à " + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "" + ChatColor.ITALIC + " !");
 		}
 

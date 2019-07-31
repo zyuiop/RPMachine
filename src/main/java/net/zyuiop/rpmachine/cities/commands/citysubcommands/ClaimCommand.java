@@ -54,7 +54,7 @@ public class ClaimCommand implements CityMemberSubCommand {
         } else if (!city.isAdjacent(chunk)) {
             player.sendMessage(ChatColor.RED + "Ce chunk n'est pas adjacent à votre ville.");
             return false;
-        } else if (city.getMoney() < floor.getChunkPrice()) {
+        } else if (city.getBalance() < floor.getChunkPrice()) {
             player.sendMessage(ChatColor.RED + "Votre ville ne dispose pas d'assez d'argent pour faire cela. Il lui faut " + floor.getChunkPrice() + " " + EconomyManager.getMoneyName() + " au minimum.");
             return false;
         } else if (city.getChunks().size() >= floor.getMaxsurface()) {
@@ -62,7 +62,7 @@ public class ClaimCommand implements CityMemberSubCommand {
             return false;
         } else if (args.length >= 1 && args[0].equals("confirm")) {
             city.getChunks().add(new VirtualChunk(chunk));
-            city.setMoney(city.getMoney() - floor.getChunkPrice());
+            city.withdrawMoney(floor.getChunkPrice());
             citiesManager.saveCity(city);
             player.sendMessage(ChatColor.GREEN + "Votre ville a bien été agrandie sur ce terrain !");
             return true;

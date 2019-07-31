@@ -78,7 +78,7 @@ public class TeleportCommand implements SubCommand {
                 if (!difference) {
                     player.sendMessage(ChatColor.RED + "Vous n'avez pas assez d'argent pour faire cela.");
                 } else {
-                    target.setMoney(target.getMoney() + price);
+                    target.creditMoney(price);
                     citiesManager.saveCity(target);
                     Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
                     ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);

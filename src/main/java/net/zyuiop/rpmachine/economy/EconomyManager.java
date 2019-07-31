@@ -3,6 +3,8 @@ package net.zyuiop.rpmachine.economy;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.FinancialCallback;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.entities.AccountHolder;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -18,7 +20,7 @@ public class EconomyManager {
 	@Deprecated
 	public double getAmount(UUID player) {
 		PlayerData data = getData(player);
-		return data.getMoney();
+		return data.getBalance();
 	}
 
 	@Deprecated
@@ -32,7 +34,7 @@ public class EconomyManager {
 			PlayerData data = getData(player);
 			data.creditMoney(amount);
 			if (callback != null)
-				callback.done(data.getMoney(), true);
+				callback.done(data.getBalance(), true);
 		}).start();
 	}
 
@@ -51,14 +53,14 @@ public class EconomyManager {
 		withdrawMoneyWithBalanceCheck(getData(player), amount, callback);
 	}
 
-	public void withdrawMoneyWithBalanceCheck(TaxPayer payer, double amount, FinancialCallback callback) {
+	public void withdrawMoneyWithBalanceCheck(LegalEntity payer, double amount, FinancialCallback callback) {
 		new Thread(() -> {
 			if (payer.withdrawMoney(amount)) {
 				if (callback != null)
-					callback.done(payer.getMoney(), true);
+					callback.done(payer.getBalance(), true);
 			} else {
 				if (callback != null)
-					callback.done(payer.getMoney(), false);
+					callback.done(payer.getBalance(), false);
 			}
 		}).start();
 	}

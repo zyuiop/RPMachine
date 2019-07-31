@@ -7,8 +7,6 @@ import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public class InfoCommand implements SubCommand {
@@ -58,7 +56,7 @@ public class InfoCommand implements SubCommand {
             player.sendMessage(ChatColor.YELLOW + "Palier : " + floor.getName());
 
             if (player.getUniqueId().equals(target.getMayor()) || target.getCouncils().contains(player.getUniqueId())) {
-                player.sendMessage(ChatColor.YELLOW + "Monnaie : " + target.getMoney() + " " + EconomyManager.getMoneyName());
+                player.sendMessage(ChatColor.YELLOW + "Monnaie : " + target.getBalance() + " " + EconomyManager.getMoneyName());
                 player.sendMessage(ChatColor.YELLOW + "Taille : " + target.getChunks().size() + " / " + floor.getMaxsurface());
             }
         }

@@ -1,13 +1,11 @@
 package net.zyuiop.rpmachine;
 
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.TextComponentSerializer;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import net.zyuiop.rpmachine.utils.DirectionArrows;
 import org.bukkit.Bukkit;
@@ -36,7 +34,7 @@ public class ScoreboardThread implements Runnable {
 		sign.setObjectiveName(ChatColor.GOLD + "" + ChatColor.BOLD + "Infos - " + player.getName());
 
 		PlayerData data = RPMachine.getInstance().getDatabaseManager().getPlayerData(uuid);
-		double money = data.getMoney();
+		double money = data.getBalance();
 		String job = data.getJob();
 		job = job != null ? ChatColor.AQUA + job : ChatColor.RED + "Aucun";
 		VirtualLocation homeData = data.getHome();
@@ -113,7 +111,7 @@ public class ScoreboardThread implements Runnable {
 
 		sign.setLine(1, ChatColor.RED + "  ");
 		sign.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
-		sign.setLine(3, ChatColor.AQUA + "" + city.getMoney() + " " + EconomyManager.getMoneyName());
+		sign.setLine(3, ChatColor.AQUA + "" + city.getBalance() + " " + EconomyManager.getMoneyName());
 		sign.setLine(4, ChatColor.RED + "   ");
 		sign.setLine(5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Habitants");
 		sign.setLine(6, ChatColor.AQUA + "" + city.countInhabitants() + " Hab.");
@@ -150,15 +148,9 @@ public class ScoreboardThread implements Runnable {
 		if (elapsed > 200)
 			elapsed = 0;
 
-		TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
-		if (token.getPlayerUuid() == null) {
-			String actAs = "§cVous agissez en tant que : ";
-			if (token.isAdmin())
-				actAs += "La Confédération";
-			else if (token.getCityName() != null)
-				actAs += ChatColor.DARK_AQUA + token.getCityName();
-			else
-				actAs += ChatColor.DARK_RED + "Inconnu";
+		LegalEntity le = RPMachine.getPlayerActAs(player);
+		if (!(le instanceof PlayerData)) {
+			String actAs = "§cVous agissez en tant que : " + le.displayable();
 
 			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(actAs));
 		}

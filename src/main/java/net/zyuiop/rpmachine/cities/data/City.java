@@ -5,22 +5,23 @@ import java.util.stream.Collectors;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
-import net.zyuiop.rpmachine.cities.LandOwner;
 import net.zyuiop.rpmachine.common.VirtualChunk;
-import net.zyuiop.rpmachine.economy.ShopOwner;
-import net.zyuiop.rpmachine.economy.TaxPayer;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.economy.RoleToken;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.common.Plot;
+import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import net.zyuiop.rpmachine.permissions.Permission;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 // TODO: finish implementing loans
-public class City implements TaxPayer, LandOwner, ShopOwner {
+public class City implements LegalEntity {
 	private String cityName;
 	private VirtualLocation spawn;
 	private String fileName;
@@ -30,8 +31,8 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	private final Map<String, Plot> plots = new HashMap<>();
 	private final Set<UUID> inhabitants = new HashSet<>();
 	private final Set<UUID> invitedUsers = new HashSet<>();
-	private final Map<TaxPayerToken, Double> taxesToPay = new HashMap<>();
-	private final Map<TaxPayerToken, Loan> loans = new HashMap<>();
+	private final Map<String, Double> taxesToPay = new HashMap<>();
+	private final Map<String, Loan> loans = new HashMap<>();
 
 	private CityTaxPayer taxPayer = new CityTaxPayer(); // loaded by Gson
 
@@ -60,7 +61,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		this.cityName = cityName;
 	}
 
-	public Map<TaxPayerToken, Double> getTaxesToPay() {
+	public Map<String, Double> getTaxesToPay() {
 		return taxesToPay;
 	}
 
@@ -140,11 +141,11 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		chunks.add(chunk);
 	}
 
-	public double getMoney() {
+	public double getBalance() {
 		return Math.floor(money * 100) / 100;
 	}
 
-	public void setMoney(double money) {
+	public void setBalance(double money) {
 		this.money = money;
 		save();
 	}
@@ -153,18 +154,28 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	public boolean withdrawMoney(double amount) {
 		if (money < amount)
 			return false;
-		setMoney(money - amount);
+		setBalance(money - amount);
 		return true;
 	}
 
 	@Override
 	public void creditMoney(double amount) {
-		setMoney(money + amount);
+		setBalance(money + amount);
+	}
+
+	@Override
+	public String displayable() {
+		return ChatColor.DARK_AQUA + getCityName();
+	}
+
+	@Override
+	public String shortDisplayable() {
+		return ChatColor.AQUA + "(Ville) " + ChatColor.DARK_AQUA + getCityName();
 	}
 
 	public double countInhabitants() {
 		int inhabitants = getInhabitants().size();
-		HashSet<TaxPayerToken> plotsInhabitants = plots.values().stream().filter(plot -> plot.getOwner() != null).map(Plot::getOwner).collect(Collectors.toCollection(HashSet::new));
+		HashSet<String> plotsInhabitants = plots.values().stream().filter(plot -> plot.getOwner() != null && plot.owner() != this).map(Plot::getOwner).collect(Collectors.toCollection(HashSet::new));
 
 		int plinSize = plotsInhabitants.size();
 		return Math.max(inhabitants, ((inhabitants + plinSize) / 2D));
@@ -197,15 +208,14 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		}
 	}
 
-	public void pay(TaxPayer player, double amt) {
-		TaxPayerToken token = TaxPayerToken.fromPayer(player);
-		Double total = taxesToPay.get(token);
+	public void pay(LegalEntity payer, double amt) {
+		Double total = taxesToPay.get(payer.tag());
 		if (total != null) {
 			total -= amt;
 			if (total <= 0)
-				taxesToPay.remove(token);
+				taxesToPay.remove(payer.tag());
 			else
-				taxesToPay.put(token, total);
+				taxesToPay.put(payer.tag(), total);
 		}
 	}
 
@@ -215,8 +225,11 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 
 		for (Plot plot : plots.values()) {
 			if (plot.getOwner() != null) {
-				TaxPayerToken owner = plot.getOwner();
-				TaxPayer ownerData = owner.getTaxPayer();
+				LegalEntity ownerData = plot.owner();
+				if (ownerData == this)
+					continue; // City doesn't pay taxes to itself
+
+				String owner = plot.ownerTag();
 				Date lastPaid = ownerData.getLastTaxes(getCityName());
 
 				if (force || lastPaid == null || !sameDay(lastPaid)) {
@@ -229,11 +242,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 							lateTaxes += toPay;
 							ownerData.setUnpaidTaxes(getCityName(), lateTaxes);
 
-							Double total = taxesToPay.get(owner);
-							if (total == null)
-								taxesToPay.put(owner, toPay);
-							else
-								taxesToPay.put(owner, total + toPay);
+							taxesToPay.merge(owner, toPay, Double::sum);
 						}
 
 						ownerData.setLastTaxes(getCityName(), new Date());
@@ -312,21 +321,11 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		return hasPermission(player, permission);
 	}
 
-	@Override
-	public boolean canManagePlot(Player player) {
-		return mayor.equals(player.getUniqueId());
+	public Loan getLoan(LegalEntity token) {
+		return loans.get(token.tag());
 	}
 
-	@Override
-	public boolean canManageShop(Player player) {
-		return mayor.equals(player.getUniqueId());
-	}
-
-	public Loan getLoan(TaxPayerToken token) {
-		return loans.get(token);
-	}
-
-	public double payLoan(TaxPayerToken token, double amount) {
+	public double payLoan(LegalEntity token, double amount) {
 		Loan loan = getLoan(token);
 		if (loan == null) {
 			return -1;
@@ -338,7 +337,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 
 		double remaining = loan.pay(amount);
 		if (remaining < 0.01) {
-			loans.remove(token);
+			loans.remove(token.tag());
 			remaining = 0;
 		}
 
@@ -346,7 +345,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		return remaining;
 	}
 
-	public Map<TaxPayerToken, Loan> getLoans() {
+	public Map<String, Loan> getLoans() {
 		return loans;
 	}
 
@@ -380,14 +379,14 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		}
 	}
 
-	public static class Loan {
-		private TaxPayerToken borrower;
+	public static class Loan implements Ownable {
+		private String borrower;
 		private double amountBorrowed;
 		private double interestRate;
 		private double amountPaid = 0;
 		private Date maximumDate;
 
-		public Loan(TaxPayerToken borrower, double amountBorrowed, double interestRate, Date maximumDate) {
+		public Loan(String borrower, double amountBorrowed, double interestRate, Date maximumDate) {
 			this.borrower = borrower;
 			this.amountBorrowed = amountBorrowed;
 			this.interestRate = interestRate;
@@ -397,11 +396,11 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		public Loan() {
 		}
 
-		public TaxPayerToken getBorrower() {
+		public String getBorrower() {
 			return borrower;
 		}
 
-		public void setBorrower(TaxPayerToken borrower) {
+		public void setBorrower(String borrower) {
 			this.borrower = borrower;
 		}
 
@@ -444,6 +443,12 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 
 		public void setMaximumDate(Date maximumDate) {
 			this.maximumDate = maximumDate;
+		}
+
+		@Nullable
+		@Override
+		public String ownerTag() {
+			return borrower;
 		}
 	}
 }

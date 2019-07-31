@@ -5,7 +5,7 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.economy.EconomyManager;
-import net.zyuiop.rpmachine.economy.TaxPayer;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.EconomyPermissions;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -30,7 +30,7 @@ public class PayTaxesCommand implements SubCommand {
 
     @Override
     public boolean canUse(Player player) {
-        return RPMachine.getPlayerRoleToken(player).hasDelegatedPermission(player, EconomyPermissions.PAY_LATE_TAXES);
+        return RPMachine.getPlayerRoleToken(player).hasDelegatedPermission(EconomyPermissions.PAY_LATE_TAXES);
     }
 
     @Override
@@ -45,12 +45,12 @@ public class PayTaxesCommand implements SubCommand {
                 return false;
             }
 
-            TaxPayer payer = RPMachine.getPlayerRoleToken(player).getTaxPayer();
+            LegalEntity payer = RPMachine.getPlayerRoleToken(player).getLegalEntity();
             double topay = payer.getUnpaidTaxes(city.getCityName());
             if (topay == 0D) {
                 player.sendMessage(ChatColor.GREEN + "Vous ne devez pas d'argent à cette ville.");
             } else {
-                double amount = payer.getMoney();
+                double amount = payer.getBalance();
                 if (amount >= topay) {
                     RPMachine.getInstance().getEconomyManager().withdrawMoney(player.getUniqueId(), topay);
                     payer.setUnpaidTaxes(city.getCityName(), 0D);
@@ -58,7 +58,7 @@ public class PayTaxesCommand implements SubCommand {
                     city.pay(payer, topay);
                 } else {
                     RPMachine.getInstance().getEconomyManager().withdrawMoney(player.getUniqueId(), amount);
-                    city.setMoney(city.getMoney() + amount);
+                    city.creditMoney(amount);
                     topay = topay - amount;
                     payer.setUnpaidTaxes(city.getCityName(), topay);
                     player.sendMessage(ChatColor.RED + "Vous devez encore " + topay + " " + EconomyManager.getMoneyName() + " à la ville.");

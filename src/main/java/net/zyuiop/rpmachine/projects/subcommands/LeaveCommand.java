@@ -1,7 +1,8 @@
 package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.economy.AdminTaxPayer;
+import net.zyuiop.rpmachine.economy.AdminLegalEntity;
+import net.zyuiop.rpmachine.permissions.ProjectPermissions;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
@@ -34,10 +35,10 @@ public class LeaveCommand implements SubCommand {
         Project plot = manager.getZone(args[0]);
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Ce projet n'existe pas.");
-        } else if (!plot.getOwner().getLandOwner().canManagePlot(player)) {
+        } else if (!plot.owner().hasDelegatedPermission(player, ProjectPermissions.LEAVE_PLOT)) {
             player.sendMessage(ChatColor.RED + "Ce projet ne vous appartient pas.");
         } else {
-            plot.setOwner(AdminTaxPayer.INSTANCE);
+            plot.setOwner(AdminLegalEntity.INSTANCE);
             manager.saveZone(plot);
             player.sendMessage(ChatColor.RED + "Vous n'êtes plus propriétaire de ce projet");
         }

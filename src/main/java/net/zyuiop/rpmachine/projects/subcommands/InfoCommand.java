@@ -3,7 +3,8 @@ package net.zyuiop.rpmachine.projects.subcommands;
 import joptsimple.internal.Strings;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.economy.RoleToken;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
@@ -38,7 +39,7 @@ public class InfoCommand implements SubCommand {
             player.sendMessage(ChatColor.GOLD + "-----[ Informations Projet ]-----");
             player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
             player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs");
-            TaxPayerToken proprio = plot.getOwner();
+            LegalEntity proprio = plot.owner();
             if (proprio == null) {
                 player.sendMessage(ChatColor.YELLOW + "Propriétaire : " + ChatColor.RED + "Aucun");
             } else {

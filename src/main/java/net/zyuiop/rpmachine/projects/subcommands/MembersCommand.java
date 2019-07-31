@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.permissions.ProjectPermissions;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
@@ -36,14 +37,17 @@ public class MembersCommand implements SubCommand {
         Project plot = manager.getZone(args[0]);
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Ce projet n'existe pas.");
-        } else if (plot.getOwner().getLandOwner().canManagePlot(player) && !player.hasPermission("zone.members.manage")) {
-            player.sendMessage(ChatColor.RED + "Ce projet ne vous appartient pas.");
         } else {
             UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[2], true);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
             } else {
                 if (args[1].equalsIgnoreCase("add")) {
+                    if (!plot.hasPermission(player, ProjectPermissions.ADD_NEW_MEMBER)) {
+                        player.sendMessage(ChatColor.RED + "Ce projet ne vous appartient pas.");
+                        return true;
+                    }
+
                     if (plot.getPlotMembers().contains(id)) {
                         player.sendMessage(ChatColor.GREEN + "Ce joueur est déjà dans le projet.");
                         return true;
@@ -52,6 +56,12 @@ public class MembersCommand implements SubCommand {
                     manager.saveZone(plot);
                     player.sendMessage(ChatColor.GREEN + "Le joueur a été ajouté dans le projet.");
                 } else if (args[1].equalsIgnoreCase("remove")) {
+
+                    if (!plot.hasPermission(player, ProjectPermissions.REMOVE_MEMBER)) {
+                        player.sendMessage(ChatColor.RED + "Ce projet ne vous appartient pas.");
+                        return true;
+                    }
+
                     if (!plot.getPlotMembers().contains(id)) {
                         player.sendMessage(ChatColor.GREEN + "Ce joueur n'est pas dans le projet.");
                         return true;

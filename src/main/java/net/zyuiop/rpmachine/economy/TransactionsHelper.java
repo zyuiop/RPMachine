@@ -2,8 +2,6 @@ package net.zyuiop.rpmachine.economy;
 
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
-
 public class TransactionsHelper {
 
 	private final EconomyManager manager;
@@ -12,12 +10,12 @@ public class TransactionsHelper {
 		this.manager = manager;
 	}
 
-	public void transaction(Player from, TaxPayerToken fromToken, Player to, double amount) {
+	public void transaction(Player from, RoleToken fromToken, Player to, double amount) {
 		new Thread(() -> {
-			if (fromToken.getTaxPayer().withdrawMoney(amount)) {
+			if (fromToken.getLegalEntity().withdrawMoney(amount)) {
 				manager.giveMoney(to.getUniqueId(), amount);
 				from.sendMessage(Messages.SENT_MONEY.getMessage().replace("{AMT}", "" + amount));
-				to.sendMessage(Messages.RECEIVED_MONEY.getMessage().replace("{AMT}", "" + amount).replace("{FROM}", fromToken.displayable()));
+				to.sendMessage(Messages.RECEIVED_MONEY.getMessage().replace("{AMT}", "" + amount).replace("{FROM}", fromToken.getLegalEntity().displayable()));
 			} else {
 				from.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
 			}

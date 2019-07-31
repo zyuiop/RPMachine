@@ -42,7 +42,7 @@ public class ListCommand implements CityMemberSubCommand {
             if (plot.getOwner() == null && empty)
                 player.sendMessage(ChatColor.YELLOW + " - " + plot.getPlotName() + ", " + ChatColor.RED + "Aucun proprio.");
             else if (claimed) {
-                String prop = plot.getOwner().displayable();
+                String prop = plot.owner().displayable();
                 player.sendMessage(ChatColor.YELLOW + " - " + plot.getPlotName() + ", " + ChatColor.GREEN + ((prop == null) ? "Proprio inconnu" : "Proprio : " + prop));
             }
         }

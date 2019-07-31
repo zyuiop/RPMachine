@@ -1,18 +1,12 @@
 package net.zyuiop.rpmachine.economy.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.AbstractCommand;
-import net.zyuiop.rpmachine.economy.TaxPayer;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.economy.RoleToken;
 import net.zyuiop.rpmachine.permissions.EconomyPermissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 public class CommandPay extends AbstractCommand {
 	public CommandPay() {
@@ -26,10 +20,10 @@ public class CommandPay extends AbstractCommand {
 			return true;
 		}
 
-		TaxPayerToken transactionFrom = RPMachine.getPlayerRoleToken(player);
+		RoleToken transactionFrom = RPMachine.getPlayerRoleToken(player);
 		Player target = Bukkit.getPlayerExact(args[0]);
-		if (!transactionFrom.hasDelegatedPermission(player, EconomyPermissions.PAY_MONEY_TO_PLAYER)) {
-			player.sendMessage(ChatColor.RED + "Vous n'avez pas le droit de faire ça en tant que " + transactionFrom.displayable());
+		if (!transactionFrom.hasDelegatedPermission(EconomyPermissions.PAY_MONEY_TO_PLAYER)) {
+			player.sendMessage(ChatColor.RED + "Vous n'avez pas le droit de faire ça en tant que " + transactionFrom.getLegalEntity().displayable());
 		} else if (target == null) {
 			player.sendMessage(ChatColor.RED + "Le joueur est actuellement hors ligne.");
 			return true;

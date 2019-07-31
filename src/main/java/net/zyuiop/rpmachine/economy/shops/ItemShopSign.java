@@ -1,10 +1,12 @@
 package net.zyuiop.rpmachine.economy.shops;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.economy.AdminLegalEntity;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.economy.RoleToken;
 import net.zyuiop.rpmachine.economy.jobs.Job;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -85,7 +87,7 @@ public class ItemShopSign extends AbstractShopSign {
 				sign.setLine(1, ChatColor.RED + "Non configuré");
 				sign.setLine(3, ChatColor.RED + "<CLIC DROIT>");
 			} else {
-				sign.setLine(0, owner.shortDisplayable());
+				sign.setLine(0, owner().shortDisplayable());
 				if (action == ShopAction.BUY) {
 					sign.setLine(1, ChatColor.GREEN + "achète " + amountPerPackage);
 				} else {
@@ -120,7 +122,7 @@ public class ItemShopSign extends AbstractShopSign {
 		RPMachine.getInstance().getShopsManager().remove(this);
 	}
 
-	void clickPrivileged(Player player, TaxPayerToken tt, PlayerInteractEvent event) {
+	void clickPrivileged(Player player, RoleToken tt, PlayerInteractEvent event) {
 		if (itemType == null) {
 			if (event.getItem() == null)
 				return;
@@ -128,7 +130,7 @@ public class ItemShopSign extends AbstractShopSign {
 			Material type = event.getItem().getType();
 
 			if (action == ShopAction.SELL) {
-				if (!tt.checkDelegatedPermission(player, ShopPermissions.CREATE_SELL_SHOPS))
+				if (!tt.checkDelegatedPermission(ShopPermissions.CREATE_SELL_SHOPS))
 					return;
 
 				Job job = RPMachine.getInstance().getJobsManager().getJob(player.getUniqueId());
@@ -141,7 +143,7 @@ public class ItemShopSign extends AbstractShopSign {
 					player.sendMessage(ChatColor.RED + "Votre job ne vous permet pas de vendre cela.");
 					return;
 				}
-			} else if (!tt.checkDelegatedPermission(player, ShopPermissions.CREATE_BUY_SHOPS))
+			} else if (!tt.checkDelegatedPermission(ShopPermissions.CREATE_BUY_SHOPS))
 				return;
 
 			itemType = type;
@@ -155,14 +157,14 @@ public class ItemShopSign extends AbstractShopSign {
 			player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Casser le panneau droppera l'inventaire du shop au sol.");
 			display();
 		} else {
-			if (owner.isAdmin()) {
+			if (owner() instanceof AdminLegalEntity) {
 				clickUser(player, event);
 				return;
 			}
 
 			if (action == ShopAction.SELL && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				if (isItemValid(event.getItem())) {
-					if (!tt.checkDelegatedPermission(player, ShopPermissions.REFILL_SHOP))
+					if (!tt.checkDelegatedPermission(ShopPermissions.REFILL_SHOP))
 						return;
 
 					int amt = event.getItem().getAmount();
@@ -173,7 +175,7 @@ public class ItemShopSign extends AbstractShopSign {
 					event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.YELLOW + "Il y a actuellement " + ChatColor.GOLD + this.available + ChatColor.YELLOW + " items dans la réserve de ce shop.");
 				}
 			} else {
-				if (!tt.checkDelegatedPermission(player, ShopPermissions.GET_SHOP_STOCK))
+				if (!tt.checkDelegatedPermission(ShopPermissions.GET_SHOP_STOCK))
 					return;
 
 				if (player.getInventory().firstEmpty() == -1) {
@@ -192,21 +194,21 @@ public class ItemShopSign extends AbstractShopSign {
 	}
 
 	void clickUser(Player player, PlayerInteractEvent event) {
-		TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
+		RoleToken token = RPMachine.getPlayerRoleToken(player);
 
 		if (itemType == null) {
 			player.sendMessage(ChatColor.RED + "Le créateur de ce shop n'a pas terminé sa configuration.");
 		} else if (action == ShopAction.BUY) {
-			if (!token.checkDelegatedPermission(player, ShopPermissions.SELL_ITEMS))
+			if (!token.checkDelegatedPermission(ShopPermissions.SELL_ITEMS))
 				return;
 
 			ItemStack click = event.getItem();
 			if (isItemValid(click) && click.getAmount() >= amountPerPackage) {
 				EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-				manager.transferMoneyBalanceCheck(owner.getTaxPayer(), token.getTaxPayer(), price, result -> {
+				manager.transferMoneyBalanceCheck(owner(), token.getLegalEntity(), price, result -> {
 					if (result) {
 						available += amountPerPackage;
-						player.sendMessage(Messages.RECEIVED_MONEY.getMessage().replace("{AMT}", "" + price).replace("{FROM}", owner.displayable()));
+						player.sendMessage(Messages.RECEIVED_MONEY.getMessage().replace("{AMT}", "" + price).replace("{FROM}", owner().displayable()));
 						click.setAmount(click.getAmount() - amountPerPackage);
 						player.getInventory().setItemInHand(click);
 					} else {
@@ -217,10 +219,10 @@ public class ItemShopSign extends AbstractShopSign {
 				player.sendMessage(ChatColor.RED + "Vous devez cliquer sur la panneau en tenant " + ChatColor.AQUA + itemType.toString() + ChatColor.RED + " en main.");
 			}
 		} else if (action == ShopAction.SELL) {
-			if (!token.checkDelegatedPermission(player, ShopPermissions.BUY_ITEMS))
+			if (!token.checkDelegatedPermission(ShopPermissions.BUY_ITEMS))
 				return;
 
-			if (available < amountPerPackage && !owner.isAdmin() /* Admin shop : unlimited resources */) {
+			if (available < amountPerPackage && !(owner() instanceof AdminLegalEntity) /* Admin shop : unlimited resources */) {
 				player.sendMessage(ChatColor.RED + "Il n'y a pas assez d'items à vendre.");
 				return;
 			} else if (player.getInventory().firstEmpty() == -1) {
@@ -229,7 +231,7 @@ public class ItemShopSign extends AbstractShopSign {
 			}
 
 			EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-			manager.transferMoneyBalanceCheck(token.getTaxPayer(), owner.getTaxPayer(), price, result -> {
+			manager.transferMoneyBalanceCheck(token.getLegalEntity(), owner(), price, result -> {
 				if (result) {
 					player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + itemType.toString() + " pour " + price + " " + EconomyManager.getMoneyName());
 					available -= amountPerPackage;

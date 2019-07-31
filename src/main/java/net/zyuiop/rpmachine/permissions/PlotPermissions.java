@@ -7,6 +7,7 @@ package net.zyuiop.rpmachine.permissions;
 public enum PlotPermissions implements DelegatedPermission {
     ADD_NEW_MEMBER("ajouter un membre à la parcelle"),
     REMOVE_MEMBER("supprimer un membre de la parcelle"),
+    BUILD_ON_PLOTS("construire sur la parcelle"),
     LEAVE_PLOT("quitter la parcelle");
 
     private final String description;

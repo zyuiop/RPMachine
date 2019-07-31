@@ -1,17 +1,14 @@
 package net.zyuiop.rpmachine.database;
 
 import com.google.gson.*;
-import net.zyuiop.rpmachine.economy.TaxPayer;
-import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
 import net.zyuiop.rpmachine.economy.shops.ItemShopSign;
 import net.zyuiop.rpmachine.json.Json;
-import net.zyuiop.rpmachine.json.ShopSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,11 +51,11 @@ public abstract class ShopsManager {
 	public abstract void save(AbstractShopSign shopSign);
 
 	public final HashSet<ItemShopSign> getPlayerShops(Player player) {
-		return signs.values().stream().filter(shopSign -> shopSign.getOwner().getPlayerUuid() != null && shopSign.getOwner().getPlayerUuid().equals(player.getUniqueId()) && shopSign instanceof ItemShopSign).map(shopSign -> (ItemShopSign) shopSign).collect(Collectors.toCollection(HashSet::new));
+		return signs.values().stream().filter(shopSign -> shopSign.owner() instanceof PlayerData && ((PlayerData) shopSign.owner()).getUuid().equals(player.getUniqueId()) && shopSign instanceof ItemShopSign).map(shopSign -> (ItemShopSign) shopSign).collect(Collectors.toCollection(HashSet::new));
 	}
 
-	public final Set<AbstractShopSign> getShops(TaxPayer payer) {
-		TaxPayerToken token = TaxPayerToken.fromPayer(payer);
+	public final Set<AbstractShopSign> getShops(LegalEntity payer) {
+		String token = payer.tag();
 		return signs.values().stream().filter(sign -> sign.getOwner().equals(token)).collect(Collectors.toSet());
 	}
 

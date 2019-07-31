@@ -6,12 +6,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.database.PlayerData;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * @author zyuiop
  */
-public class PlayerFile implements net.zyuiop.rpmachine.database.PlayerData {
+public class PlayerFile implements PlayerData {
 	private final YamlConfiguration data;
 	private final File file;
 	private final UUID uuid;
@@ -59,12 +61,12 @@ public class PlayerFile implements net.zyuiop.rpmachine.database.PlayerData {
 	}
 
 	@Override
-	public double getMoney() {
+	public double getBalance() {
 		return Math.round(data.getDouble("rpmoney", 0.0) * 100) / 100;
 	}
 
 	@Override
-	public void setMoney(double amount) {
+	public void setBalance(double amount) {
 		data.set("rpmoney", amount);
 		save();
 	}
@@ -128,6 +130,16 @@ public class PlayerFile implements net.zyuiop.rpmachine.database.PlayerData {
 		return dataKeys.stream()
 				.filter(key -> key.startsWith("topay."))
 				.collect(Collectors.toMap(key -> key.split("\\.")[1], data::getDouble));
+	}
+
+	@Override
+	public String displayable() {
+		return ChatColor.YELLOW + "(Joueur) " + ChatColor.GOLD + getName();
+	}
+
+	@Override
+	public String shortDisplayable() {
+		return ChatColor.GOLD + getName();
 	}
 
 	@Override

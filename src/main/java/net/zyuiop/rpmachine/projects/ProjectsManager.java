@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.projects;
 
 import com.google.gson.Gson;
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.entities.LegalEntityRepository;
 import net.zyuiop.rpmachine.json.Json;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * @author zyuiop
  */
-public class ProjectsManager {
+public class ProjectsManager implements LegalEntityRepository<Project> {
 	private final File zonesFolder;
 	private final RPMachine rpMachine;
 	private ConcurrentHashMap<String, Project> zones = new ConcurrentHashMap<>();
@@ -125,5 +126,15 @@ public class ProjectsManager {
 
 	public Collection<Project> getZonesHere(Chunk chunk) {
 		return zones.values().stream().filter(zone -> zone.getArea().hasCommonPositionsWith(chunk)).collect(Collectors.toList());
+	}
+
+	@Override
+	public Project findEntity(String tag) {
+		return getZone(tag);
+	}
+
+	@Override
+	public String getTag(Project entity) {
+		return entity.getPlotName();
 	}
 }
