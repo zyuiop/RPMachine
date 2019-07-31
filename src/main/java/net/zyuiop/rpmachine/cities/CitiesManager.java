@@ -138,7 +138,7 @@ public class CitiesManager implements LegalEntityRepository<City> {
 			BufferedWriter writer = null;
 			try {
 				writer = new BufferedWriter(new FileWriter(file));
-				new Gson().toJson(city, City.class, writer);
+				Json.GSON.toJson(city, City.class, writer);
 				writer.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

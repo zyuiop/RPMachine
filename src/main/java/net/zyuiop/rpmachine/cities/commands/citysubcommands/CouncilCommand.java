@@ -47,13 +47,15 @@ public class CouncilCommand implements CityMemberSubCommand {
             UUID id = RPMachine.database().getUUIDTranslator().getUUID(pseudo, true);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
+            } else if (id == city.getMayor()) {
+                player.sendMessage(ChatColor.RED + "Impossible d'affecter le maire de la ville !");
             } else {
                 if (type.equalsIgnoreCase("add")) {
-                    city.getCouncils().add(id);
+                    city.addCouncil(id);
                     player.sendMessage(ChatColor.GREEN + "Ce joueur est désormais conseiller !");
                     citiesManager.saveCity(city);
                 } else {
-                    city.getCouncils().remove(id);
+                    city.removeCouncil(id);
                     player.sendMessage(ChatColor.GREEN + "Ce joueur n'est désormais plus conseiller !");
                     citiesManager.saveCity(city);
                 }

@@ -11,7 +11,6 @@ import javax.annotation.Nonnull;
 /**
  * @author zyuiop
  */
-@Deprecated
 public class RoleToken {
     private final Player player;
     private final LegalEntity controlledEntity;

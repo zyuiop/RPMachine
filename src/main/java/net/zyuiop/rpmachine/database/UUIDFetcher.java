@@ -59,7 +59,7 @@ class UUIDFetcher implements Callable<Map<String, UUID>> {
             HttpURLConnection connection = createConnection();
             String body = Json.GSON.toJson(names.subList(i * 100, Math.min((i + 1) * 100, names.size())));
             writeBody(connection, body);
-            Profile[] array = new Gson().fromJson(new InputStreamReader(connection.getInputStream()), Profile[].class);
+            Profile[] array = Json.GSON.fromJson(new InputStreamReader(connection.getInputStream()), Profile[].class);
             for (Profile profile : array) {
                 UUID uuid = UUIDFetcher.getUUID(profile.id);
                 uuidMap.put(profile.name, uuid);

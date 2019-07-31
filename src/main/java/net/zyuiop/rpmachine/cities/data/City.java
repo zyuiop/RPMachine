@@ -306,11 +306,15 @@ public class City implements LegalEntity {
 	}
 
 	public boolean hasPermission(Player player, @Nonnull Permission permission) {
-		if (mayor.equals(player.getUniqueId())) {
+		return hasPermission(player.getUniqueId(), permission);
+	}
+
+	public boolean hasPermission(UUID player, @Nonnull Permission permission) {
+		if (mayor.equals(player)) {
 			return true; // Mayor has all permissions on all city properties
 		} else {
-			if (councils.containsKey(player.getUniqueId())) {
-				return councils.get(player.getUniqueId()).contains(permission);
+			if (councils.containsKey(player)) {
+				return councils.get(player).contains(permission);
 			}
 			return false;
 		}
@@ -368,7 +372,30 @@ public class City implements LegalEntity {
 		return false;
 	}
 
-    public static class CityTaxPayer {
+	public void addCouncil(UUID id) {
+		if (!councils.containsKey(id))
+			councils.put(id, new HashSet<>());
+	}
+
+	public void removeCouncil(UUID id) {
+		councils.remove(id);
+	}
+
+	public void addPermission(UUID target, Permission permission) {
+		if (councils.containsKey(target)) {
+			councils.get(target).add(permission);
+			save();
+		}
+	}
+
+	public void removePermission(UUID target, Permission permission) {
+		if (councils.containsKey(target)) {
+			councils.get(target).remove(permission);
+			save();
+		}
+	}
+
+	public static class CityTaxPayer {
 		private Map<String, Double> unpaidTaxes = new HashMap<>();
 		private Map<String, Date> lastPaidTaxes = new HashMap<>();
 

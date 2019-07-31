@@ -23,6 +23,7 @@ import net.zyuiop.rpmachine.economy.jobs.JobsManager;
 import net.zyuiop.rpmachine.economy.listeners.PlayerListener;
 import net.zyuiop.rpmachine.economy.listeners.SignsListener;
 import net.zyuiop.rpmachine.entities.LegalEntity;
+import net.zyuiop.rpmachine.gui.WindowsListener;
 import net.zyuiop.rpmachine.projects.ProjectCommand;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.Bukkit;
@@ -38,6 +39,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 
 public class RPMachine extends JavaPlugin {
 
@@ -78,6 +80,15 @@ public class RPMachine extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        try {
+            start();
+        } catch (Exception e) {
+            getLogger().log(Level.SEVERE, "Error while starting, killing server", e);
+            Bukkit.shutdown();
+        }
+    }
+
+    private void start() {
         getLogger().info("Begin RPMachine enable...");
         instance = this;
 
@@ -94,7 +105,8 @@ public class RPMachine extends JavaPlugin {
 
         // Load DB
         if (!loadDatabase()) {
-            setEnabled(false);
+            getLogger().severe("Cannot start DB, shutting down.");
+            Bukkit.shutdown();
             return;
         }
 
@@ -119,6 +131,7 @@ public class RPMachine extends JavaPlugin {
         getCommand("myshops").setExecutor(new CommandShops(this));
 
         Bukkit.getPluginManager().registerEvents(selectionManager, this);
+        Bukkit.getPluginManager().registerEvents(new WindowsListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SignsListener(this), this);
         Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);

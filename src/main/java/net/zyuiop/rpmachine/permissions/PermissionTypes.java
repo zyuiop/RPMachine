@@ -29,4 +29,13 @@ public enum PermissionTypes {
     public Permission getPermission(String name) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         return (Permission) clazz.getMethod("valueOf", String.class).invoke(null, name);
     }
+
+    public Permission[] members() {
+        try {
+            return (Permission[]) clazz.getMethod("values").invoke(null);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
 }

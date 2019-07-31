@@ -92,7 +92,7 @@ public class ProjectsManager implements LegalEntityRepository<Project> {
 			BufferedWriter writer = null;
 			try {
 				writer = new BufferedWriter(new FileWriter(file));
-				new Gson().toJson(project, Project.class, writer);
+				Json.GSON.toJson(project, Project.class, writer);
 				writer.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

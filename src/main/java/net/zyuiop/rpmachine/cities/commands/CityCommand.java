@@ -28,6 +28,7 @@ public class CityCommand extends CompoundCommand {
         registerSubCommand("simulatetaxes", new SimulateTaxesCommand());
         registerSubCommand("kick", new KickCommand(citiesManager));
         registerSubCommand("create", new CreateCityCommand(citiesManager));
+        registerSubCommand("permissions", new PermissionsCommand());
 
         // Will also register a command with the same name
         FloorsCommand fc = new FloorsCommand();
