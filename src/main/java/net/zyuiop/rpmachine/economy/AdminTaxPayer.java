@@ -1,6 +1,7 @@
 package net.zyuiop.rpmachine.economy;
 
 import net.zyuiop.rpmachine.cities.LandOwner;
+import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import org.bukkit.entity.Player;
 
 import java.util.Date;
@@ -60,6 +61,11 @@ public class AdminTaxPayer implements TaxPayer, LandOwner, ShopOwner {
 	@Override
 	public Map<String, Double> getUnpaidTaxes() {
 		return new HashMap<>();
+	}
+
+	@Override
+	public boolean hasDelegatedPermission(Player player, DelegatedPermission permission) {
+		return true; // All admins have permissions over all admin properties
 	}
 
 	@Override

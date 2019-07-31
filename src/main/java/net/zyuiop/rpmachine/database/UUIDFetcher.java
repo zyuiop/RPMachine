@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.database;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
+import net.zyuiop.rpmachine.json.Json;
 
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -56,7 +57,7 @@ class UUIDFetcher implements Callable<Map<String, UUID>> {
         int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
         for (int i = 0; i < requests; i++) {
             HttpURLConnection connection = createConnection();
-            String body = new Gson().toJson(names.subList(i * 100, Math.min((i + 1) * 100, names.size())));
+            String body = Json.GSON.toJson(names.subList(i * 100, Math.min((i + 1) * 100, names.size())));
             writeBody(connection, body);
             Profile[] array = new Gson().fromJson(new InputStreamReader(connection.getInputStream()), Profile[].class);
             for (Profile profile : array) {

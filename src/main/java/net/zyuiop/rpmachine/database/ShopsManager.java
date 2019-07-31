@@ -5,6 +5,8 @@ import net.zyuiop.rpmachine.economy.TaxPayer;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import net.zyuiop.rpmachine.economy.shops.AbstractShopSign;
 import net.zyuiop.rpmachine.economy.shops.ItemShopSign;
+import net.zyuiop.rpmachine.json.Json;
+import net.zyuiop.rpmachine.json.ShopSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,9 +17,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public abstract class ShopsManager implements JsonDeserializer<AbstractShopSign>, JsonSerializer<AbstractShopSign> {
+public abstract class ShopsManager {
 	protected final ConcurrentHashMap<Location, AbstractShopSign> signs = new ConcurrentHashMap<>();
-	protected final Gson gson = new GsonBuilder().registerTypeAdapter(AbstractShopSign.class, this).create();
+	protected final Gson gson = Json.GSON;
 
 	public final void create(AbstractShopSign sign) {
 		signs.put(sign.getLocation(), sign);
@@ -28,23 +30,6 @@ public abstract class ShopsManager implements JsonDeserializer<AbstractShopSign>
 	protected abstract void doCreate(AbstractShopSign shopSign);
 
 	protected abstract void load();
-
-	@Override
-	public AbstractShopSign deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException {
-		String clazz = element.getAsJsonObject().get("signClass").getAsString();
-		try {
-			return context.deserialize(element, Class.forName(clazz));
-		} catch (ClassNotFoundException e) {
-			throw new JsonParseException(e);
-		}
-	}
-
-	@Override
-	public JsonElement serialize(AbstractShopSign sign, Type type, JsonSerializationContext context) {
-		JsonObject ser = context.serialize(sign).getAsJsonObject();
-		ser.addProperty("signClass", sign.getClass().getName());
-		return ser;
-	}
 
 	protected String locAsString(Location loc) {
 		return loc.getWorld().getName() + "-" + loc.getBlockX() + "-" + loc.getBlockY() + "-" + loc.getBlockZ();

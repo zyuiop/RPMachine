@@ -11,9 +11,13 @@ import net.zyuiop.rpmachine.economy.ShopOwner;
 import net.zyuiop.rpmachine.economy.TaxPayer;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import net.zyuiop.rpmachine.common.Plot;
+import net.zyuiop.rpmachine.permissions.DelegatedPermission;
+import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import javax.annotation.Nonnull;
 
 // TODO: finish implementing loans
 public class City implements TaxPayer, LandOwner, ShopOwner {
@@ -21,13 +25,13 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	private VirtualLocation spawn;
 	private String fileName;
 
-	private Set<VirtualChunk> chunks = new HashSet<>();
-	private Set<UUID> councils = new HashSet<>();
-	private Map<String, Plot> plots = new HashMap<>();
-	private Set<UUID> inhabitants = new HashSet<>();
-	private Set<UUID> invitedUsers = new HashSet<>();
-	private Map<TaxPayerToken, Double> taxesToPay = new HashMap<>();
-	private Map<TaxPayerToken, Loan> loans = new HashMap<>();
+	private final Set<VirtualChunk> chunks = new HashSet<>();
+	private final Map<UUID, Set<Permission>> councils = new HashMap<>();
+	private final Map<String, Plot> plots = new HashMap<>();
+	private final Set<UUID> inhabitants = new HashSet<>();
+	private final Set<UUID> invitedUsers = new HashSet<>();
+	private final Map<TaxPayerToken, Double> taxesToPay = new HashMap<>();
+	private final Map<TaxPayerToken, Loan> loans = new HashMap<>();
 
 	private CityTaxPayer taxPayer = new CityTaxPayer(); // loaded by Gson
 
@@ -60,10 +64,6 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		return taxesToPay;
 	}
 
-	public void setTaxesToPay(HashMap<TaxPayerToken, Double> taxesToPay) {
-		this.taxesToPay = taxesToPay;
-	}
-
 	public VirtualLocation getSpawn() {
 		return spawn;
 	}
@@ -76,24 +76,12 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		return chunks;
 	}
 
-	public void setChunks(Set<VirtualChunk> chunks) {
-		this.chunks = chunks;
-	}
-
 	public Set<UUID> getCouncils() {
-		return councils;
-	}
-
-	public void setCouncils(Set<UUID> councils) {
-		this.councils = councils;
+		return councils.keySet();
 	}
 
 	public Map<String, Plot> getPlots() {
 		return plots;
-	}
-
-	public void setPlots(HashMap<String, Plot> plots) {
-		this.plots = plots;
 	}
 
 	public String getFileName() {
@@ -108,16 +96,8 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		return inhabitants;
 	}
 
-	public void setInhabitants(Set<UUID> inhabitants) {
-		this.inhabitants = inhabitants;
-	}
-
 	public Set<UUID> getInvitedUsers() {
 		return invitedUsers;
-	}
-
-	public void setInvitedUsers(Set<UUID> invitedUsers) {
-		this.invitedUsers = invitedUsers;
 	}
 
 	public double getTaxes() {
@@ -208,7 +188,8 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	}
 
 	public boolean canBuild(Player player, Location location) {
-		if (mayor.equals(player.getUniqueId()) || councils.contains(player.getUniqueId())) {
+		// TODO: update to permissions
+		if (mayor.equals(player.getUniqueId()) || councils.containsKey(player.getUniqueId())) {
 			return true;
 		} else {
 			Plot plot = getPlotHere(location);
@@ -275,7 +256,8 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	}
 
 	public boolean canInteractWithBlock(Player player, Location location) {
-		if (mayor.equals(player.getUniqueId()) || councils.contains(player.getUniqueId())) {
+		// TODO: update to permissions
+		if (mayor.equals(player.getUniqueId()) || councils.containsKey(player.getUniqueId())) {
 			return true;
 		} else {
 			Plot plot = getPlotHere(location);
@@ -312,6 +294,22 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	@Override
 	public Map<String, Double> getUnpaidTaxes() {
 		return taxPayer.getUnpaidTaxes();
+	}
+
+	public boolean hasPermission(Player player, @Nonnull Permission permission) {
+		if (mayor.equals(player.getUniqueId())) {
+			return true; // Mayor has all permissions on all city properties
+		} else {
+			if (councils.containsKey(player.getUniqueId())) {
+				return councils.get(player.getUniqueId()).contains(permission);
+			}
+			return false;
+		}
+	}
+
+	@Override
+	public boolean hasDelegatedPermission(Player player, @Nonnull DelegatedPermission permission) {
+		return hasPermission(player, permission);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.TaxPayer;
+import net.zyuiop.rpmachine.permissions.EconomyPermissions;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -25,6 +26,11 @@ public class PayTaxesCommand implements SubCommand {
     @Override
     public String getDescription() {
         return "paye vos impôts en retard";
+    }
+
+    @Override
+    public boolean canUse(Player player) {
+        return RPMachine.getPlayerRoleToken(player).hasDelegatedPermission(player, EconomyPermissions.PAY_LATE_TAXES);
     }
 
     @Override

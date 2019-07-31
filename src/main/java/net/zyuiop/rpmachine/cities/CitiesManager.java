@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.common.VirtualChunk;
+import net.zyuiop.rpmachine.json.Json;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -49,12 +50,10 @@ public class CitiesManager {
 		if (!cityFolder.isDirectory())
 			throw new RuntimeException("Cities folder doesn't exist. " + cityFolder);
 
-		Gson gson = new Gson();
-
 		for (File file : cityFolder.listFiles()) {
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(file));
-				City city = gson.fromJson(reader, City.class);
+				City city = Json.GSON.fromJson(reader, City.class);
 				cities.put(city.getCityName(), city);
 				plugin.getLogger().info("Loaded city " + city.getCityName());
 			} catch (FileNotFoundException e) {

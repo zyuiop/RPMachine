@@ -5,6 +5,8 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
+import net.zyuiop.rpmachine.permissions.DelegatedPermission;
+import net.zyuiop.rpmachine.permissions.EconomyPermissions;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,6 +27,11 @@ public class GiveMoneyCommand implements SubCommand {
 	@Override
 	public String getDescription() {
 		return "effectue un don de monnaie à une ville";
+	}
+
+	@Override
+	public boolean canUse(Player player) {
+		return RPMachine.getPlayerRoleToken(player).hasDelegatedPermission(player, EconomyPermissions.PAY_MONEY_TO_CITY);
 	}
 
 	@Override
@@ -51,11 +58,12 @@ public class GiveMoneyCommand implements SubCommand {
 					if (amt <= 0) {
 						player.sendMessage(ChatColor.RED + "Montant trop faible.");
 					}
-					if (!RPMachine.getInstance().getEconomyManager().canPay(player.getUniqueId(), amt)) {
+
+					TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
+
+					if (!token.getTaxPayer().canPay(amt)) {
 						player.sendMessage(ChatColor.RED + "Vous ne pouvez pas payer ce montant.");
 					} else {
-						TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
-
 						City finalCity = city;
 						RPMachine.getInstance().getEconomyManager().transferMoneyBalanceCheck(token.getTaxPayer(), city, amt, result -> {
 							if (result) {

@@ -15,19 +15,18 @@ public class EconomyManager {
 		return RPMachine.database().getPlayerData(player);
 	}
 
-	public boolean canPay(UUID player, double amount) {
-		return getAmount(player) >= amount;
-	}
-
+	@Deprecated
 	public double getAmount(UUID player) {
 		PlayerData data = getData(player);
 		return data.getMoney();
 	}
 
+	@Deprecated
 	public void giveMoney(UUID player, double amount) {
 		giveMoney(player, amount, null);
 	}
 
+	@Deprecated
 	public void giveMoney(UUID player, double amount, FinancialCallback callback) {
 		new Thread(() -> {
 			PlayerData data = getData(player);
@@ -37,14 +36,17 @@ public class EconomyManager {
 		}).start();
 	}
 
+	@Deprecated
 	public void withdrawMoney(UUID player, double amount) {
 		withdrawMoney(player, amount, null);
 	}
 
+	@Deprecated
 	public void withdrawMoney(UUID player, double amount, FinancialCallback callback) {
 		giveMoney(player, -amount, callback); // Same thing with a negative amount
 	}
 
+	@Deprecated
 	public void withdrawMoneyWithBalanceCheck(UUID player, double amount, FinancialCallback callback) {
 		withdrawMoneyWithBalanceCheck(getData(player), amount, callback);
 	}
@@ -61,6 +63,7 @@ public class EconomyManager {
 		}).start();
 	}
 
+	@Deprecated
 	public void transferMoney(UUID from, UUID to, double amount) {
 		new Thread(() -> {
 			PlayerData fromData = getData(from);
@@ -71,6 +74,7 @@ public class EconomyManager {
 		}).start();
 	}
 
+	@Deprecated
 	public void transferMoneyBalanceCheck(UUID from, UUID to, double amount, Consumer<Boolean> result) {
 		PlayerData fromData = getData(from);
 		PlayerData toData = getData(to);

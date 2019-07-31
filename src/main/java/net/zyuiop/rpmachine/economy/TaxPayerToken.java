@@ -4,9 +4,13 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.LandOwner;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import net.zyuiop.rpmachine.projects.Project;
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
 /**
@@ -35,6 +39,28 @@ public class TaxPayerToken {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * Check if the given player has the right to execute the given command as the current taxpayer
+	 * @param player the player to check
+	 * @param permission the permission to check
+	 * @return true if the command is allowed, false if not
+	 */
+	public boolean hasDelegatedPermission(@Nonnull Player player, @Nonnull DelegatedPermission permission) {
+		Validate.notNull(player);
+		Validate.notNull(permission);
+
+		return getTaxPayer().hasDelegatedPermission(player, permission);
+	}
+
+	public boolean checkDelegatedPermission(@Nonnull Player player, @Nonnull DelegatedPermission permission) {
+		if (!hasDelegatedPermission(player, permission)) {
+			player.sendMessage(ChatColor.RED + "Vous n'avez pas le droit de faire ça en tant que " + displayable());
+			return false;
+		}
+
+		return true;
 	}
 
 	public String displayable() {

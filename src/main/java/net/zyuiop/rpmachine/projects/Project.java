@@ -1,15 +1,14 @@
 package net.zyuiop.rpmachine.projects;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.LandOwner;
-import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Area;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.economy.ShopOwner;
 import net.zyuiop.rpmachine.economy.TaxPayer;
+import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -28,6 +27,7 @@ public class Project extends Plot implements TaxPayer, ShopOwner, LandOwner {
 	private double money = 0D;
 	private Map<String, Double> unpaidTaxes = new HashMap<>();
 	private Map<String, Date> lastPaidTaxes = new HashMap<>();
+	private final Map<UUID, Set<DelegatedPermission>> permissions = new HashMap<>();
 
 
 	public String getWelcomeMessage() {
@@ -147,6 +147,15 @@ public class Project extends Plot implements TaxPayer, ShopOwner, LandOwner {
 	@Override
 	public Map<String, Double> getUnpaidTaxes() {
 		return unpaidTaxes;
+	}
+
+	@Override
+	public boolean hasDelegatedPermission(Player player, DelegatedPermission permission) {
+		if (getOwner().hasPermission(player, permission))
+			return true;
+		else if (permissions.containsKey(player.getUniqueId()))
+			return permissions.get(player.getUniqueId()).contains(permission);
+		return false;
 	}
 
 	@Override

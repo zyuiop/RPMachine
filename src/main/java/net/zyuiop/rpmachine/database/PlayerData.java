@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.LandOwner;
 import net.zyuiop.rpmachine.economy.ShopOwner;
 import net.zyuiop.rpmachine.economy.TaxPayer;
+import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -35,4 +36,9 @@ public interface PlayerData extends TaxPayer, LandOwner, ShopOwner {
 	}
 
 	boolean togglePlotMessages();
+
+	@Override
+	default boolean hasDelegatedPermission(Player player, DelegatedPermission permission) {
+		return true; // Player has all permissions on properties he manages!
+	}
 }

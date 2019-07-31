@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.projects;
 
 import com.google.gson.Gson;
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.json.Json;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -25,12 +26,10 @@ public class ProjectsManager {
 		if (!zonesFolder.isDirectory())
 			return;
 
-		Gson gson = new Gson();
-
 		for (File file : zonesFolder.listFiles()) {
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(file));
-				Project project = gson.fromJson(reader, Project.class);
+				Project project = Json.GSON.fromJson(reader, Project.class);
 				zones.put(project.getPlotName(), project);
 				plugin.getLogger().info("Loaded project " + project.getPlotName());
 			} catch (FileNotFoundException e) {

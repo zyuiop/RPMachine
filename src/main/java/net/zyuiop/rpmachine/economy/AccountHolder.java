@@ -11,4 +11,8 @@ public interface AccountHolder {
 	boolean withdrawMoney(double amount);
 
 	void creditMoney(double amount);
+
+	default boolean canPay(double amount) {
+		return getMoney() > amount;
+	}
 }

@@ -8,9 +8,6 @@ commands:
    money:
      description: Obtient votre monnaie actuelle
      usage: /money
-   pay:
-     description: Paye un joueur
-     usage: /pay <joueur> <montant>
    home:
      description: Vous téléporte à votre home
      usage: /home
