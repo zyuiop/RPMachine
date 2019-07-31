@@ -1,6 +1,7 @@
-package net.zyuiop.rpmachine.cities.commands;
+package net.zyuiop.rpmachine.commands;
 
 import net.zyuiop.rpmachine.cities.CitiesManager;
+import net.zyuiop.rpmachine.cities.commands.CitiesCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

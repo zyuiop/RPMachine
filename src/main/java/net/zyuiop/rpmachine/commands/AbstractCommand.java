@@ -18,10 +18,16 @@ import java.util.logging.Level;
  * @author Louis Vialar
  */
 public abstract class AbstractCommand implements TabCompleter, CommandExecutor {
+    private static Throwable instanciationContext = null;
     private final String requiredPerms;
 
     protected AbstractCommand(String command, String permission, String... aliases) {
         this.requiredPerms = permission;
+
+        if (instanciationContext != null) {
+            Bukkit.getLogger().log(Level.SEVERE, "Failed registering command (already instanciated) " + command + ". Previously registered at ", instanciationContext);
+            throw new IllegalStateException("Command already instanciated.");
+        }
         
         try {
             JavaPlugin plugin = RPMachine.getInstance();
@@ -35,6 +41,8 @@ public abstract class AbstractCommand implements TabCompleter, CommandExecutor {
             ((CraftServer) Bukkit.getServer()).getCommandMap().register(plugin.getName(), com);
 
             Bukkit.getLogger().info("Registered command " + command);
+
+            instanciationContext = new Throwable();
         } catch (ReflectiveOperationException ex) {
             Bukkit.getLogger().log(Level.SEVERE, "Failed registering command " + command, ex);
         }

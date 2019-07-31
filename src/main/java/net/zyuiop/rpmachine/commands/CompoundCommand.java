@@ -80,7 +80,7 @@ public class CompoundCommand extends AbstractCommand {
         }
 
         if (!subCommand.canUse(player)) {
-            player.sendMessage(ChatColor.RED + "Vous ne pouvez pas exécuter cette sous commande. Essayez " + ChatColor.DARK_RED + "/" + command + " help" + ChatColor.RED + " pour plus d'informations.");
+            player.sendMessage(ChatColor.RED + "Vous ne pouvez pas exécuter cette sous commande (permission ou conditions manquantes). Essayez " + ChatColor.DARK_RED + "/" + command + " help" + ChatColor.RED + " pour plus d'informations.");
             return false;
         }
 

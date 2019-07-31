@@ -29,16 +29,9 @@ commands:
    invsee:
      description: Affiche l'inventaire
      usage: /invsee <pseudo>
-   createcity:
-     description: Création de villes
-     usage: /createcity
-     permission: rp.createcity
    info:
      description: Commande d'aide
      usage: /help
-   floors:
-     description: Paliers de villes
-     usage: /floors
    myshops:
      description: Affiche vos shops
      usage: /myshops

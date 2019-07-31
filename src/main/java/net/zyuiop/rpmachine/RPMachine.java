@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.SelectionManager;
 import net.zyuiop.rpmachine.cities.commands.*;
+import net.zyuiop.rpmachine.cities.commands.citysubcommands.CreateCityCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.database.DatabaseManager;
@@ -73,9 +74,6 @@ public class RPMachine extends JavaPlugin {
 		new ProjectCommand(projectsManager);
 
 		// Classic commands
-		getCommand("createcity").setExecutor(new CreateCityCommand(citiesManager));
-		getCommand("floors").setExecutor(new FloorsCommand(citiesManager));
-
 		getCommand("pay").setExecutor(new CommandPay(this));
 		getCommand("money").setExecutor(new CommandMoney(this));
 		getCommand("fly").setExecutor(new CommandFly());
