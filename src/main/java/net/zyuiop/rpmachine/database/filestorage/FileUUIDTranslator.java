@@ -46,7 +46,7 @@ public class FileUUIDTranslator extends UUIDTranslatorBase {
 
 	@Override
 	protected CachedUUIDEntry getSavedUUID(String name) {
-		ConfigurationSection section = uuidsConf.getConfigurationSection(name);
+		ConfigurationSection section = namesConf.getConfigurationSection(name);
 		if (section == null) {
 			return null;
 		}
@@ -55,7 +55,7 @@ public class FileUUIDTranslator extends UUIDTranslatorBase {
 
 	@Override
 	protected CachedUUIDEntry getSavedName(UUID uuid) {
-		ConfigurationSection section = namesConf.getConfigurationSection(uuid.toString());
+		ConfigurationSection section = uuidsConf.getConfigurationSection(uuid.toString());
 		if (section == null) {
 			return null;
 		}
