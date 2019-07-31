@@ -167,6 +167,10 @@ public class CitiesManager {
 		return null;
 	}
 
+	public City getPlayerCity(Player player) {
+		return getPlayerCity(player.getUniqueId());
+	}
+
 	public City getCityHere(Chunk chunk) {
 		if (!chunk.getWorld().getName().equals("world"))
 			return null;

@@ -29,18 +29,10 @@ commands:
    invsee:
      description: Affiche l'inventaire
      usage: /invsee <pseudo>
-   city:
-     description: Commande de villes
-     usage: /city
-     aliases: [cities, c]
    createcity:
      description: Création de villes
      usage: /createcity
      permission: rp.createcity
-   plot:
-     description: Commande de parcelles
-     usage: /plot
-     aliases: [p, plots]
    info:
      description: Commande d'aide
      usage: /help
@@ -65,9 +57,6 @@ commands:
    actas:
      description: Agit en tant qu'une entité
      usage: /actas
-   projects:
-     description: Gère les projets
-     aliases: [project, zone, projet, zones]
 permissions:
    rp.bypass:
      default: op

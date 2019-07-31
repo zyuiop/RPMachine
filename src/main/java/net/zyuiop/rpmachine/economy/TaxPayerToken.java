@@ -58,7 +58,7 @@ public class TaxPayerToken {
 			}
 		}
 
-		return null;
+		return ChatColor.DARK_RED + "????";
 	}
 
 	public String shortDisplayable() {

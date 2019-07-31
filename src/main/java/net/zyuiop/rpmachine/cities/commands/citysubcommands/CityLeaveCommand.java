@@ -1,51 +1,39 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
-import net.zyuiop.rpmachine.cities.CitiesManager;
-import net.zyuiop.rpmachine.cities.commands.SubCommand;
+import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CityLeaveCommand implements SubCommand {
+import javax.annotation.Nonnull;
 
-	private final CitiesManager citiesManager;
-	public CityLeaveCommand(CitiesManager citiesManager) {
-		this.citiesManager = citiesManager;
-	}
+public class CityLeaveCommand implements CityMemberSubCommand {
+    @Override
+    public String getUsage() {
+        return "";
+    }
 
+    @Override
+    public String getDescription() {
+        return "quitte la ville dont vous êtes citoyen.";
+    }
 
-	@Override
-	public String getUsage() {
-		return "";
-	}
+    @Override
+    public boolean run(Player player, @Nonnull City city, String[] args) {
+        if (city.getMayor().equals(player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "Vous ne pouvez quitter une ville dont vous êtes le maire. Si vous souhaitez supprimer votre ville, contactez le staff. Sinon, nommez un autre maire avec /city setmayor <pseudo>");
+            return false;
+        } else {
+            if (city.getCouncils().contains(player.getUniqueId()))
+                city.getCouncils().remove(player.getUniqueId());
 
-	@Override
-	public String getDescription() {
-		return "Vous permet de quitter la ville dont vous êtes citoyen.";
-	}
+            city.getInhabitants().remove(player.getUniqueId());
+            city.getInvitedUsers().remove(player.getUniqueId());
+            RPMachine.getInstance().getCitiesManager().saveCity(city);
 
-	@Override
-	public void run(CommandSender sender, String[] args) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			City city = citiesManager.getPlayerCity(player.getUniqueId());
-			if (city == null) {
-				player.sendMessage(ChatColor.RED + "Vous n'êtes membre d'aucune ville.");
-			} else if (city.getMayor().equals(player.getUniqueId())) {
-				player.sendMessage(ChatColor.RED + "Vous ne pouvez quitter une ville dont vous êtes le maire. Si vous souhaitez supprimer votre ville, contactez le staff. Sinon, nommez un autre maire avec /city setmayor <pseudo>");
-			} else {
-				if (city.getCouncils().contains(player.getUniqueId()))
-					city.getCouncils().remove(player.getUniqueId());
-
-				city.getInhabitants().remove(player.getUniqueId());
-				city.getInvitedUsers().remove(player.getUniqueId());
-				citiesManager.saveCity(city);
-
-				player.sendMessage(ChatColor.RED + "Vous n'êtes plus citoyen de " + city.getCityName());
-			}
-		} else {
-			sender.sendMessage(ChatColor.RED + "Commande réservée aux joueurs.");
-		}
-	}
+            player.sendMessage(ChatColor.RED + "Vous n'êtes plus citoyen de " + city.getCityName());
+            return true;
+        }
+    }
 }

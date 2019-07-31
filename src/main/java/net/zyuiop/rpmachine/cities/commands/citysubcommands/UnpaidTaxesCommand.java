@@ -1,51 +1,38 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
-import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.CitiesManager;
-import net.zyuiop.rpmachine.cities.commands.SubCommand;
+import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.economy.TaxPayerToken;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
-import java.util.UUID;
 
-public class UnpaidTaxesCommand implements SubCommand {
+public class UnpaidTaxesCommand implements CityMemberSubCommand {
+    @Override
+    public String getUsage() {
+        return "";
+    }
 
-	private final CitiesManager citiesManager;
+    @Override
+    public String getDescription() {
+        return "affiche les impôts impayés";
+    }
 
-	public UnpaidTaxesCommand(CitiesManager citiesManager) {
-		this.citiesManager = citiesManager;
-	}
+    @Override
+    public boolean requiresCouncilPrivilege() {
+        return true;
+    }
 
-	@Override
-	public String getUsage() {
-		return "";
-	}
+    @Override
+    public boolean run(Player player, @Nonnull City city, String[] args) {
+        player.sendMessage(ChatColor.GOLD + "-----[ Impôts impayés ]-----");
+        for (Map.Entry<TaxPayerToken, Double> entry : city.getTaxesToPay().entrySet()) {
+            String name = entry.getKey().displayable();
+            player.sendMessage(ChatColor.YELLOW + " - " + (name == null ? "§cInconnu§e" : name + "§e") + " doit " + ChatColor.RED + entry.getValue() + ChatColor.YELLOW + " à la ville.");
+        }
 
-	@Override
-	public String getDescription() {
-		return "Affiche les impôts impayés dans votre ville.";
-	}
-
-	@Override
-	public void run(CommandSender sender, String[] args) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			City city = citiesManager.getPlayerCity(player.getUniqueId());
-			if (city == null) {
-				player.sendMessage(ChatColor.RED + "Cette ville n'existe pas.");
-			} else if (!city.getMayor().equals(player.getUniqueId()) && !city.getCouncils().contains(player.getUniqueId())) {
-				player.sendMessage(ChatColor.RED + "Vous ne pouvez pas gérer les impôts de cette ville.");
-			} else {
-				player.sendMessage(ChatColor.GOLD + "-----[ Impôts impayés ]-----");
-				for (Map.Entry<TaxPayerToken, Double> entry : city.getTaxesToPay().entrySet()) {
-					String name = entry.getKey().displayable();
-					player.sendMessage(ChatColor.YELLOW + " - " + (name == null ? "§cInconnu§e" : name + "§e") + " doit " + ChatColor.RED + entry.getValue() + ChatColor.YELLOW + " à la ville.");
-				}
-			}
-		}
-	}
+        return true;
+    }
 }

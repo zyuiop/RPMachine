@@ -1,53 +1,56 @@
 package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 
 import net.zyuiop.rpmachine.cities.CitiesManager;
-import net.zyuiop.rpmachine.cities.commands.SubCommand;
+import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class RemoveCommand implements SubCommand {
-	private final CitiesManager citiesManager;
+import javax.annotation.Nonnull;
 
-	public RemoveCommand(CitiesManager citiesManager) {
-		this.citiesManager = citiesManager;
-	}
+public class RemoveCommand implements CityMemberSubCommand {
+    private final CitiesManager citiesManager;
 
-	@Override
-	public String getUsage() {
-		return "<nom>";
-	}
+    public RemoveCommand(CitiesManager citiesManager) {
+        this.citiesManager = citiesManager;
+    }
 
-	@Override
-	public String getDescription() {
-		return "Supprime la parcelle <nom>";
-	}
+    @Override
+    public String getUsage() {
+        return "<nom>";
+    }
 
-	@Override
-	public void run(CommandSender sender, String[] args) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			City city = citiesManager.getPlayerCity(player.getUniqueId());
-			if (city == null) {
-				player.sendMessage(ChatColor.RED + "Vous n'avez pas de ville.");
-			} else if (!city.getCouncils().contains(player.getUniqueId()) && !player.getUniqueId().equals(city.getMayor())) {
-				player.sendMessage(ChatColor.RED + "Vous n'avez pas le droit de définir des parcelles dans votre ville.");
-			} else if (args.length < 1) {
-				player.sendMessage(ChatColor.RED + "Argument manquant.");
-			} else {
-				Plot plot = city.getPlots().get(args[0]);
-				if (plot == null)
-					player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
-				else {
-					city.getPlots().remove(plot.getPlotName());
-					citiesManager.saveCity(city);
-					player.sendMessage(ChatColor.GREEN + "La parcelle a bien été supprimée.");
-				}
-			}
-		} else {
-			sender.sendMessage(ChatColor.RED + "Commande réservée aux joueurs.");
-		}
-	}
+    @Override
+    public String getDescription() {
+        return "supprime la parcelle <nom>";
+    }
+
+    @Override
+    public boolean requiresCouncilPrivilege() {
+        return true;
+    }
+
+    @Override
+    public boolean run(Player player, @Nonnull City city, String[] args) {
+        if (args.length < 1) {
+            player.sendMessage(ChatColor.RED + "Argument manquant.");
+            return false;
+        } else {
+            Plot plot = city.getPlots().get(args[0]);
+            if (plot == null)
+                player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
+            else {
+                if (plot.getOwner() != null && (args.length < 2 || !args[1].equalsIgnoreCase("override"))) {
+                    player.sendMessage(ChatColor.RED + "Cette parcelle est habitée !");
+                    player.sendMessage(ChatColor.RED + "Pour supprimer quand même, ajoutez 'override' aux arguments de la commande.");
+                }
+                city.getPlots().remove(plot.getPlotName());
+                citiesManager.saveCity(city);
+                player.sendMessage(ChatColor.GREEN + "La parcelle a bien été supprimée.");
+            }
+
+            return true;
+        }
+    }
 }

@@ -67,8 +67,12 @@ public class RPMachine extends JavaPlugin {
 		this.scoreboardManager = new ScoreboardManager(this);
 		this.projectsManager = new ProjectsManager(this);
 
-		getCommand("city").setExecutor(new CityCommand(citiesManager));
-		getCommand("plot").setExecutor(new PlotCommand(citiesManager));
+		// Auto-registering commands
+		new CityCommand(citiesManager);
+		new PlotCommand(citiesManager);
+		new ProjectCommand(projectsManager);
+
+		// Classic commands
 		getCommand("createcity").setExecutor(new CreateCityCommand(citiesManager));
 		getCommand("floors").setExecutor(new FloorsCommand(citiesManager));
 
@@ -86,7 +90,6 @@ public class RPMachine extends JavaPlugin {
 		getCommand("bypass").setExecutor(new CommandBypass(citiesManager));
 		getCommand("myshops").setExecutor(new CommandShops(this));
 		getCommand("actas").setExecutor(new CommandActAs());
-		getCommand("projects").setExecutor(new ProjectCommand(projectsManager));
 
 		Bukkit.getPluginManager().registerEvents(selectionManager, this);
 		Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);

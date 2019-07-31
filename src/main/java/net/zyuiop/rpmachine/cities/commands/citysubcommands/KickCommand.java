@@ -9,14 +9,13 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class SetMayorCommand implements CityMemberSubCommand {
+public class KickCommand implements CityMemberSubCommand {
 
     private final CitiesManager citiesManager;
 
-    public SetMayorCommand(CitiesManager citiesManager) {
+    public KickCommand(CitiesManager citiesManager) {
         this.citiesManager = citiesManager;
     }
-
 
     @Override
     public String getUsage() {
@@ -25,7 +24,7 @@ public class SetMayorCommand implements CityMemberSubCommand {
 
     @Override
     public String getDescription() {
-        return "nomme un nouveau maire";
+        return "expulse un citoyen de la ville";
     }
 
     @Override
@@ -36,24 +35,23 @@ public class SetMayorCommand implements CityMemberSubCommand {
     @Override
     public boolean run(Player player, City city, String[] args) {
         if (args.length < 1) {
-            player.sendMessage(ChatColor.RED + "Utilisation incorrecte : /city setmayor " + getUsage());
+            player.sendMessage(ChatColor.RED + "Le pseudo du joueur est manquant.");
+            return false;
         } else {
-            String newMayor = args[0];
-            UUID id = RPMachine.database().getUUIDTranslator().getUUID(newMayor, true);
+            String pseudo = args[0];
+            UUID id = RPMachine.database().getUUIDTranslator().getUUID(pseudo, true);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
             } else {
                 if (!city.getInhabitants().contains(id)) {
-                    player.sendMessage(ChatColor.RED + "Ce joueur n'est pas citoyen de votre ville.");
+                    player.sendMessage(ChatColor.RED + "Ce joueur n'est pas membre de votre ville.");
                 } else {
-                    city.setMayor(id);
-                    city.getCouncils().add(id);
-                    player.sendMessage(ChatColor.GREEN + "Le maire a été modifié.");
+                    city.getInhabitants().remove(id);
                     citiesManager.saveCity(city);
+                    player.sendMessage(ChatColor.GREEN + "Le joueur a bien été exclus de votre ville.");
                 }
             }
+            return true;
         }
-
-        return true;
     }
 }

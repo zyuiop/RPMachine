@@ -50,7 +50,7 @@ public class FileUUIDTranslator extends UUIDTranslatorBase {
 		if (section == null) {
 			return null;
 		}
-		return new CachedUUIDEntry(name, UUID.fromString(section.getString("uuid")), getExpiry(section.getLong("date")));
+		return new CachedUUIDEntry(name, UUID.fromString(section.getString("uuid")));
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class FileUUIDTranslator extends UUIDTranslatorBase {
 		if (section == null) {
 			return null;
 		}
-		return new CachedUUIDEntry(section.getString("name"), uuid, getExpiry(section.getLong("date")));
+		return new CachedUUIDEntry(section.getString("name"), uuid);
 	}
 
 	@Override

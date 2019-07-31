@@ -97,30 +97,6 @@ public class PlotSign extends AbstractShopSign {
 	}
 
 	void clickUser(Player player, PlayerInteractEvent event) {
-		if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
-			if (city == null) {
-				player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la ville n'existe pas.");
-				return;
-			}
-
-			Plot plot = city.getPlots().get(plotName);
-			if (plot == null) {
-				player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la parcelle n'existe pas.");
-				return;
-			}
-
-			player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
-			player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
-			player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
-			player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs²");
-			player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().getVolume() + " blocs³");
-			player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " $");
-
-			return;
-		}
-
-		EconomyManager manager = RPMachine.getInstance().getEconomyManager();
 		City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
 		if (city == null) {
 			player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la ville n'existe pas.");
@@ -132,6 +108,18 @@ public class PlotSign extends AbstractShopSign {
 			player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la parcelle n'existe pas.");
 			return;
 		}
+
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
+			player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
+			player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
+			player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs²");
+			player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().getVolume() + " blocs³");
+			player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " $");
+			return;
+		}
+
+		EconomyManager manager = RPMachine.getInstance().getEconomyManager();
 
 		if (citizensOnly && !city.getInhabitants().contains(player.getUniqueId())) {
 			player.sendMessage(ChatColor.RED + "Vous n'êtes pas citoyen de cette ville.");
@@ -179,7 +167,6 @@ public class PlotSign extends AbstractShopSign {
 			}
 		});
 	}
-
 
 	public static void launchfw(final Location loc, final FireworkEffect effect) {
 		ReflectionUtils.getVersion().launchfw(loc, effect);

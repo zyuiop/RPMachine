@@ -2,84 +2,73 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
-import net.zyuiop.rpmachine.cities.commands.SubCommand;
+import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nonnull;
 import java.util.UUID;
 
-public class CouncilCommand implements SubCommand {
+public class CouncilCommand implements CityMemberSubCommand {
 
-	private final CitiesManager citiesManager;
-	public CouncilCommand(CitiesManager citiesManager) {
-		this.citiesManager = citiesManager;
-	}
+    private final CitiesManager citiesManager;
 
+    public CouncilCommand(CitiesManager citiesManager) {
+        this.citiesManager = citiesManager;
+    }
 
-	@Override
-	public String getUsage() {
-		return "<add|remove|list> <pseudo>";
-	}
+    @Override
+    public boolean requiresMayorPrivilege() {
+        return true;
+    }
 
-	@Override
-	public String getDescription() {
-		return "Ajoute ou supprime un adjoint dans votre ville. Pour plus d'informations sur les adjoints, rendez vous sur le forum.";
-	}
+    @Override
+    public boolean run(Player player, @Nonnull City city, String[] args) {
+        if (args.length == 1 && args[0].equals("list")) {
+            player.sendMessage(ChatColor.GOLD + "-----[ Liste des Conseillers ]-----");
+            for (UUID council : city.getCouncils()) {
+                String name = RPMachine.database().getUUIDTranslator().getName(council, false);
+                if (name != null)
+                    player.sendMessage(ChatColor.YELLOW + " - " + name);
+            }
+            return true;
+        } else if (args.length < 2) {
+            player.sendMessage(ChatColor.RED + "Arguments incorrects.");
+            return false;
+        } else {
+            String type = args[0];
+            String pseudo = args[1];
+            if (!type.equalsIgnoreCase("add") && !type.equalsIgnoreCase("remove")) {
+                player.sendMessage(ChatColor.RED + "Arguments incorrects.");
+                return false;
+            }
 
-	@Override
-	public void run(CommandSender sender, String[] args) {
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			City city = citiesManager.getPlayerCity(player.getUniqueId());
-			if (city == null) {
-				player.sendMessage(ChatColor.RED + "Vous n'êtes membre d'aucune ville. Pour créer une ville, utilisez plutot /createcity");
-			} else {
-				if (city.getMayor().equals(player.getUniqueId())) {
-					if (args.length == 1 && args[0].equals("list")) {
-						player.sendMessage(ChatColor.GOLD + "-----[ Liste des Conseillers ]-----");
-						for (UUID council : city.getCouncils()) {
-							String name = RPMachine.database().getUUIDTranslator().getName(council, false);
-							if (name != null)
-								player.sendMessage(ChatColor.YELLOW + " - " + name);
-						}
-						return;
-					} else if (args.length < 2) {
-						player.sendMessage(ChatColor.RED + "Arguments incorrects.");
-					} else {
-						String type = args[0];
-						String pseudo = args[1];
-						if (!type.equalsIgnoreCase("add") && !type.equalsIgnoreCase("remove")) {
-							player.sendMessage(ChatColor.RED + "Arguments incorrects.");
-							return;
-						}
+            UUID id = RPMachine.database().getUUIDTranslator().getUUID(pseudo, true);
+            if (id == null) {
+                player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
+            } else {
+                if (type.equalsIgnoreCase("add")) {
+                    city.getCouncils().add(id);
+                    player.sendMessage(ChatColor.GREEN + "Ce joueur est désormais conseiller !");
+                    citiesManager.saveCity(city);
+                } else {
+                    city.getCouncils().remove(id);
+                    player.sendMessage(ChatColor.GREEN + "Ce joueur n'est désormais plus conseiller !");
+                    citiesManager.saveCity(city);
+                }
+            }
+            return true;
+        }
+    }
 
-						UUID id = RPMachine.database().getUUIDTranslator().getUUID(pseudo, true);
-						if (id == null) {
-							player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
-						} else {
-							if (type.equalsIgnoreCase("add")) {
-								if (!city.getCouncils().contains(id))
-									city.getCouncils().add(id);
-								player.sendMessage(ChatColor.GREEN + "Ce joueur est désormais conseiller !");
-								citiesManager.saveCity(city);
-							} else {
-								if (city.getCouncils().contains(id))
-									city.getCouncils().remove(id);
-								player.sendMessage(ChatColor.GREEN + "Ce joueur n'est désormais plus conseiller !");
-								citiesManager.saveCity(city);
-							}
-						}
-					}
-				} else {
-					player.sendMessage(ChatColor.RED + "Vous n'avez pas le droit de faire ça dans cette ville.");
-				}
-			}
-		} else {
-			sender.sendMessage(ChatColor.RED + "Commande réservée aux joueurs.");
-		}
+    @Override
+    public String getUsage() {
+        return "<add|remove|list> <pseudo>";
+    }
 
-
-	}
+    @Override
+    public String getDescription() {
+        return "ajoute, liste, ou supprime un adjoint dans votre ville";
+    }
 }

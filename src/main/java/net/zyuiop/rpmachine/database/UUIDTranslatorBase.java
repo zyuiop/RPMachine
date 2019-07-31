@@ -147,16 +147,15 @@ public abstract class UUIDTranslatorBase implements UUIDTranslator {
 	public static class CachedUUIDEntry {
 		private final String name;
 		private final UUID uuid;
-		private final Calendar expiry;
 
-		public CachedUUIDEntry(String name, UUID uuid, Calendar expiry) {
+		public CachedUUIDEntry(String name, UUID uuid) {
 			this.name = name;
 			this.uuid = uuid;
-			this.expiry = expiry;
 		}
 
 		public boolean expired() {
-			return Calendar.getInstance().after(expiry);
+			return false;
+			// Never expire UUID entries
 		}
 
 		public String getName() {
@@ -165,10 +164,6 @@ public abstract class UUIDTranslatorBase implements UUIDTranslator {
 
 		public UUID getUuid() {
 			return uuid;
-		}
-
-		public Calendar getExpiry() {
-			return expiry;
 		}
 	}
 }

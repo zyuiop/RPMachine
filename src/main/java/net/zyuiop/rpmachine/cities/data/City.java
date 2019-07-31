@@ -20,13 +20,13 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 	private VirtualLocation spawn;
 	private String fileName;
 
-	private ArrayList<VirtualChunk> chunks = new ArrayList<>();
-	private ArrayList<UUID> councils = new ArrayList<>();
-	private HashMap<String, Plot> plots = new HashMap<>();
-	private ArrayList<UUID> inhabitants = new ArrayList<>();
-	private ArrayList<UUID> invitedUsers = new ArrayList<>();
-	private HashMap<TaxPayerToken, Double> taxesToPay = new HashMap<>();
-	private HashMap<TaxPayerToken, Loan> loans = new HashMap<>();
+	private Set<VirtualChunk> chunks = new HashSet<>();
+	private Set<UUID> councils = new HashSet<>();
+	private Map<String, Plot> plots = new HashMap<>();
+	private Set<UUID> inhabitants = new HashSet<>();
+	private Set<UUID> invitedUsers = new HashSet<>();
+	private Map<TaxPayerToken, Double> taxesToPay = new HashMap<>();
+	private Map<TaxPayerToken, Loan> loans = new HashMap<>();
 
 	private CityTaxPayer taxPayer = new CityTaxPayer(); // loaded by Gson
 
@@ -55,7 +55,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		this.cityName = cityName;
 	}
 
-	public HashMap<TaxPayerToken, Double> getTaxesToPay() {
+	public Map<TaxPayerToken, Double> getTaxesToPay() {
 		return taxesToPay;
 	}
 
@@ -71,23 +71,23 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		this.spawn = spawn;
 	}
 
-	public ArrayList<VirtualChunk> getChunks() {
+	public Set<VirtualChunk> getChunks() {
 		return chunks;
 	}
 
-	public void setChunks(ArrayList<VirtualChunk> chunks) {
+	public void setChunks(Set<VirtualChunk> chunks) {
 		this.chunks = chunks;
 	}
 
-	public ArrayList<UUID> getCouncils() {
+	public Set<UUID> getCouncils() {
 		return councils;
 	}
 
-	public void setCouncils(ArrayList<UUID> councils) {
+	public void setCouncils(Set<UUID> councils) {
 		this.councils = councils;
 	}
 
-	public HashMap<String, Plot> getPlots() {
+	public Map<String, Plot> getPlots() {
 		return plots;
 	}
 
@@ -103,19 +103,19 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		this.fileName = fileName;
 	}
 
-	public ArrayList<UUID> getInhabitants() {
+	public Set<UUID> getInhabitants() {
 		return inhabitants;
 	}
 
-	public void setInhabitants(ArrayList<UUID> inhabitants) {
+	public void setInhabitants(Set<UUID> inhabitants) {
 		this.inhabitants = inhabitants;
 	}
 
-	public ArrayList<UUID> getInvitedUsers() {
+	public Set<UUID> getInvitedUsers() {
 		return invitedUsers;
 	}
 
-	public void setInvitedUsers(ArrayList<UUID> invitedUsers) {
+	public void setInvitedUsers(Set<UUID> invitedUsers) {
 		this.invitedUsers = invitedUsers;
 	}
 
@@ -347,7 +347,7 @@ public class City implements TaxPayer, LandOwner, ShopOwner {
 		return remaining;
 	}
 
-	public HashMap<TaxPayerToken, Loan> getLoans() {
+	public Map<TaxPayerToken, Loan> getLoans() {
 		return loans;
 	}
 
