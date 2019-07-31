@@ -2,7 +2,7 @@ package net.zyuiop.rpmachine.reflection;
 
 import net.minecraft.server.v1_14_R1.EntityFireworks;
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.ScoreboardSign;
+import net.zyuiop.rpmachine.scoreboards.ScoreboardSign;
 import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;

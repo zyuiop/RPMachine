@@ -4,7 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.*;
-import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.common.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Area;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.Selection;
@@ -13,7 +13,6 @@ import net.zyuiop.rpmachine.permissions.CityPermissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;

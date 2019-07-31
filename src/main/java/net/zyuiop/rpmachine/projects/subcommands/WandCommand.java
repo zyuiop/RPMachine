@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.projects.subcommands;
 
-import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.common.commands.SubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

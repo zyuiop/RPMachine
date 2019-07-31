@@ -1,15 +1,7 @@
 package net.zyuiop.rpmachine.projects;
 
-import net.zyuiop.rpmachine.commands.CompoundCommand;
+import net.zyuiop.rpmachine.common.commands.CompoundCommand;
 import net.zyuiop.rpmachine.projects.subcommands.*;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class ProjectCommand extends CompoundCommand {

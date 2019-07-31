@@ -1,15 +1,13 @@
-package net.zyuiop.rpmachine.commands;
+package net.zyuiop.rpmachine.common.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
-import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.commands.EconomixCommand;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine;
+package net.zyuiop.rpmachine.scoreboards;
 
 /**
  * @author zyuiop

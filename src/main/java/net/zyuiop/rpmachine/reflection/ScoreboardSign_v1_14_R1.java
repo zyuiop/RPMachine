@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.reflection;
 
 import net.minecraft.server.v1_14_R1.*;
-import net.zyuiop.rpmachine.ScoreboardSign;
+import net.zyuiop.rpmachine.scoreboards.ScoreboardSign;
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_14_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;

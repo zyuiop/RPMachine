@@ -1,7 +1,6 @@
-package net.zyuiop.rpmachine;
+package net.zyuiop.rpmachine.common.commands;
 
-import net.zyuiop.rpmachine.commands.CompoundCommand;
-import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.economy.AdminLegalEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.LegalEntityType;

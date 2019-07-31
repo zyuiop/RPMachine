@@ -2,10 +2,9 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.common.commands.SubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CityJoinCommand implements SubCommand {

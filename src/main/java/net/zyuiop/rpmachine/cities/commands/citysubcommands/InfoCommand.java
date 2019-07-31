@@ -4,7 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
-import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.common.commands.SubCommand;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

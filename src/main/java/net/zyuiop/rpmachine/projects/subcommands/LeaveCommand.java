@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.projects.subcommands;
 
-import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.common.commands.SubCommand;
 import net.zyuiop.rpmachine.economy.AdminLegalEntity;
 import net.zyuiop.rpmachine.permissions.ProjectPermissions;
 import net.zyuiop.rpmachine.projects.Project;

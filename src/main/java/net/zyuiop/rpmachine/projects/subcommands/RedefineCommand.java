@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.common.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Area;
 import net.zyuiop.rpmachine.common.Selection;
 import net.zyuiop.rpmachine.projects.Project;

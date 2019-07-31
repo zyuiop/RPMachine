@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.commands;
+package net.zyuiop.rpmachine.common.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

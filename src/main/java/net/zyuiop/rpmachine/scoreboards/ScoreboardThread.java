@@ -1,7 +1,9 @@
-package net.zyuiop.rpmachine;
+package net.zyuiop.rpmachine.scoreboards;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;

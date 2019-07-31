@@ -1,5 +1,6 @@
-package net.zyuiop.rpmachine;
+package net.zyuiop.rpmachine.scoreboards;
 
+import net.zyuiop.rpmachine.RPMachine;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;

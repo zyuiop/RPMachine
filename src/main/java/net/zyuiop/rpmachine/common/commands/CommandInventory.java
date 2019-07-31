@@ -1,10 +1,8 @@
-package net.zyuiop.rpmachine.commands;
+package net.zyuiop.rpmachine.common.commands;
 
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandInventory extends AbstractCommand {

@@ -1,13 +1,12 @@
 package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.common.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Area;
 import net.zyuiop.rpmachine.common.Selection;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CreateCommand implements SubCommand {

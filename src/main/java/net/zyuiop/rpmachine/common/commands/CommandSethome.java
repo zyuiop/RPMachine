@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.commands;
+package net.zyuiop.rpmachine.common.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
