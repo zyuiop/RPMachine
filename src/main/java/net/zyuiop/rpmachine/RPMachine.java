@@ -148,7 +148,7 @@ public class RPMachine extends JavaPlugin {
 	}
 
 	private boolean loadDatabase() {
-		String managerClass = getConfig().getString("database", "net.zyuiop.rpmachine.database.bukkitbridge.BukkitBridgeDatabase");
+		String managerClass = getConfig().getString("database", "net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase");
 		try {
 			Class<? extends DatabaseManager> clazz = (Class<? extends DatabaseManager>) Class.forName(managerClass);
 			databaseManager = clazz.newInstance();

@@ -236,7 +236,6 @@ money:
   symbol: $
   baseAmount: 150.0
 
-# database: net.zyuiop.rpmachine.database.bukkitbridge.BukkitBridgeDatabase
 database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
 
 citytp:
