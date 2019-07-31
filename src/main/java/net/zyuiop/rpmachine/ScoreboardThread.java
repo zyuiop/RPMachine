@@ -136,9 +136,9 @@ public class ScoreboardThread implements Runnable {
 			return;
 		}
 
-		if (elapsed > 25 && RPMachine.getInstance().getCitiesManager().getPlayerCity(player.getUniqueId()) != null) {
+		if (elapsed > 100 && RPMachine.getInstance().getCitiesManager().getPlayerCity(player.getUniqueId()) != null) {
 			cityBoard();
-		} else if (elapsed > 25) {
+		} else if (elapsed > 100) {
 			elapsed = 0;
 			personnalBoard();
 		} else {
@@ -147,7 +147,7 @@ public class ScoreboardThread implements Runnable {
 
 		elapsed++;
 
-		if (elapsed > 50)
+		if (elapsed > 200)
 			elapsed = 0;
 
 		TaxPayerToken token = RPMachine.getPlayerRoleToken(player);
