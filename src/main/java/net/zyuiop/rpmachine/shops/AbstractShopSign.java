@@ -14,23 +14,21 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import javax.annotation.Nullable;
 
 public abstract class AbstractShopSign implements Ownable, StoredEntity {
+    private String fileName;
+    private String owner;
     protected VirtualLocation location;
     protected double price;
-    protected String owner;
-    protected String fileName;
 
-    public AbstractShopSign() {
+    public AbstractShopSign() { }
 
+    public AbstractShopSign(Location location) {
+        this.location = new VirtualLocation(location);
     }
 
     @Nullable
     @Override
     public String ownerTag() {
         return owner;
-    }
-
-    public AbstractShopSign(Location location) {
-        this.location = new VirtualLocation(location);
     }
 
     public String getOwner() {
@@ -45,14 +43,6 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
         return location.getLocation();
     }
 
-    public void setLocation(VirtualLocation location) {
-        this.location = location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = new VirtualLocation(location);
-    }
-
     public double getPrice() {
         return price;
     }
@@ -60,8 +50,6 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
     public void setPrice(double price) {
         this.price = price;
     }
-
-    public abstract void display();
 
     public void rightClick(Player player, PlayerInteractEvent event) {
         RoleToken token = RPMachine.getPlayerRoleToken(player);
@@ -72,11 +60,9 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
         }
     }
 
-    protected abstract void doBreakSign(Player authorizedBreaker);
-
     public boolean breakSign(Player player) {
         if (player == null) {
-            doBreakSign(null);
+            breakSign();
             return true;
         }
 
@@ -85,17 +71,39 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
             if (!token.checkDelegatedPermission(ShopPermissions.DESTROY_SHOP))
                 return false;
 
-            doBreakSign(player);
+            breakSign();
             return true;
         }
 
         return false;
     }
 
-    public abstract void breakSign();
+    /**
+     * Renders the sign
+     */
+    public abstract void display();
 
+    /**
+     * Breaks the sign, effectively removing the block and its content
+     */
+    public void breakSign() {
+        location.getLocation().getBlock().breakNaturally();
+        RPMachine.getInstance().getShopsManager().remove(this);
+    }
+
+    /**
+     * Use the sign as a privileged user (someone acting on behalf of the owner)
+     * @param player the player using the sign
+     * @param token the entity the player is acting on behalf of
+     * @param event the event that triggered the action
+     */
     abstract void clickPrivileged(Player player, RoleToken token, PlayerInteractEvent event);
 
+    /**
+     * Use the sign as a simple user
+     * @param player the user using the sign
+     * @param event the event that triggered the action
+     */
     abstract void clickUser(Player player, PlayerInteractEvent event);
 
     @Override

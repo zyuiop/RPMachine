@@ -107,18 +107,13 @@ public class ItemShopSign extends AbstractShopSign {
 		RPMachine.getInstance().getShopsManager().save(this);
 	}
 
-	public void doBreakSign(Player player) {
-		breakSign();
-	}
-
 	@Override
 	public void breakSign() {
 		for (; available > 0; available--) {
 			Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), new ItemStack(itemType, 1, damage));
 		}
 
-		location.getLocation().getBlock().breakNaturally();
-		RPMachine.getInstance().getShopsManager().remove(this);
+		super.breakSign();
 	}
 
 	void clickPrivileged(Player player, RoleToken tt, PlayerInteractEvent event) {

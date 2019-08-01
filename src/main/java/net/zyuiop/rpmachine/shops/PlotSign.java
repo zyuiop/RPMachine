@@ -88,18 +88,6 @@ public class PlotSign extends AbstractShopSign {
     }
 
     @Override
-    protected void doBreakSign(Player ignored) {
-        location.getLocation().getBlock().breakNaturally();
-        RPMachine.getInstance().getShopsManager().remove(this);
-    }
-
-    @Override
-    public void breakSign() {
-        location.getLocation().getBlock().breakNaturally();
-        RPMachine.getInstance().getShopsManager().remove(this);
-    }
-
-    @Override
     void clickPrivileged(Player player, RoleToken token, PlayerInteractEvent event) {
     }
 
@@ -169,7 +157,7 @@ public class PlotSign extends AbstractShopSign {
                 city.getPlots().put(plotName, plot);
                 RPMachine.getInstance().getCitiesManager().saveCity(city);
                 Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
-                    doBreakSign(null);
+                    breakSign();
                     launchfw(location.getLocation(), FireworkEffect.builder().withColor(Color.WHITE, Color.GRAY, Color.BLACK).with(FireworkEffect.Type.STAR).build());
                 });
                 player.sendMessage(ChatColor.GREEN + "Vous êtes désormais propriétaire de cette parcelle.");

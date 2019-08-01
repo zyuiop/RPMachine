@@ -7,9 +7,11 @@ import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Sign;
+import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.Vector;
 
 public class SignsListener implements Listener {
 
@@ -30,6 +33,8 @@ public class SignsListener implements Listener {
     public void onSignPlace(SignChangeEvent event) {
         if (!event.getPlayer().getWorld().getName().equals("world"))
             return;
+
+        // TODO: split in parts and make clean
 
         RoleToken tt = RPMachine.getPlayerRoleToken(event.getPlayer());
 
@@ -137,6 +142,38 @@ public class SignsListener implements Listener {
                     showPlotSignsRules(event.getPlayer());
                 }
             }
+        } else if (event.getLine(0).equalsIgnoreCase("TollShop")) {
+            String price = event.getLine(1);
+            String direction = event.getLine(2);
+
+            if (!tt.checkDelegatedPermission(ShopPermissions.CREATE_TOLL_SHOPS))
+                return;
+
+            TollShopSign.TollShopDirection dir;
+            if (direction.equals("->")) dir = TollShopSign.TollShopDirection.RIGHT;
+            else if (direction.equals("<-")) dir = TollShopSign.TollShopDirection.LEFT;
+            else {
+                event.getPlayer().sendMessage(ChatColor.RED + "Direction invalide, essayez -> ou <-");
+                event.getBlock().breakNaturally();
+                return;
+            }
+
+            Double dprice = Double.valueOf(price);
+
+            if (dprice > 9_999_999) {
+                event.getPlayer().sendMessage(ChatColor.RED + "Le prix entré est trop grand.");
+                return;
+            }
+
+            // TODO: better input parsing
+
+            TollShopSign sign = new TollShopSign(event.getBlock().getLocation(), dir, dprice);
+
+            sign.setOwner(tt.getTag());
+
+            event.getPlayer().sendMessage(ChatColor.AQUA + "[" + ChatColor.GREEN + "Shops" + ChatColor.AQUA + "] " + ChatColor.GREEN + "Votre boutique est prête à l'emploi.");
+
+            plugin.getShopsManager().create(sign);
         }
     }
 
@@ -160,6 +197,7 @@ public class SignsListener implements Listener {
     public void onSignClick(PlayerInteractEvent event) {
         if (event.getClickedBlock() == null)
             return;
+
         AbstractShopSign sign = plugin.getShopsManager().get(event.getClickedBlock().getLocation());
         if (sign == null)
             return;
