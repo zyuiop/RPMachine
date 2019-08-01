@@ -2,17 +2,25 @@ package net.zyuiop.rpmachine.economy.jobs;
 
 import org.bukkit.Material;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 public class Job {
 	protected String jobName;
 	protected String jobDescription;
-	protected HashSet<Material> materials;
+	protected Set<Material> materials = new HashSet<>();
+	protected Set<JobRestrictions> restrictions = new HashSet<>();
 
-	public Job(String jobName, String jobDescription, HashSet<Material> materials) {
+	public Job(String jobName, String jobDescription, HashSet<Material> materials, Set<JobRestrictions> restrictions) {
 		this.jobName = jobName;
 		this.jobDescription = jobDescription;
-		this.materials = materials;
+		this.materials.addAll(materials);
+		this.restrictions.addAll(restrictions);
+	}
+
+	public Set<JobRestrictions> getRestrictions() {
+		return Collections.unmodifiableSet(restrictions);
 	}
 
 	public String getJobName() {
@@ -31,7 +39,7 @@ public class Job {
 		this.jobDescription = jobDescription;
 	}
 
-	public HashSet<Material> getMaterials() {
+	public Set<Material> getMaterials() {
 		return materials;
 	}
 
