@@ -194,6 +194,23 @@ public class EnchantingSign extends AbstractShopSign {
         }
     }
 
+    public String getEnchantment() {
+        return enchantment;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    @Override
+    public String describe() {
+        String size = (available > 0 ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
+
+        return super.describe() + ChatColor.GREEN + "Vente" + ChatColor.YELLOW + " de l'enchantement " + enchantment + " " + level +
+                " pour " + ChatColor.AQUA + price + EconomyManager.getMoneyName() + ChatColor.YELLOW +
+                " (" + size + ChatColor.YELLOW + ")";
+    }
+
     public static class Builder extends ShopBuilder<EnchantingSign> {
         @Override
         public void describeFormat(Player player) {

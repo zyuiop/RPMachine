@@ -9,13 +9,15 @@ import java.util.Set;
 public class Job {
 	protected String jobName;
 	protected String jobDescription;
-	protected Set<Material> materials = new HashSet<>();
+	protected Set<Material> restrictedItems = new HashSet<>();
+	protected Set<Material> restrictedBlocks = new HashSet<>();
 	protected Set<JobRestrictions> restrictions = new HashSet<>();
 
-	public Job(String jobName, String jobDescription, HashSet<Material> materials, Set<JobRestrictions> restrictions) {
+	public Job(String jobName, String jobDescription, Set<Material> restrictedItems, Set<Material> restrictedBlocks, Set<JobRestrictions> restrictions) {
 		this.jobName = jobName;
 		this.jobDescription = jobDescription;
-		this.materials.addAll(materials);
+		this.restrictedItems.addAll(restrictedItems);
+		this.restrictedBlocks.addAll(restrictedBlocks);
 		this.restrictions.addAll(restrictions);
 	}
 
@@ -23,27 +25,19 @@ public class Job {
 		return Collections.unmodifiableSet(restrictions);
 	}
 
+	public Set<Material> getRestrictedItems() {
+		return restrictedItems;
+	}
+
+	public Set<Material> getRestrictedBlocks() {
+		return restrictedBlocks;
+	}
+
 	public String getJobName() {
 		return jobName;
 	}
 
-	public void setJobName(String jobName) {
-		this.jobName = jobName;
-	}
-
 	public String getJobDescription() {
 		return jobDescription;
-	}
-
-	public void setJobDescription(String jobDescription) {
-		this.jobDescription = jobDescription;
-	}
-
-	public Set<Material> getMaterials() {
-		return materials;
-	}
-
-	public void setMaterials(HashSet<Material> materials) {
-		this.materials = materials;
 	}
 }

@@ -101,6 +101,7 @@ public class TollShopSign extends AbstractShopSign {
         } else return null;
     }
 
+
     private TollShopDirection direction;
     @JsonExclude
     private Door door;
@@ -288,5 +289,10 @@ public class TollShopSign extends AbstractShopSign {
         p.sendMessage(ChatColor.YELLOW + "Price : " + getPrice());
         p.sendMessage(ChatColor.YELLOW + "Owner (Tag/displayable) : " + ownerTag() + " / " + owner().displayable());
         p.sendMessage(ChatColor.YELLOW + "Direction : " + direction);
+    }
+
+    @Override
+    public String describe() {
+        return super.describe() + ChatColor.DARK_AQUA + "Péage" + ChatColor.YELLOW + " pour " + ChatColor.AQUA + price + EconomyManager.getMoneyName();
     }
 }

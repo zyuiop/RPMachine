@@ -1,6 +1,7 @@
 package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.economy.jobs.Job;
@@ -28,7 +29,6 @@ public class ItemShopSign extends AbstractShopSign {
     }
 
     private Material itemType;
-    private short damage;
     private int amountPerPackage;
     private ShopAction action;
     private int available;
@@ -42,11 +42,11 @@ public class ItemShopSign extends AbstractShopSign {
     }
 
     public boolean isItemValid(ItemStack itemStack) {
-        return itemStack != null && itemStack.getType() == itemType && itemStack.getDurability() == damage;
+        return itemStack != null && itemStack.getType() == itemType;
     }
 
     public ItemStack getNewStack() {
-        return new ItemStack(itemType, amountPerPackage, damage);
+        return new ItemStack(itemType, amountPerPackage);
     }
 
     public Material getItemType() {
@@ -97,7 +97,7 @@ public class ItemShopSign extends AbstractShopSign {
     @Override
     public void breakSign() {
         for (; available > 0; available--) {
-            Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), new ItemStack(itemType, 1, damage));
+            Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), new ItemStack(itemType, 1));
         }
 
         super.breakSign();
@@ -114,21 +114,23 @@ public class ItemShopSign extends AbstractShopSign {
                 if (!tt.checkDelegatedPermission(ShopPermissions.CREATE_SELL_SHOPS))
                     return;
 
-                Job job = RPMachine.getInstance().getJobsManager().getJob(player.getUniqueId());
-                if (job == null) {
-                    player.sendMessage(ChatColor.RED + "Vous n'avez pas de métier pour le moment.");
-                    return;
-                }
-
-                if (!job.getMaterials().contains(type)) {
-                    player.sendMessage(ChatColor.RED + "Votre job ne vous permet pas de vendre cela.");
-                    return;
+                if (RPMachine.getInstance().getJobsManager().isItemRestricted(type)) {
+                    if (!(tt.getLegalEntity() instanceof AdminLegalEntity)) {
+                        if (tt.getLegalEntity() instanceof PlayerData) {
+                            if (!RPMachine.getInstance().getJobsManager().isItemAllowed(player, type)) {
+                                RPMachine.getInstance().getJobsManager().printAvailableJobsForItem(type, player);
+                                return;
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "Cet objet est restreint et ne peut être vendu que par des joueurs.");
+                            return;
+                        }
+                    }
                 }
             } else if (!tt.checkDelegatedPermission(ShopPermissions.CREATE_BUY_SHOPS))
                 return;
 
             itemType = type;
-            damage = event.getItem().getDurability();
             player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Votre shop est maintenant totalement opérationnel.");
             if (action == ShopAction.SELL) {
                 player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Cliquez droit avec des items pour les ajouter dans l'inventaire de votre shop.");
@@ -289,5 +291,15 @@ public class ItemShopSign extends AbstractShopSign {
         p.sendMessage(ChatColor.YELLOW + "Item : " + getItemType());
         p.sendMessage(ChatColor.YELLOW + "Amount per package : " + getAmountPerPackage());
         p.sendMessage(ChatColor.YELLOW + "Available items : " + getAvailable());
+    }
+
+    @Override
+    public String describe() {
+        String typeLine = getAction() == ItemShopSign.ShopAction.BUY ? net.md_5.bungee.api.ChatColor.RED + "Achat" : net.md_5.bungee.api.ChatColor.GREEN + "Vente";
+        String size = (getAvailable() > getAmountPerPackage() ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
+
+        return super.describe() + typeLine + ChatColor.YELLOW + " de lots de " + amountPerPackage + " " + itemType +
+                " pour " + ChatColor.AQUA + price + EconomyManager.getMoneyName() + ChatColor.YELLOW +
+                " (" + size + ChatColor.YELLOW + ")";
     }
 }

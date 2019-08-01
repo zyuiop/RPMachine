@@ -106,8 +106,8 @@ public class ShopsManager extends FileEntityStore<AbstractShopSign> {
         super.saveEntity(shopSign);
     }
 
-    public final HashSet<ItemShopSign> getPlayerShops(Player player) {
-        return signs.values().stream().filter(shopSign -> shopSign.owner() instanceof PlayerData && ((PlayerData) shopSign.owner()).getUuid().equals(player.getUniqueId()) && shopSign instanceof ItemShopSign).map(shopSign -> (ItemShopSign) shopSign).collect(Collectors.toCollection(HashSet::new));
+    public final Set<AbstractShopSign> getPlayerShops(Player player) {
+        return signs.values().stream().filter(shopSign -> shopSign.owner() instanceof PlayerData && ((PlayerData) shopSign.owner()).getUuid().equals(player.getUniqueId())).collect(Collectors.toSet());
     }
 
     public final Set<AbstractShopSign> getShops(LegalEntity payer) {

@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.economy.jobs;
 
+import com.google.common.collect.Sets;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
 import org.apache.commons.lang.StringUtils;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 // TODO: on init, find restrictions, and if they are used init their listener
@@ -17,6 +19,32 @@ public class JobsManager {
 	private final RPMachine rpMachine;
 	private HashMap<String, Job> jobs = new HashMap<>();
 	private Set<JobRestrictions> enabledRestrictions = new HashSet<>();
+	private Set<Material> restrictedItems = new HashSet<>(); // items that can only be crafted/sold by specific job
+	private Set<Material> restrictedBlocks = new HashSet<>(); // blocks that can only be placed/used by specific job
+
+	private Set<Material> parseMaterialSet(List<?> list) {
+		if (list == null) return Sets.newHashSet();
+
+		HashSet<Material> materials = new HashSet<>();
+		for (Object material : list) {
+			try {
+				Material mat = null;
+				if (material instanceof String) {
+					if (((String) material).contains(":")) {
+						mat = Material.matchMaterial((String) material);
+					} else
+						mat = Material.getMaterial((String) material);
+				}
+
+				if (mat != null)
+					materials.add(mat);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return materials;
+	}
 
 	public JobsManager(RPMachine pl) {
 		this.rpMachine = pl;
@@ -24,23 +52,9 @@ public class JobsManager {
 		for (Map<?, ?> map : rpMachine.getConfig().getMapList("jobs")) {
 			String name = (String) map.get("name");
 			String description = (String) map.get("description");
-			HashSet<Material> materials = new HashSet<>();
-			for (Object material : (List<?>) map.get("items")) {
-				try {
-					Material mat = null;
-					if (material instanceof String) {
-						if (((String) material).contains(":")) {
-							mat = Material.matchMaterial((String) material);
-						} else
-							mat = Material.getMaterial((String) material);
-					}
+			Set<Material> restrictedItems = parseMaterialSet((List<?>) map.get("restrictedItems"));
+			Set<Material> restrictedBlocks = parseMaterialSet((List<?>) map.get("restrictedBlocks"));
 
-					if (mat != null)
-						materials.add(mat);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
 
 			HashSet<JobRestrictions> restrictions = new HashSet<>();
 			if (map.containsKey("restrictions")) {
@@ -49,8 +63,10 @@ public class JobsManager {
 			}
 
 			enabledRestrictions.addAll(restrictions);
+			this.restrictedBlocks.addAll(restrictedBlocks);
+			this.restrictedItems.addAll(restrictedItems);
 
-			jobs.put(name, new Job(name, description, materials, restrictions));
+			jobs.put(name, new Job(name, description, restrictedItems, restrictedBlocks, restrictions));
 		}
 
 		// Enable enabled restrictions
@@ -76,6 +92,22 @@ public class JobsManager {
 		return getJob(p) != null && getJob(p).getRestrictions().contains(r);
 	}
 
+	public boolean isItemRestricted(Material m) {
+		return restrictedItems.contains(m);
+	}
+
+	public boolean isItemAllowed(Player p, Material m) {
+		return !isItemRestricted(m) || (getJob(p) != null && getJob(p).getRestrictedItems().contains(m));
+	}
+
+	public boolean isBlockRestricted(Material m) {
+		return restrictedBlocks.contains(m);
+	}
+
+	public boolean isBlockAllowed(Player p, Material m) {
+		return !isBlockRestricted(m) || (getJob(p) != null && getJob(p).getRestrictedBlocks().contains(m));
+	}
+
 	public Job getJob(UUID player) {
 		PlayerData data = RPMachine.database().getPlayerData(player);
 		String job = data.getJob();
@@ -85,16 +117,23 @@ public class JobsManager {
 	}
 
 	public void printAvailableJobs(JobRestrictions restrictedAction, Player player) {
-		String availableJobs =
-				StringUtils.join(getJobs(restrictedAction).stream().map(Job::getJobName).collect(Collectors.toList()),
-						ChatColor.GOLD + ", " + ChatColor.YELLOW);
-
-		player.sendMessage(ChatColor.RED + "Cette action est restreinte et nécessite d'avoir le travail adéquat. Métiers autorisés : " + ChatColor.YELLOW + availableJobs);
-
+		printAvailableJobs(j -> j.getRestrictions().contains(restrictedAction), "Cette action est restreinte et nécessite d'avoir le travail adéquat.", player);
 	}
 
-	public List<Job> getJobs(JobRestrictions restrictions) {
-		return jobs.values().stream().filter(j -> j.getRestrictions().contains(restrictions)).collect(Collectors.toList());
+	private void printAvailableJobs(Predicate<Job> filter, String message, Player player) {
+		String availableJobs =
+				StringUtils.join(jobs.values().stream().filter(filter).map(Job::getJobName).collect(Collectors.toList()),
+						ChatColor.GOLD + ", " + ChatColor.YELLOW);
+
+		player.sendMessage(ChatColor.RED + message + " Métiers autorisés : " + ChatColor.YELLOW + availableJobs);
+	}
+
+	public void printAvailableJobsForItem(Material item, Player player) {
+		printAvailableJobs(j -> j.getRestrictedItems().contains(item), "Cet objet ne peut être crafté et vendu que par certains métiers.", player);
+	}
+
+	public void printAvailableJobsForBlock(Material block, Player player) {
+		printAvailableJobs(j -> j.getRestrictedBlocks().contains(block), "Ce block ne peut être placé et utilisé que par certains métiers.", player);
 	}
 
 	public HashMap<String, Job> getJobs() {

@@ -124,4 +124,8 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+
+    public String describe() {
+        return ChatColor.GOLD + "(" + ChatColor.YELLOW + getLocation().getBlockX() + "; " + getLocation().getBlockY() + "; " + getLocation().getBlockZ() + ChatColor.GOLD + ") ";
+    }
 }

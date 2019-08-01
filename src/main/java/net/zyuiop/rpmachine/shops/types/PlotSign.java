@@ -83,6 +83,11 @@ public class PlotSign extends AbstractShopSign {
     }
 
     @Override
+    public String describe() {
+        return super.describe() + ChatColor.DARK_GREEN + "Parcelle" + ChatColor.YELLOW + " " + plotName + " dans " + cityName + " pour " + ChatColor.AQUA + price + EconomyManager.getMoneyName();
+    }
+
+    @Override
     void clickPrivileged(Player player, RoleToken token, PlayerInteractEvent event) {
         clickUser(player, event);
     }

@@ -30,17 +30,11 @@ public class CommandShops extends CompoundCommand {
 
             @Override
             public boolean run(Player player, String[] args) {
-                for (ItemShopSign sign : RPMachine.getInstance().getShopsManager().getPlayerShops(player)) {
-                    String typeLine = sign.getAction() == ItemShopSign.ShopAction.BUY ? ChatColor.RED + "Achat" : ChatColor.GREEN + "Vente";
-                    String size = (sign.getAvailable() > sign.getAmountPerPackage() ? ChatColor.GREEN : ChatColor.RED) + "" + sign.getAvailable() + " en stock";
-                    player.sendMessage(
-                            ChatColor.GOLD + " -> " +
-                                    sign.getLocation().getBlockX() + "-" + sign.getLocation().getBlockY() + "-" + sign.getLocation().getBlockZ() +
-                                    " : " + typeLine + ChatColor.YELLOW + " de " + sign.getItemType() + " : " + size);
-                }
+                player.sendMessage(ChatColor.YELLOW + " ---[Liste de vos boutiques]--- ");
+                RPMachine.getInstance().getShopsManager().getPlayerShops(player).forEach(s -> player.sendMessage(ChatColor.GOLD + "- " + s.describe()));
                 return true;
             }
-        });
+        }, "list");
 
         registerBuilder(new ItemShopSign.Builder(), "shops", "boutiques", "boutiques");
         registerBuilder(new PlotSign.Builder(), "plotshops", "vente de parcelle", "parcelles", "plot", "plots");
