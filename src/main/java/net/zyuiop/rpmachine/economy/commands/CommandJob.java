@@ -4,11 +4,9 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.AbstractCommand;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.jobs.Job;
-import net.zyuiop.rpmachine.shops.ItemShopSign;
+import net.zyuiop.rpmachine.shops.types.ItemShopSign;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandJob extends AbstractCommand {

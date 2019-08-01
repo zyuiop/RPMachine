@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.shops;
+package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
@@ -7,6 +7,7 @@ import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -47,10 +48,6 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
     public void rightClick(Player player, PlayerInteractEvent event) {
         RoleToken token = RPMachine.getPlayerRoleToken(player);
         if (!owner.equals(token.getTag())) {
@@ -68,11 +65,16 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
 
         RoleToken token = RPMachine.getPlayerRoleToken(player);
         if (owner.equals(token.getTag())) {
-            if (!token.checkDelegatedPermission(ShopPermissions.DESTROY_SHOP))
+            if (!token.checkDelegatedPermission(ShopPermissions.DESTROY_SHOP)) {
+                player.sendMessage(ChatColor.RED + "Impossible de casser ce shop!");
                 return false;
+            }
 
             breakSign();
+            player.sendMessage(ChatColor.GREEN + "Le shop a bien été supprimé.");
             return true;
+        } else {
+            player.sendMessage(ChatColor.RED + "Impossible de casser ce shop!");
         }
 
         return false;
@@ -82,6 +84,11 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
      * Renders the sign
      */
     public abstract void display();
+
+    /**
+     * Prints the debug info to the player
+     */
+    public abstract void debug(Player player);
 
     /**
      * Breaks the sign, effectively removing the block and its content

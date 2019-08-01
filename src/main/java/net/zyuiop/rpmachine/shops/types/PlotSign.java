@@ -1,14 +1,16 @@
-package net.zyuiop.rpmachine.shops;
+package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
-import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.entities.LegalEntity;
+import net.zyuiop.rpmachine.entities.RoleToken;
+import net.zyuiop.rpmachine.permissions.PlotPermissions;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
+import net.zyuiop.rpmachine.shops.ShopBuilder;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -16,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -28,11 +31,8 @@ public class PlotSign extends AbstractShopSign {
         super();
     }
 
-    public PlotSign(Location location, String regionName, boolean citizensOnly, String cityName) {
+    public PlotSign(Location location) {
         super(location);
-        this.plotName = regionName;
-        this.citizensOnly = citizensOnly;
-        this.cityName = cityName;
     }
 
     public static void launchfw(final Location loc, final FireworkEffect effect) {
@@ -163,5 +163,68 @@ public class PlotSign extends AbstractShopSign {
                 player.sendMessage(ChatColor.GREEN + "Vous êtes désormais propriétaire de cette parcelle.");
             }
         });
+    }
+
+    public static class Builder extends ShopBuilder<PlotSign> {
+        @Override
+        public void describeFormat(Player player) {
+            player.sendMessage(ChatColor.YELLOW + " - PlotShop");
+            player.sendMessage(ChatColor.AQUA + " - Prix de la parcelle");
+            player.sendMessage(ChatColor.AQUA + " - <all|citizens> (limite qui peut acheter la parcelle)");
+        }
+
+        @Override
+        public boolean hasPermission(RoleToken player) {
+            return player.hasDelegatedPermission(ShopPermissions.CREATE_PLOT_SHOPS);
+        }
+
+        @Override
+        public Optional<PlotSign> parseSign(Block block, RoleToken tt, String[] lines) throws SignPermissionError, SignParseError {
+            return Optional.of(new PlotSign(block.getLocation()))
+                    .map(sign -> {
+                        City city = RPMachine.getInstance().getCitiesManager().getCityHere(block.getChunk());
+                        if (city != null) {
+                            Plot plot = city.getPlotHere(sign.getLocation());
+                            if (plot == null) {
+                                throw new SignParseError("Le panneau ne se trouve pas dans une parcelle");
+                            }
+
+                            if (!plot.getOwner().equals(tt.getTag())) {
+                                throw new SignParseError("Vous n'êtes pas propriétaire de cette parcelle");
+                            } else if (!tt.hasDelegatedPermission(PlotPermissions.SELL_PLOT)) {
+                                throw new SignPermissionError("Vous ne pouvez pas vendre cette parcelle");
+                            }
+
+                            sign.plotName = plot.getPlotName();
+                            sign.cityName = city.getCityName();
+
+                            return sign;
+                        } else {
+                            throw new SignParseError("Le panneau ne se trouve pas dans une ville.");
+                        }
+                    })
+                    .flatMap(sign -> extractDouble(lines[1]).map(price -> {
+                        if (price > 100_000_000_000D)
+                            throw new SignParseError("Le prix maximal est dépassé (100 milliards)");
+                        sign.price = price;
+                        return sign;
+                    }))
+                    .map(sign -> {
+                        sign.citizensOnly = lines[2] != null && lines[2].equalsIgnoreCase("citziens");
+                        sign.setOwner(tt.getTag());
+
+                        return sign;
+                    });
+        }
+    }
+
+    @Override
+    public void debug(Player p) {
+        p.sendMessage(ChatColor.YELLOW + "-----[ Débug Shop ] -----");
+        p.sendMessage(ChatColor.YELLOW + "Price : " + getPrice());
+        p.sendMessage(ChatColor.YELLOW + "Owner (Tag/displayable) : " + ownerTag() + " / " + owner().displayable());
+        p.sendMessage(ChatColor.YELLOW + "Parcelle : " + getPlotName());
+        p.sendMessage(ChatColor.YELLOW + "Ville : " + getCityName());
+        p.sendMessage(ChatColor.YELLOW + "Citizens Only : " + isCitizensOnly());
     }
 }

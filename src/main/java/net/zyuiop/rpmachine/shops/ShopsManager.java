@@ -1,24 +1,75 @@
 package net.zyuiop.rpmachine.shops;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntity;
+import net.zyuiop.rpmachine.entities.RoleToken;
+import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
+import net.zyuiop.rpmachine.shops.types.ItemShopSign;
+import net.zyuiop.rpmachine.shops.types.PlotSign;
+import net.zyuiop.rpmachine.shops.types.TollShopSign;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.SignChangeEvent;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.swing.plaf.SplitPaneUI;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ShopsManager extends FileEntityStore<AbstractShopSign> {
     protected final ConcurrentHashMap<Location, AbstractShopSign> signs = new ConcurrentHashMap<>();
+    protected final Map<String, ShopBuilder<? extends AbstractShopSign>> shopBuilders = new HashMap<>();
 
     public ShopsManager() {
         super(AbstractShopSign.class, "shops");
 
         super.load();
+
+        registerShopBuilder(new PlotSign.Builder(), "PlotShop", "[PlotShop]", "[Plot]", "[Parcelle]");
+        registerShopBuilder(new ItemShopSign.Builder(), "Shop", "ItemShop", "[Shop]", "[Boutique]");
+        registerShopBuilder(new TollShopSign.Builder(), "TollShop", "[TollShop]", "[Toll]", "[Peage]", "[Péage]");
+    }
+
+    private void registerShopBuilder(ShopBuilder<? extends AbstractShopSign> builder, String... validFirstLines) {
+        for (String f : validFirstLines)
+            shopBuilders.put(f.toLowerCase(), builder);
+    }
+
+    public final void buildShop(SignChangeEvent event) {
+        RoleToken tt = RPMachine.getPlayerRoleToken(event.getPlayer());
+        String type = event.getLine(0);
+
+        if (type == null)
+            return;
+
+        ShopBuilder<? extends AbstractShopSign> builder = shopBuilders.get(type.toLowerCase());
+        if (builder == null)
+            return;
+
+        // Try to build the shop
+        try {
+            Optional<? extends AbstractShopSign> sign = builder.parseSign(event.getBlock(), tt, event.getLines());
+
+            if (sign.isPresent()) {
+                create(sign.get());
+                builder.postCreateInstructions(event.getPlayer());
+            } else {
+                event.getPlayer().sendMessage(ChatColor.RED + "Format de panneau invalide.");
+                event.getBlock().breakNaturally();
+                builder.describeFormat(event.getPlayer());
+            }
+        } catch (ShopBuilder.SignParseError e) {
+            event.getBlock().breakNaturally();
+            event.getPlayer().sendMessage(ChatColor.RED + "Format de panneau invalide : " + e.getMessage());
+            builder.describeFormat(event.getPlayer());
+        } catch (ShopBuilder.SignPermissionError e) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Permission manquante (en tant que " + tt.getLegalEntity().displayable() + ChatColor.RED + ") : " + e.getMessage());
+            event.getBlock().breakNaturally();
+        }
     }
 
     public final void create(AbstractShopSign sign) {
