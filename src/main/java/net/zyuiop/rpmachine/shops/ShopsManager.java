@@ -5,10 +5,7 @@ import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
-import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
-import net.zyuiop.rpmachine.shops.types.ItemShopSign;
-import net.zyuiop.rpmachine.shops.types.PlotSign;
-import net.zyuiop.rpmachine.shops.types.TollShopSign;
+import net.zyuiop.rpmachine.shops.types.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -32,6 +29,7 @@ public class ShopsManager extends FileEntityStore<AbstractShopSign> {
         registerShopBuilder(new PlotSign.Builder(), "PlotShop", "[PlotShop]", "[Plot]", "[Parcelle]");
         registerShopBuilder(new ItemShopSign.Builder(), "Shop", "ItemShop", "[Shop]", "[Boutique]");
         registerShopBuilder(new TollShopSign.Builder(), "TollShop", "[TollShop]", "[Toll]", "[Peage]", "[Péage]");
+        registerShopBuilder(new EnchantingSign.Builder(), "EnchantShop", "ShopEnchant", "[Enchantment]", "[Enchantement]", "[Enchant]");
     }
 
     private void registerShopBuilder(ShopBuilder<? extends AbstractShopSign> builder, String... validFirstLines) {

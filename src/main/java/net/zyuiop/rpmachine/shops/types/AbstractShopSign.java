@@ -55,6 +55,8 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
         } else {
             clickPrivileged(player, token, event);
         }
+
+        RPMachine.getInstance().getShopsManager().save(this);
     }
 
     public boolean breakSign(Player player) {

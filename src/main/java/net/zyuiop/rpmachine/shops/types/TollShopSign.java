@@ -208,11 +208,6 @@ public class TollShopSign extends AbstractShopSign {
         }
     }
 
-    public void rightClick(Player player, PlayerInteractEvent event) {
-        super.rightClick(player, event);
-        RPMachine.getInstance().getShopsManager().save(this);
-    }
-
     void clickPrivileged(Player player, RoleToken tt, PlayerInteractEvent event) {
         display(); // try to regen door
         clickUser(player, event);

@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.CompoundCommand;
 import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.shops.types.EnchantingSign;
 import net.zyuiop.rpmachine.shops.types.ItemShopSign;
 import net.zyuiop.rpmachine.shops.types.PlotSign;
 import net.zyuiop.rpmachine.shops.types.TollShopSign;
@@ -41,9 +42,10 @@ public class CommandShops extends CompoundCommand {
             }
         });
 
-        registerBuilder(new ItemShopSign.Builder(), "shops", "boutiques", "boutiques", "shop", "boutique");
+        registerBuilder(new ItemShopSign.Builder(), "shops", "boutiques", "boutiques");
         registerBuilder(new PlotSign.Builder(), "plotshops", "vente de parcelle", "parcelles", "plot", "plots");
-        registerBuilder(new TollShopSign.Builder(), "tolls", "péages", "peages", "péages", "tollshops", "péage", "peage", "toll");
+        registerBuilder(new TollShopSign.Builder(), "tolls", "péages", "peages", "péages", "toll");
+        registerBuilder(new EnchantingSign.Builder(), "enchant", "enchantement", "enchantement");
     }
 
     private void registerBuilder(ShopBuilder builder, String name, String helpName, String... aliases) {

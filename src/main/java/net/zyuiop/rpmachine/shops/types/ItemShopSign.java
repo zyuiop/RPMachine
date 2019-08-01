@@ -94,11 +94,6 @@ public class ItemShopSign extends AbstractShopSign {
         }
     }
 
-    public void rightClick(Player player, PlayerInteractEvent event) {
-        super.rightClick(player, event);
-        RPMachine.getInstance().getShopsManager().save(this);
-    }
-
     @Override
     public void breakSign() {
         for (; available > 0; available--) {

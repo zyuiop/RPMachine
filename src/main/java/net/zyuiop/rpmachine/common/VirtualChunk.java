@@ -43,8 +43,8 @@ public class VirtualChunk {
 
 	public VirtualChunk(String string) {
 		String[] parts = string.split("/");
-		x = Integer.valueOf(parts[0]);
-		z = Integer.valueOf(parts[1]);
+		x = Integer.parseInt(parts[0]);
+		z = Integer.parseInt(parts[1]);
 	}
 
 	@Override
@@ -56,12 +56,7 @@ public class VirtualChunk {
 
 		VirtualChunk that = (VirtualChunk) o;
 
-		if (x != that.x)
-			return false;
-		if (z != that.z)
-			return false;
-
-		return true;
+		return x == that.x && z == that.z;
 	}
 
 	@Override

@@ -15,6 +15,7 @@ public enum ShopPermissions implements DelegatedPermission {
 
     // ActAs shops user
     BUY_ITEMS("acheter des items dans un shop"),
+    BUY_ENCHANTS("acheter des enchantements dans un shop"),
     USE_TOLL("payer une entrée payante"),
     SELL_ITEMS("vendre des items dans un shop"),
     BUY_PLOTS("acheter des parcelles dans un shop");

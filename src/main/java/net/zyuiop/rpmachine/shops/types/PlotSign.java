@@ -82,13 +82,9 @@ public class PlotSign extends AbstractShopSign {
         }
     }
 
-    public void rightClick(Player player, PlayerInteractEvent event) {
-        clickUser(player, event);
-        RPMachine.getInstance().getShopsManager().save(this);
-    }
-
     @Override
     void clickPrivileged(Player player, RoleToken token, PlayerInteractEvent event) {
+        clickUser(player, event);
     }
 
     void clickUser(Player player, PlayerInteractEvent event) {
