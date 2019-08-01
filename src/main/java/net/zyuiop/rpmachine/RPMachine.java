@@ -146,14 +146,6 @@ public class RPMachine extends JavaPlugin {
             Bukkit.getLogger().info("Done !");
         }, 20 * 60, 20 * 20 * 60);
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                PlayerData data = databaseManager.getPlayerData(player.getUniqueId());
-                if (data.getJob() == null)
-                    player.sendMessage(ChatColor.GOLD + "Vous n'avez pas encore choisi de métier. Tapez /job pour plus d'infos.");
-            }
-        }, 100L, 3 * 60 * 20L);
-
         ItemStack capturator = new ItemStack(Material.SPAWNER);
         ItemMeta meta = capturator.getItemMeta();
         meta.setDisplayName(ChatColor.GOLD + "PokeBall");
@@ -165,7 +157,15 @@ public class RPMachine extends JavaPlugin {
         recipe.setIngredient('C', Material.CHEST);
 
         Bukkit.addRecipe(recipe);
+        scheduleReboot();
 
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(new Date());
+        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+            citiesManager.payTaxes(false);
+    }
+
+    private void scheduleReboot() {
         try {
             Calendar calendar = new GregorianCalendar();
             calendar.setTime(new Date());
@@ -182,16 +182,22 @@ public class RPMachine extends JavaPlugin {
                     Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Le serveur redémarrera à 4h du matin soit dans précisément 15 minutes.");
                 }
             }, sched);
+
+            calendar.set(Calendar.HOUR_OF_DAY, 4);
+            calendar.set(Calendar.MINUTE, 0);
+            sched = calendar.getTime();
+
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Bukkit.getServer().shutdown();
+                }
+            }, sched);
             this.getLogger().info("Scheduled automatic reboot at : " + calendar.toString());
         } catch (Exception e) {
             this.getLogger().severe("CANNOT SCHEDULE AUTOMATIC SHUTDOWN.");
             e.printStackTrace();
         }
-
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(new Date());
-        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
-            citiesManager.payTaxes(false);
     }
 
     private boolean loadDatabase() {

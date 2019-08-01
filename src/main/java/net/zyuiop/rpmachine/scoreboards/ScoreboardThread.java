@@ -38,7 +38,7 @@ public class ScoreboardThread implements Runnable {
 		PlayerData data = RPMachine.getInstance().getDatabaseManager().getPlayerData(uuid);
 		double money = data.getBalance();
 		String job = data.getJob();
-		job = job != null ? ChatColor.AQUA + job : ChatColor.RED + "Aucun";
+		job = job != null ? ChatColor.AQUA + job : ChatColor.YELLOW + "Aucun";
 		VirtualLocation homeData = data.getHome();
 		String home;
 		if (homeData == null)
