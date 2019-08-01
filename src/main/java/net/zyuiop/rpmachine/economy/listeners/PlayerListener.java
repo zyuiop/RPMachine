@@ -4,9 +4,11 @@ import net.md_5.bungee.api.ChatColor;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.jobs.Job;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,17 +21,28 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.SpawnEgg;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Iterator;
 
 import static org.bukkit.entity.EntityType.*;
 
 @Deprecated // TODO Try to split this
 public class PlayerListener implements Listener {
-
+	private static final String ATTRIBUTE_LAST_DAILY_WAGE = "lastDailyWage";
 	private final RPMachine plugin;
+
+	private final int dailyWageMin;
+	private final int dailyWageMax;
+	private final double dailyWageRate;
 
 	public PlayerListener(RPMachine plugin) {
 		this.plugin = plugin;
+
+		Configuration c = plugin.getConfig();
+		dailyWageMin = c.getInt("dailyWage.min", 5);
+		dailyWageMax = c.getInt("dailyWage.max", 100);
+		dailyWageRate = c.getDouble("dailyWage.rate", 0.01D);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -40,6 +53,14 @@ public class PlayerListener implements Listener {
 		if (d.isNew()) {
 			d.setBalance(EconomyManager.getBaseAmount());
 			event.setJoinMessage(ChatColor.YELLOW + "" + ChatColor.ITALIC + "Bienvenue à " + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "" + ChatColor.ITALIC + " !");
+		}
+
+		String date = DateFormat.getDateInstance().format(new Date());
+		if (!d.hasAttribute(ATTRIBUTE_LAST_DAILY_WAGE) || !d.getAttribute(ATTRIBUTE_LAST_DAILY_WAGE).equals(date)) {
+			d.setAttribute(ATTRIBUTE_LAST_DAILY_WAGE, date);
+			double amt = Math.min(dailyWageMax, Math.max(dailyWageMin, d.getBalance() * dailyWageRate));
+			d.creditMoney(amt);
+			event.getPlayer().sendMessage(Messages.ECO_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez reçu " + ChatColor.YELLOW + amt + EconomyManager.getMoneyName() + ChatColor.GREEN + " (première connexion du jour)");
 		}
 
 		RPMachine.database().getUUIDTranslator().cachePair(event.getPlayer().getUniqueId(), event.getPlayer().getName());
