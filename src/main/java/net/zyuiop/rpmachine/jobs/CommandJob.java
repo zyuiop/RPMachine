@@ -3,8 +3,7 @@ package net.zyuiop.rpmachine.jobs;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.AbstractCommand;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.jobs.Job;
-import net.zyuiop.rpmachine.jobs.JobRestrictions;
+import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import net.zyuiop.rpmachine.shops.types.EnchantingSign;
 import net.zyuiop.rpmachine.shops.types.ItemShopSign;
@@ -12,10 +11,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandJob extends AbstractCommand {
+    private static final String ATTRIBUTE_LAST_CHANGE = "job.lastChange";
+
     public CommandJob() {
         super("job", null, "jobs");
     }
@@ -75,16 +78,41 @@ public class CommandJob extends AbstractCommand {
                     return true;
                 }
 
-                new Thread(() -> {
-                    PlayerData data = RPMachine.database().getPlayerData(((Player) commandSender).getUniqueId());
-                    if (data.getJob() != null)
-                        commandSender.sendMessage(ChatColor.RED + "Vous avez déjà un métier.");
-                    else {
+                PlayerData data = RPMachine.database().getPlayerData(((Player) commandSender).getUniqueId());
+                if (data.getJob() != null)
+                    commandSender.sendMessage(ChatColor.RED + "Vous avez déjà un métier. " + ChatColor.YELLOW + "/jobs quit" + ChatColor.RED + " pour le quitter.");
+                else {
+                    if (strings.length >= 3 && strings[2].equalsIgnoreCase("confirm")) {
                         data.setJob(j.getJobName());
+                        data.setAttribute(ATTRIBUTE_LAST_CHANGE, System.currentTimeMillis());
+
                         commandSender.sendMessage(ChatColor.GREEN + "Vous avez bien choisi le métier " + ChatColor.DARK_GREEN + j.getJobName());
+                    } else {
+                        commandSender.sendMessage(ChatColor.YELLOW + "Voulez vous vraiment adopter le métier " + ChatColor.GOLD + j.getJobName() + ChatColor.YELLOW + " ? Confirmez avec " + ChatColor.GOLD + "/jobs choose " + j.getJobName() + " confirm");
+                        commandSender.sendMessage(ChatColor.YELLOW + "Vous ne pourrez pas changer avant " + ChatColor.GOLD + rpMachine.getJobsManager().getQuitFrequency() + " jours " + ChatColor.YELLOW + " et cela coûtera " + ChatColor.AQUA + rpMachine.getJobsManager().getQuitPrice() + EconomyManager.getMoneyName());
                     }
-                }).start();
+                }
             } else if (com.equalsIgnoreCase("quit")) {
+                // Can quit ?
+                Job j = rpMachine.getJobsManager().getJob(commandSender);
+                if (j == null) {
+                    commandSender.sendMessage(ChatColor.RED + "Vous n'avez pas de métier.");
+                    return true;
+                }
+
+                PlayerData data = RPMachine.database().getPlayerData(commandSender.getUniqueId());
+                if (data.hasAttribute(ATTRIBUTE_LAST_CHANGE)) {
+                    Long lastChange = data.getAttribute(ATTRIBUTE_LAST_CHANGE);
+                    long nextChange = lastChange + 24L * 3600L * 1000L * rpMachine.getJobsManager().getQuitFrequency();
+
+                    if (nextChange > System.currentTimeMillis()) {
+                        commandSender.sendMessage(ChatColor.RED + "Vous ne pouvez pas quitter votre métier avant le " + ChatColor.DARK_RED + DateFormat.getDateTimeInstance().format(new Date(nextChange)));
+                        return true;
+                    }
+                } else {
+
+                }
+
                 // Get shops
                 List<AbstractShopSign> signs = rpMachine.getShopsManager().getPlayerShops(commandSender).stream().filter(shop -> {
                     if (shop instanceof ItemShopSign)
@@ -95,10 +123,9 @@ public class CommandJob extends AbstractCommand {
                     return false;
                 }).collect(Collectors.toList());
 
-                // TODO: destroy enchantment shops
                 if (strings.length < 2) {
                     if (signs.isEmpty()) {
-                        commandSender.sendMessage(ChatColor.RED + "Voulez vous vraiment changer de métier ? Merci de confirmer l'opération avec /jobs quit confirm");
+                        commandSender.sendMessage(ChatColor.RED + "Voulez vous vraiment quitter votre métier ? Merci de confirmer l'opération avec /jobs quit confirm");
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "ATTENTION : L'utilisation de cette commande va déclencher la destruction des shops suivants. Merci de confirmer l'opération avec /jobs quit confirm");
                         for (AbstractShopSign s : signs) {
@@ -106,6 +133,7 @@ public class CommandJob extends AbstractCommand {
                         }
                         commandSender.sendMessage(ChatColor.GRAY + "Vos autres boutiques ne seront pas affectées.");
                     }
+                    commandSender.sendMessage(ChatColor.YELLOW + "L'abandon de votre métier coûtera " + ChatColor.AQUA + rpMachine.getJobsManager().getQuitPrice() + EconomyManager.getMoneyName());
                     return true;
                 } else if (strings[1].equalsIgnoreCase("confirm")) {
                     int i = 0;
@@ -114,11 +142,9 @@ public class CommandJob extends AbstractCommand {
                         i++;
                     }
                     commandSender.sendMessage(ChatColor.AQUA + "" + i + ChatColor.GOLD + " Shops ont été supprimés.");
-                    new Thread(() -> {
-                        PlayerData data = RPMachine.database().getPlayerData(((Player) commandSender).getUniqueId());
-                        data.setJob(null);
-                        commandSender.sendMessage(ChatColor.GOLD + "Vous n'avez maintenant plus de métier.");
-                    }).start();
+                    data.setJob(null);
+                    data.setAttribute(ATTRIBUTE_LAST_CHANGE, System.currentTimeMillis());
+                    commandSender.sendMessage(ChatColor.GOLD + "Vous n'avez maintenant plus de métier.");
                 }
             }
         }

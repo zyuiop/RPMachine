@@ -158,4 +158,20 @@ public class PlayerFile implements PlayerData {
 	public UUID getUuid() {
 		return uuid;
 	}
+
+	@Override
+	public void setAttribute(String key, Object value) {
+		data.set("attr." + key, value);
+		save();
+	}
+
+	@Override
+	public boolean hasAttribute(String key) {
+		return data.contains("attr." + key);
+	}
+
+	@Override
+	public <T> T getAttribute(String key) {
+		return (T) data.get("attr." + key);
+	}
 }

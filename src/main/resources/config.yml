@@ -197,6 +197,10 @@ jobs:
       - 168
       - 109
 
+jobsquit:
+  price: 100
+  mindays: 7
+
 
 # Paliers de villes :
 

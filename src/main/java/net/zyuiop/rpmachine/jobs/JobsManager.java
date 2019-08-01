@@ -21,6 +21,9 @@ public class JobsManager {
 	private Set<Material> restrictedItems = new HashSet<>(); // items that can only be crafted/sold by specific job
 	private Set<Material> restrictedBlocks = new HashSet<>(); // blocks that can only be placed/used by specific job
 
+	private int quitPrice;
+	private int quitFrequency;
+
 	private Set<Material> parseMaterialSet(List<?> list) {
 		if (list == null) return Sets.newHashSet();
 
@@ -76,6 +79,9 @@ public class JobsManager {
 			JobRestriction rest = r.newInstance();
 			Bukkit.getPluginManager().registerEvents(rest, pl);
 		});
+
+		quitPrice = rpMachine.getConfig().getInt("jobsquit.price", 100);
+		quitFrequency = rpMachine.getConfig().getInt("jobsquit.mindays", 7);
 	}
 
 	public Job getJob(Player player) {
@@ -143,5 +149,13 @@ public class JobsManager {
 
 	public Job getJob(String job) {
 		return jobs.get(job);
+	}
+
+	public int getQuitPrice() {
+		return quitPrice;
+	}
+
+	public int getQuitFrequency() {
+		return quitFrequency;
 	}
 }
