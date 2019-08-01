@@ -2,7 +2,9 @@ package net.zyuiop.rpmachine.economy.jobs;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,11 +16,11 @@ import java.util.stream.Collectors;
 public class JobsManager {
 	private final RPMachine rpMachine;
 	private HashMap<String, Job> jobs = new HashMap<>();
+	private Set<JobRestrictions> enabledRestrictions = new HashSet<>();
 
 	public JobsManager(RPMachine pl) {
 		this.rpMachine = pl;
 
-		Set<JobRestrictions> enabledRestrictions = new HashSet<>();
 		for (Map<?, ?> map : rpMachine.getConfig().getMapList("jobs")) {
 			String name = (String) map.get("name");
 			String description = (String) map.get("description");
@@ -63,12 +65,32 @@ public class JobsManager {
 		return getJob(player.getUniqueId());
 	}
 
+	public boolean isRestrictionEnabled(JobRestrictions r) {
+		return enabledRestrictions.contains(r);
+	}
+
+	public boolean isRestrictionAllowed(Player p, JobRestrictions r) {
+		if (!isRestrictionEnabled(r))
+			return false;
+
+		return getJob(p) != null && getJob(p).getRestrictions().contains(r);
+	}
+
 	public Job getJob(UUID player) {
 		PlayerData data = RPMachine.database().getPlayerData(player);
 		String job = data.getJob();
 		if (job == null)
 			return null;
 		return getJob(job);
+	}
+
+	public void printAvailableJobs(JobRestrictions restrictedAction, Player player) {
+		String availableJobs =
+				StringUtils.join(getJobs(restrictedAction).stream().map(Job::getJobName).collect(Collectors.toList()),
+						ChatColor.GOLD + ", " + ChatColor.YELLOW);
+
+		player.sendMessage(ChatColor.RED + "Cette action est restreinte et nécessite d'avoir le travail adéquat. Métiers autorisés : " + ChatColor.YELLOW + availableJobs);
+
 	}
 
 	public List<Job> getJobs(JobRestrictions restrictions) {

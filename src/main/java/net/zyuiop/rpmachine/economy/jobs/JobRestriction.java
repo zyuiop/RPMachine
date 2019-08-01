@@ -20,11 +20,7 @@ public abstract class JobRestriction implements Listener {
         boolean allow = job != null && job.restrictions.contains(restrictions);
 
         if (!allow) {
-            String availableJobs =
-                    StringUtils.join(RPMachine.getInstance().getJobsManager().getJobs(restrictions).stream().map(Job::getJobName).collect(Collectors.toList()),
-                            ChatColor.GOLD + ", " + ChatColor.YELLOW);
-
-            player.sendMessage(ChatColor.RED + "Cette action est restreinte et nécessite d'avoir le travail adéquat. Métiers autorisés : " + ChatColor.YELLOW + availableJobs);
+            RPMachine.getInstance().getJobsManager().printAvailableJobs(restrictions, player);
         }
 
         return allow;

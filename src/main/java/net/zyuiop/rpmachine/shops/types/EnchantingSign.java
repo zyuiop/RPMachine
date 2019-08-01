@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
+import net.zyuiop.rpmachine.economy.jobs.JobRestrictions;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.json.JsonExclude;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
@@ -202,7 +203,8 @@ public class EnchantingSign extends AbstractShopSign {
 
         @Override
         public boolean hasPermission(RoleToken player) {
-            return player.getLegalEntity() instanceof PlayerData; // Only players can create enchantment shops
+            return player.getLegalEntity() instanceof PlayerData &&
+                    RPMachine.getInstance().getJobsManager().isRestrictionAllowed(player.getPlayer(), JobRestrictions.ENCHANTING);
         }
 
         public void postCreateInstructions(Player player) {
