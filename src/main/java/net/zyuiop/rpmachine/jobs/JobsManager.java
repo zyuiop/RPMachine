@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.economy.jobs;
+package net.zyuiop.rpmachine.jobs;
 
 import com.google.common.collect.Sets;
 import net.zyuiop.rpmachine.RPMachine;
@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -48,6 +47,8 @@ public class JobsManager {
 
 	public JobsManager(RPMachine pl) {
 		this.rpMachine = pl;
+
+		Bukkit.getPluginManager().registerEvents(new JobsListener(this), pl);
 
 		for (Map<?, ?> map : rpMachine.getConfig().getMapList("jobs")) {
 			String name = (String) map.get("name");
@@ -133,7 +134,7 @@ public class JobsManager {
 	}
 
 	public void printAvailableJobsForBlock(Material block, Player player) {
-		printAvailableJobs(j -> j.getRestrictedBlocks().contains(block), "Ce block ne peut être placé et utilisé que par certains métiers.", player);
+		printAvailableJobs(j -> j.getRestrictedBlocks().contains(block), "Ce block ne peut être crafté, vendu, placé et utilisé que par certains métiers.", player);
 	}
 
 	public HashMap<String, Job> getJobs() {

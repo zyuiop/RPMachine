@@ -1,8 +1,8 @@
-package net.zyuiop.rpmachine.economy.jobs;
+package net.zyuiop.rpmachine.jobs;
 
-import net.zyuiop.rpmachine.economy.jobs.restrictions.BreedingRestriction;
-import net.zyuiop.rpmachine.economy.jobs.restrictions.EnchantingRestriction;
-import net.zyuiop.rpmachine.economy.jobs.restrictions.FarmingRestriction;
+import net.zyuiop.rpmachine.jobs.restrictions.BreedingRestriction;
+import net.zyuiop.rpmachine.jobs.restrictions.EnchantingRestriction;
+import net.zyuiop.rpmachine.jobs.restrictions.FarmingRestriction;
 
 /**
  * @author Louis Vialar

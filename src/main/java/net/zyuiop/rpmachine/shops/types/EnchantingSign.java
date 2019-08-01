@@ -4,7 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
-import net.zyuiop.rpmachine.economy.jobs.JobRestrictions;
+import net.zyuiop.rpmachine.jobs.JobRestrictions;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.json.JsonExclude;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;

@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.economy.jobs;
+package net.zyuiop.rpmachine.jobs;
 
 import org.bukkit.Material;
 

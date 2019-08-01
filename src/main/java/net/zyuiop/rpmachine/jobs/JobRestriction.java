@@ -1,12 +1,8 @@
-package net.zyuiop.rpmachine.economy.jobs;
+package net.zyuiop.rpmachine.jobs;
 
 import net.zyuiop.rpmachine.RPMachine;
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-
-import java.util.stream.Collectors;
 
 /**
  * @author Louis Vialar

@@ -1,7 +1,7 @@
-package net.zyuiop.rpmachine.economy.jobs.restrictions;
+package net.zyuiop.rpmachine.jobs.restrictions;
 
 import com.google.common.collect.ImmutableSet;
-import net.zyuiop.rpmachine.economy.jobs.JobRestriction;
+import net.zyuiop.rpmachine.jobs.JobRestriction;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockFertilizeEvent;

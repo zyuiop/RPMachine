@@ -1,10 +1,10 @@
-package net.zyuiop.rpmachine.economy.commands;
+package net.zyuiop.rpmachine.jobs;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.AbstractCommand;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.jobs.Job;
-import net.zyuiop.rpmachine.economy.jobs.JobRestrictions;
+import net.zyuiop.rpmachine.jobs.Job;
+import net.zyuiop.rpmachine.jobs.JobRestrictions;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import net.zyuiop.rpmachine.shops.types.EnchantingSign;
 import net.zyuiop.rpmachine.shops.types.ItemShopSign;
@@ -88,7 +88,8 @@ public class CommandJob extends AbstractCommand {
                 // Get shops
                 List<AbstractShopSign> signs = rpMachine.getShopsManager().getPlayerShops(commandSender).stream().filter(shop -> {
                     if (shop instanceof ItemShopSign)
-                        return ((ItemShopSign) shop).getAction() == ItemShopSign.ShopAction.SELL && rpMachine.getJobsManager().isItemRestricted(((ItemShopSign) shop).getItemType());
+                        return ((ItemShopSign) shop).getAction() == ItemShopSign.ShopAction.SELL &&
+                                (rpMachine.getJobsManager().isItemRestricted(((ItemShopSign) shop).getItemType()) || rpMachine.getJobsManager().isBlockRestricted(((ItemShopSign) shop).getItemType()));
                     else if (shop instanceof EnchantingSign)
                         return RPMachine.getInstance().getJobsManager().isRestrictionEnabled(JobRestrictions.ENCHANTING);
                     return false;

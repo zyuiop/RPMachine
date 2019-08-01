@@ -4,7 +4,6 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
 import net.zyuiop.rpmachine.economy.Messages;
-import net.zyuiop.rpmachine.economy.jobs.Job;
 import net.zyuiop.rpmachine.entities.AdminLegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
@@ -114,11 +113,14 @@ public class ItemShopSign extends AbstractShopSign {
                 if (!tt.checkDelegatedPermission(ShopPermissions.CREATE_SELL_SHOPS))
                     return;
 
-                if (RPMachine.getInstance().getJobsManager().isItemRestricted(type)) {
+                if (RPMachine.getInstance().getJobsManager().isItemRestricted(type) || RPMachine.getInstance().getJobsManager().isBlockRestricted(type)) {
                     if (!(tt.getLegalEntity() instanceof AdminLegalEntity)) {
                         if (tt.getLegalEntity() instanceof PlayerData) {
                             if (!RPMachine.getInstance().getJobsManager().isItemAllowed(player, type)) {
                                 RPMachine.getInstance().getJobsManager().printAvailableJobsForItem(type, player);
+                                return;
+                            } else if (!RPMachine.getInstance().getJobsManager().isBlockAllowed(player, type)) {
+                                RPMachine.getInstance().getJobsManager().printAvailableJobsForBlock(type, player);
                                 return;
                             }
                         } else {

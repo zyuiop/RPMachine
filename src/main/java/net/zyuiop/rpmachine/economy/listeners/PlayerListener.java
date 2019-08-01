@@ -4,7 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.economy.EconomyManager;
-import net.zyuiop.rpmachine.economy.jobs.Job;
+import net.zyuiop.rpmachine.jobs.Job;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
