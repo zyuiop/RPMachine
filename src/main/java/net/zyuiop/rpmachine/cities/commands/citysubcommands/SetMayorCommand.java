@@ -39,7 +39,7 @@ public class SetMayorCommand implements CityMemberSubCommand {
             player.sendMessage(ChatColor.RED + "Utilisation incorrecte : /city setmayor " + getUsage());
         } else {
             String newMayor = args[0];
-            UUID id = RPMachine.database().getUUIDTranslator().getUUID(newMayor, true);
+            UUID id = RPMachine.database().getUUIDTranslator().getUUID(newMayor);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
             } else {

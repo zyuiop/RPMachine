@@ -7,17 +7,9 @@ import java.util.UUID;
  */
 public interface UUIDTranslator {
 
-	String getName(UUID uuid, boolean allowMojangCheck);
+	String getName(UUID uuid);
 
-	default String getName(UUID uuid) {
-		return getName(uuid, true);
-	}
-
-	UUID getUUID(String name, boolean allowMojangCheck);
-
-	default UUID getUUID(String name) {
-		return getUUID(name, true);
-	}
+	UUID getUUID(String name);
 
 	void cachePair(UUID uuid, String playerName);
 }

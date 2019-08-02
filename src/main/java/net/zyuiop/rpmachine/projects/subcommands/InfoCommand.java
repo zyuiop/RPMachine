@@ -52,7 +52,7 @@ public class InfoCommand implements SubCommand {
 
             ArrayList<String> members = new ArrayList<>();
             for (UUID id : plot.getPlotMembers()) {
-                String name = RPMachine.database().getUUIDTranslator().getName(id, false);
+                String name = RPMachine.database().getUUIDTranslator().getName(id);
                 if (name != null)
                     members.add(name);
             }

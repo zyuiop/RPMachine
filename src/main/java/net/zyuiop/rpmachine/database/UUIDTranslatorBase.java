@@ -1,7 +1,5 @@
 package net.zyuiop.rpmachine.database;
 
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +37,7 @@ public abstract class UUIDTranslatorBase implements UUIDTranslator {
 	}
 
 	@Override
-	public UUID getUUID(String name, boolean allowMojangCheck) {
+	public UUID getUUID(String name) {
 		// If the player is online, give them their UUID.
 		// Remember, local data > remote data.
 		if (Bukkit.getPlayer(name) != null) { return Bukkit.getPlayer(name).getUniqueId(); }
@@ -76,29 +74,11 @@ public abstract class UUIDTranslatorBase implements UUIDTranslator {
 			}
 		}
 
-		// That didn't work. Let's ask Mojang.
-		if (!allowMojangCheck) { return null; }
-
-		Map<String, UUID> uuidMap1;
-		try {
-			uuidMap1 = new UUIDFetcher(Collections.singletonList(name)).call();
-		} catch (Exception e) {
-			RPMachine.getInstance().getLogger().log(Level.SEVERE, "Unable to fetch UUID from Mojang for " + name, e);
-			return null;
-		}
-
-		for (Map.Entry<String, UUID> e : uuidMap1.entrySet()) {
-			if (e.getKey().equalsIgnoreCase(name)) {
-				save(e.getKey(), e.getValue());
-				return e.getValue();
-			}
-		}
-
 		return null; // Nope, game over!
 	}
 
 	@Override
-	public String getName(UUID uuid, boolean allowMojangCheck) {
+	public String getName(UUID uuid) {
 		if (Bukkit.getPlayer(uuid) != null) {
 			return Bukkit.getPlayer(uuid).getName();
 		}
@@ -123,22 +103,6 @@ public abstract class UUIDTranslatorBase implements UUIDTranslator {
 				uuidToNameMap.put(uuid, entry);
 				return entry.getName();
 			}
-		}
-
-		if (!allowMojangCheck) { return null; }
-
-		// That didn't work. Let's ask Mojang. This call may fail, because Mojang is insane.
-		String name;
-		try {
-			name = NameFetcher.nameHistoryFromUuid(uuid).get(0);
-		} catch (Exception e) {
-			RPMachine.getInstance().getLogger().log(Level.SEVERE, "Unable to fetch name from Mojang for " + uuid, e);
-			return null;
-		}
-
-		if (name != null) {
-			save(name, uuid);
-			return name;
 		}
 
 		return null;

@@ -23,22 +23,20 @@ public class CommandHome extends AbstractCommand {
             return true;
         }
 
-        new Thread(() -> {
-            PlayerData data = RPMachine.database().getPlayerData(player.getUniqueId());
-            VirtualLocation loc = data.getHome();
-            if (loc == null)
-                player.sendMessage(ChatColor.RED + "Vous n'avez pas défini de domicile.");
-            else {
-                Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
-                    Location tp = loc.getLocation();
-                    if (!tp.getChunk().isLoaded())
-                        tp.getChunk().load();
-                    player.teleport(tp);
-                    ReflectionUtils.getVersion().playEndermanTeleport(tp, player);
-                    player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté !");
-                });
-            }
-        }).start();
+        PlayerData data = RPMachine.database().getPlayerData(player.getUniqueId());
+        VirtualLocation loc = data.getHome();
+        if (loc == null)
+            player.sendMessage(ChatColor.RED + "Vous n'avez pas défini de domicile.");
+        else {
+            Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
+                Location tp = loc.getLocation();
+                if (!tp.getChunk().isLoaded())
+                    tp.getChunk().load();
+                player.teleport(tp);
+                ReflectionUtils.getVersion().playEndermanTeleport(tp, player);
+                player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté !");
+            });
+        }
         return true;
     }
 }

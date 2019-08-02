@@ -1,7 +1,6 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.CitiesPermGui;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -27,7 +26,7 @@ public class PermissionsCommand implements CityMemberSubCommand {
         }
 
         String name = args[0];
-        UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[0], true);
+        UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[0]);
 
         if (!city.getCouncils().contains(id)) {
             player.sendMessage(ChatColor.RED + "Cette personne n'est pas encore un conseiller. Nommez le conseiller pour poursuivre.");

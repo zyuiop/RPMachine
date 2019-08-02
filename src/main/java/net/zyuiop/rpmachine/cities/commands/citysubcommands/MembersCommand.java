@@ -23,7 +23,7 @@ public class MembersCommand implements CityMemberSubCommand {
     public boolean run(Player player, City city, String[] args) {
         player.sendMessage(ChatColor.GOLD + "-----[ Liste des Habitants ]-----");
         for (UUID inhabitant : city.getInhabitants()) {
-            String name = RPMachine.database().getUUIDTranslator().getName(inhabitant, false);
+            String name = RPMachine.database().getUUIDTranslator().getName(inhabitant);
             if (name != null)
                 player.sendMessage(ChatColor.YELLOW + " - " + name);
         }

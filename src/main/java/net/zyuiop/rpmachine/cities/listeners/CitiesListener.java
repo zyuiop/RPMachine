@@ -7,7 +7,6 @@ import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.*;
 import org.bukkit.block.data.type.Sign;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,16 +21,16 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
 public class CitiesListener implements Listener {
 
-	private final CitiesManager manager;
-	//private final HashSet<Material> checkInteract;
-	public CitiesListener(CitiesManager manager) {
-		this.manager = manager;
+    private final CitiesManager manager;
+
+    //private final HashSet<Material> checkInteract;
+    public CitiesListener(CitiesManager manager) {
+        this.manager = manager;
 
 		/*checkInteract = new HashSet<>();
 		checkInteract.add(Material.ACACIA_DOOR);
@@ -60,207 +59,203 @@ public class CitiesListener implements Listener {
 		checkInteract.add(Material.DROPPER);
 		checkInteract.add(Material.DISPENSER);
 		checkInteract.add(Material.BEACON);*/
-	}
+    }
 
-	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onInteract(PlayerInteractEvent event) {
-		//if (event.getAction() == Action.RIGHT_CLICK_AIR)
-		//	return;
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onInteract(PlayerInteractEvent event) {
+        //if (event.getAction() == Action.RIGHT_CLICK_AIR)
+        //	return;
 
-		if (event.getAction() == Action.PHYSICAL) {
-			event.setCancelled(!manager.canBuild(event.getPlayer(), event.getClickedBlock().getLocation()));
-			return;
-		}
+        if (event.getAction() == Action.PHYSICAL) {
+            event.setCancelled(!manager.canBuild(event.getPlayer(), event.getClickedBlock().getLocation()));
+            return;
+        }
 
-		if (event.getItem() != null) {
-			Material type = event.getItem().getType();
-			if (type == Material.BUCKET || type == Material.WATER_BUCKET || type == Material.LAVA_BUCKET || type == Material.FLINT_AND_STEEL) {
-				event.setCancelled(! manager.canBuild(event.getPlayer(), event.getClickedBlock().getLocation()));
-				return;
-			}
-		}
+        if (event.getItem() != null) {
+            Material type = event.getItem().getType();
+            if (type == Material.BUCKET || type == Material.WATER_BUCKET || type == Material.LAVA_BUCKET || type == Material.FLINT_AND_STEEL) {
+                event.setCancelled(!manager.canBuild(event.getPlayer(), event.getClickedBlock().getLocation()));
+                return;
+            }
+        }
 
-		if (event.getClickedBlock() == null || !event.getClickedBlock().getType().isInteractable())
-			return;
+        if (event.getClickedBlock() == null || !event.getClickedBlock().getType().isInteractable())
+            return;
 
-		if (event.getClickedBlock().getBlockData() instanceof Sign)
-			return; // Signs are always interactable
+        if (event.getClickedBlock().getBlockData() instanceof Sign)
+            return; // Signs are always interactable
 
-		event.setCancelled(!manager.canInteractWithBlock(event.getPlayer(), event.getClickedBlock().getLocation()));
-	}
+        event.setCancelled(!manager.canInteractWithBlock(event.getPlayer(), event.getClickedBlock().getLocation()));
+    }
 
-	@EventHandler
-	public void onJoin(PlayerJoinEvent event) {
-		new Thread(() -> {
-			Player player = event.getPlayer();
-			PlayerData data = RPMachine.database().getPlayerData(player.getUniqueId());
-			for (Map.Entry<String, Double> entry : data.getUnpaidTaxes().entrySet()) {
-				double topay = entry.getValue();
-				if (topay <= 0)
-					continue;
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        PlayerData data = RPMachine.database().getPlayerData(player.getUniqueId());
+        for (Map.Entry<String, Double> entry : data.getUnpaidTaxes().entrySet()) {
+            double topay = entry.getValue();
+            if (topay <= 0)
+                continue;
 
-				player.sendMessage(ChatColor.RED + "ATTENTION ! Votre compte ne contient pas assez d'argent pour payer vos impots.");
-				player.sendMessage(ChatColor.RED + "Vous devez " + ChatColor.AQUA + topay + ChatColor.RED + " à la ville de " + ChatColor.AQUA + entry.getKey());
-				player.sendMessage(ChatColor.RED + "Payez les rapidement avec " + ChatColor.AQUA + "/city paytaxes " + entry.getKey());
-			}
-		}).start();
-	}
+            player.sendMessage(ChatColor.RED + "ATTENTION ! Votre compte ne contient pas assez d'argent pour payer vos impots.");
+            player.sendMessage(ChatColor.RED + "Vous devez " + ChatColor.AQUA + topay + ChatColor.RED + " à la ville de " + ChatColor.AQUA + entry.getKey());
+            player.sendMessage(ChatColor.RED + "Payez les rapidement avec " + ChatColor.AQUA + "/city paytaxes " + entry.getKey());
+        }
+    }
 
-	@EventHandler
-	public void onGamemode(PlayerGameModeChangeEvent event) {
-		if (! event.getPlayer().hasPermission("rp.gamemode") && event.getNewGameMode() != GameMode.SURVIVAL) {
-			event.getPlayer().setGameMode(GameMode.SURVIVAL);
-			event.setCancelled(true);
-			event.getPlayer().sendMessage(ChatColor.RED + "Vous n'avez pas le droit d'accéder au gamemode créatif.");
-		}
-	}
+    @EventHandler
+    public void onGamemode(PlayerGameModeChangeEvent event) {
+        if (!event.getPlayer().hasPermission("rp.gamemode") && event.getNewGameMode() != GameMode.SURVIVAL) {
+            event.getPlayer().setGameMode(GameMode.SURVIVAL);
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "Vous n'avez pas le droit d'accéder au gamemode créatif.");
+        }
+    }
 
-	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onPlace(BlockPlaceEvent event) {
-		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlock().getLocation()));
-	}
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlace(BlockPlaceEvent event) {
+        event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlock().getLocation()));
+    }
 
-	@EventHandler
-	public void onEntityExplodeEvent(EntityExplodeEvent entityExplodeEvent) {
-		entityExplodeEvent.blockList().clear();
-	}
+    @EventHandler
+    public void onEntityExplodeEvent(EntityExplodeEvent entityExplodeEvent) {
+        entityExplodeEvent.blockList().clear();
+    }
 
-	@EventHandler
-	public void onBlockExplode(BlockExplodeEvent explodeEvent) {
-		explodeEvent.blockList().clear();
-	}
+    @EventHandler
+    public void onBlockExplode(BlockExplodeEvent explodeEvent) {
+        explodeEvent.blockList().clear();
+    }
 
-	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onBreak(BlockBreakEvent event) {
-		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlock().getLocation()));
-	}
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBreak(BlockBreakEvent event) {
+        event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlock().getLocation()));
+    }
 
-	@EventHandler (priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onInteractEntity(PlayerInteractEntityEvent event) {
-		event.setCancelled(!manager.canBuild(event.getPlayer(), event.getRightClicked().getLocation()));
-	}
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onInteractEntity(PlayerInteractEntityEvent event) {
+        event.setCancelled(!manager.canBuild(event.getPlayer(), event.getRightClicked().getLocation()));
+    }
 
-	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onHangingEntity(HangingBreakByEntityEvent event) {
-		if (event.getRemover() instanceof Player)
-			event.setCancelled(!manager.canBuild((Player) event.getRemover(), event.getEntity().getLocation()));
-	}
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onHangingEntity(HangingBreakByEntityEvent event) {
+        if (event.getRemover() instanceof Player)
+            event.setCancelled(!manager.canBuild((Player) event.getRemover(), event.getEntity().getLocation()));
+    }
 
 
-	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onEntityDamage(EntityDamageByEntityEvent event) {
-		if (event.getDamager() instanceof Player && !(event.getEntity() instanceof Monster))
-			event.setCancelled(!manager.canBuild((Player) event.getDamager(), event.getEntity().getLocation()));
-	}
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player && !(event.getEntity() instanceof Monster))
+            event.setCancelled(!manager.canBuild((Player) event.getDamager(), event.getEntity().getLocation()));
+    }
 
-	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onMove(PlayerMoveEvent event) {
-		new Thread(() -> {
-			UUID id = event.getPlayer().getUniqueId();
-			if (!isSameChunk(event.getFrom(), event.getTo())) {
-				City c1 = manager.getCityHere(event.getFrom().getChunk());
-				City c2 = manager.getCityHere(event.getTo().getChunk());
-				boolean entering = false;
-				boolean leaving = false;
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onMove(PlayerMoveEvent event) {
+        UUID id = event.getPlayer().getUniqueId();
+        if (!isSameChunk(event.getFrom(), event.getTo())) {
+            City c1 = manager.getCityHere(event.getFrom().getChunk());
+            City c2 = manager.getCityHere(event.getTo().getChunk());
+            boolean entering = false;
+            boolean leaving = false;
 
-				if (c1 != null && c2 != null && c1.getCityName().equals(c2.getCityName())) {
+            if (c1 != null && c2 != null && c1.getCityName().equals(c2.getCityName())) {
 
-					Plot plot = c1.getPlotHere(event.getFrom());
-					Plot to = c1.getPlotHere(event.getTo());
+                Plot plot = c1.getPlotHere(event.getFrom());
+                Plot to = c1.getPlotHere(event.getTo());
 
-					if (plot != null && to != null && plot.getPlotName().equals(to.getPlotName()))
-						return;
+                if (plot != null && to != null && plot.getPlotName().equals(to.getPlotName()))
+                    return;
 
-					boolean pOverride = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
+                boolean pOverride = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
 
-					if (plot != null && (id.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
-						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
-						leaving = true;
-					} else if (pOverride && plot != null) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + plot.getPlotName());
-					}
+                if (plot != null && (id.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
+                    //event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+                    leaving = true;
+                } else if (pOverride && plot != null) {
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + plot.getPlotName());
+                }
 
-					if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
-						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
-						entering = true;
-					} else if (pOverride && to != null) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
-					}
+                if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
+                    //event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+                    entering = true;
+                } else if (pOverride && to != null) {
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
+                }
 
-					return;
-				}
+                return;
+            }
 
-				if (c1 != null) {
-					event.getPlayer().sendMessage(ChatColor.GOLD + "Vous quittez " + ChatColor.YELLOW + c1.getCityName() + ChatColor.GOLD + " !");
-					boolean c1Override = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
-					Plot from = c1.getPlotHere(event.getFrom());
+            if (c1 != null) {
+                event.getPlayer().sendMessage(ChatColor.GOLD + "Vous quittez " + ChatColor.YELLOW + c1.getCityName() + ChatColor.GOLD + " !");
+                boolean c1Override = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
+                Plot from = c1.getPlotHere(event.getFrom());
 
-					if (from != null && (id.equals(from.getOwner()) || from.getPlotMembers().contains(id))) {
-						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
-						leaving = true;
-					} else if (c1Override && from != null) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + from.getPlotName());
-					}
-				}
+                if (from != null && (id.equals(from.getOwner()) || from.getPlotMembers().contains(id))) {
+                    //event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+                    leaving = true;
+                } else if (c1Override && from != null) {
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + from.getPlotName());
+                }
+            }
 
-				if (c2 != null) {
-					event.getPlayer().sendMessage(ChatColor.GOLD + "Vous entrez à " + ChatColor.YELLOW + c2.getCityName() + ChatColor.GOLD + " !");
+            if (c2 != null) {
+                event.getPlayer().sendMessage(ChatColor.GOLD + "Vous entrez à " + ChatColor.YELLOW + c2.getCityName() + ChatColor.GOLD + " !");
 
-					boolean c2Override = (c2.getCouncils().contains(id) || c2.getMayor().equals(id));
-					Plot to = c2.getPlotHere(event.getTo());
+                boolean c2Override = (c2.getCouncils().contains(id) || c2.getMayor().equals(id));
+                Plot to = c2.getPlotHere(event.getTo());
 
-					if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
-						//event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
-						entering = true;
-					} else if (c2Override && to != null) {
-						event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
-					}
-				}
+                if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
+                    //event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+                    entering = true;
+                } else if (c2Override && to != null) {
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
+                }
+            }
 
-				if (entering && !leaving) {
-					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
-				} else if (!entering && leaving) {
-					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
-				}
-			} else {
-				// Same chunk, same city.
-				City city = manager.getCityHere(event.getFrom().getChunk());
-				if (city == null)
-					return;
+            if (entering && !leaving) {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+            } else if (!entering && leaving) {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+            }
+        } else {
+            // Same chunk, same city.
+            City city = manager.getCityHere(event.getFrom().getChunk());
+            if (city == null)
+                return;
 
-				Plot plot = city.getPlotHere(event.getFrom());
-				Plot to = city.getPlotHere(event.getTo());
+            Plot plot = city.getPlotHere(event.getFrom());
+            Plot to = city.getPlotHere(event.getTo());
 
-				boolean pOverride = (city.getCouncils().contains(id) || city.getMayor().equals(id));
-				if (plot != null && to != null && plot.getPlotName().equals(to.getPlotName()))
-					return;
+            boolean pOverride = (city.getCouncils().contains(id) || city.getMayor().equals(id));
+            if (plot != null && to != null && plot.getPlotName().equals(to.getPlotName()))
+                return;
 
-				if (plot != null && (id.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
-					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
-				} else if (pOverride && plot != null) {
-					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + plot.getPlotName());
-				}
+            if (plot != null && (id.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+            } else if (pOverride && plot != null) {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + plot.getPlotName());
+            }
 
-				if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
-					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
-				} else if (pOverride && to != null) {
-					event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
-				}
-			}
-		}).start();
-	}
+            if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+            } else if (pOverride && to != null) {
+                event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
+            }
+        }
+    }
 
-	@EventHandler (priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onChat(AsyncPlayerChatEvent event) {
-		City city = manager.getPlayerCity(event.getPlayer().getUniqueId());
-		if (city != null) {
-			event.setFormat(ChatColor.DARK_AQUA + "["+city.getCityName()+"]" + event.getFormat());
-		}
-	}
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onChat(AsyncPlayerChatEvent event) {
+        City city = manager.getPlayerCity(event.getPlayer().getUniqueId());
+        if (city != null) {
+            event.setFormat(ChatColor.DARK_AQUA + "[" + city.getCityName() + "]" + event.getFormat());
+        }
+    }
 
-	boolean isSameChunk(Location l1, Location l2) {
-		Chunk c1 = l1.getChunk();
-		Chunk c2 = l2.getChunk();
-		return (c1.getX() == c2.getX() && c1.getZ() == c2.getZ());
-	}
+    boolean isSameChunk(Location l1, Location l2) {
+        Chunk c1 = l1.getChunk();
+        Chunk c2 = l2.getChunk();
+        return (c1.getX() == c2.getX() && c1.getZ() == c2.getZ());
+    }
 }

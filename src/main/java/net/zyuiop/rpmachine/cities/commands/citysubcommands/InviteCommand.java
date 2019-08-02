@@ -48,7 +48,7 @@ public class InviteCommand implements CityMemberSubCommand {
             }
 
             String name = args[0];
-            UUID id = RPMachine.database().getUUIDTranslator().getUUID(name, false);
+            UUID id = RPMachine.database().getUUIDTranslator().getUUID(name);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'existe pas.");
             } else if (city.getInvitedUsers().contains(id)) {

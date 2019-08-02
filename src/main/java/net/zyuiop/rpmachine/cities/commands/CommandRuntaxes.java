@@ -13,7 +13,7 @@ public class CommandRuntaxes extends CitiesCommand {
 	@Override
 	public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
 		commandSender.sendMessage(ChatColor.GOLD + "Exécution forcée des taxes lancée.");
-		new Thread(() -> citiesManager.payTaxes(true)).start();
+		citiesManager.payTaxes(true);
 		return true;
 	}
 }

@@ -41,7 +41,7 @@ public class KickCommand implements CityMemberSubCommand {
             return false;
         } else {
             String pseudo = args[0];
-            UUID id = RPMachine.database().getUUIDTranslator().getUUID(pseudo, true);
+            UUID id = RPMachine.database().getUUIDTranslator().getUUID(pseudo);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
             } else {

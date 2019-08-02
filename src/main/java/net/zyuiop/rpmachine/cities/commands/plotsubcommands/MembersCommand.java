@@ -59,7 +59,7 @@ public class MembersCommand implements SubCommand {
         } else if (!city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) && !plot.getOwner().equals(tt)) {
             player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
         } else {
-            UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[3], true);
+            UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[3]);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
             } else {

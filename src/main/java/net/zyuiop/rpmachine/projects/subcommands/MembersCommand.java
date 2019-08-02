@@ -38,7 +38,7 @@ public class MembersCommand implements SubCommand {
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Ce projet n'existe pas.");
         } else {
-            UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[2], true);
+            UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[2]);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
             } else {

@@ -29,7 +29,7 @@ public class CouncilCommand implements CityMemberSubCommand {
         if (args.length == 1 && args[0].equals("list")) {
             player.sendMessage(ChatColor.GOLD + "-----[ Liste des Conseillers ]-----");
             for (UUID council : city.getCouncils()) {
-                String name = RPMachine.database().getUUIDTranslator().getName(council, false);
+                String name = RPMachine.database().getUUIDTranslator().getName(council);
                 if (name != null)
                     player.sendMessage(ChatColor.YELLOW + " - " + name);
             }
@@ -45,7 +45,7 @@ public class CouncilCommand implements CityMemberSubCommand {
                 return false;
             }
 
-            UUID id = RPMachine.database().getUUIDTranslator().getUUID(pseudo, true);
+            UUID id = RPMachine.database().getUUIDTranslator().getUUID(pseudo);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
             } else if (id == city.getMayor()) {

@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.json.Json;
 import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
 
 import java.io.*;
 import java.nio.file.NoSuchFileException;
@@ -90,7 +91,7 @@ public abstract class FileEntityStore<T extends StoredEntity> {
     }
 
     protected void saveEntity(T entity) {
-        new Thread(() -> {
+        Bukkit.getScheduler().runTaskAsynchronously(RPMachine.getInstance(), () -> {
             File file = new File(folder, entity.getFileName());
 
             // Fail if the file doesn't exist
@@ -107,7 +108,7 @@ public abstract class FileEntityStore<T extends StoredEntity> {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }).start();
+        });
     }
 
     protected void removeEntity(T entity) {
