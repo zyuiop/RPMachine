@@ -114,7 +114,7 @@ public class Area {
 	public Block getMiddleFloor() {
 		int midX = (minX + maxX) / 2;
 		int midZ = (minZ + maxZ) / 2;
-		return Bukkit.getWorld("world").getHighestBlockAt(midX, midZ);
+		return Bukkit.getWorld(world).getHighestBlockAt(midX, midZ);
 	}
 
 	public boolean hasCommonPositionsWith(Chunk chunk) {

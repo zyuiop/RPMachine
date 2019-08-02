@@ -65,10 +65,11 @@ public class SelectionManager implements Listener {
 					selection = new Selection();
 
 				Block block = event.getClickedBlock();
-				if (block == null || !block.getWorld().getName().equals("world"))
+				if (block == null)
 					return;
 
-				if (citiesManager.getCityHere(block.getChunk()) != null) {
+				boolean isOverworld = block.getWorld().getName().equalsIgnoreCase("world");
+				if (isOverworld && citiesManager.getCityHere(block.getChunk()) != null) {
 					player.sendMessage(ChatColor.RED + "Ce point est dans une ville.");
 					return;
 				}
