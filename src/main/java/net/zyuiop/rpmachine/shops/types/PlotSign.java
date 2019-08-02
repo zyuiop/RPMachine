@@ -142,8 +142,6 @@ public class PlotSign extends AbstractShopSign {
                 Messages.credit(city, price, "vente de parcelle");
             } else {
                 // On crédite à l'owner du panneau
-                // TODO: make tax customizable
-
                 double cityRate = city.getPlotSellTaxRate();
                 double userRate = 1 - city.getPlotSellTaxRate();
 

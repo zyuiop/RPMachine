@@ -7,6 +7,7 @@ import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.Ownable;
+import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.*;
@@ -17,7 +18,6 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// TODO: finish implementing loans
 public class City implements LegalEntity, StoredEntity {
     private final Set<VirtualChunk> chunks = new HashSet<>();
     private final Map<UUID, Set<Permission>> councils = new HashMap<>();
@@ -236,12 +236,12 @@ public class City implements LegalEntity, StoredEntity {
     }
 
     public boolean canBuild(Player player, Location location) {
-        // TODO: update to permissions
-        if (mayor.equals(player.getUniqueId()) || councils.containsKey(player.getUniqueId())) {
-            return true;
+        Plot plot = getPlotHere(location);
+
+        if (plot == null) {
+            return hasPermission(player, CityPermissions.BUILD_IN_CITY);
         } else {
-            Plot plot = getPlotHere(location);
-            return plot != null && plot.canBuild(player, location);
+            return hasPermission(player, CityPermissions.BUILD_IN_PLOTS) || plot.canBuild(player, location);
         }
     }
 
@@ -300,12 +300,13 @@ public class City implements LegalEntity, StoredEntity {
     }
 
     public boolean canInteractWithBlock(Player player, Location location) {
-        // TODO: update to permissions
-        if (mayor.equals(player.getUniqueId()) || councils.containsKey(player.getUniqueId())) {
-            return true;
+        Plot plot = getPlotHere(location);
+
+        if (plot == null) {
+            // A voir, tous les habitants de la ville peuvent-t-ils vraiment intéragir dans toutes les parcelles ?
+            return inhabitants.contains(player.getUniqueId());
         } else {
-            Plot plot = getPlotHere(location);
-            return (inhabitants.contains(player.getUniqueId()) && plot == null) || (plot != null && plot.canBuild(player, location));
+            return hasPermission(player, CityPermissions.INTERACT_IN_PLOTS) || plot.canBuild(player, location);
         }
     }
 

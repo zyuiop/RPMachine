@@ -59,8 +59,6 @@ public class SelectionManager implements Listener {
 			setSelection(player.getUniqueId(), selection);
 			event.setCancelled(true);
 		} else if (event.getItem() != null && event.getItem().getType() == Material.BLAZE_ROD) {
-			// TODO: merge two code blocks, use same tool for both.
-			// TODO: wait actually we might not care as this is admin only
 			if (player.hasPermission("zones.select")) {
 				Selection selection = getSelection(player.getUniqueId());
 				if (selection == null)
