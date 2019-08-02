@@ -15,6 +15,8 @@ import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.gui.WindowsListener;
 import net.zyuiop.rpmachine.jobs.CommandJob;
 import net.zyuiop.rpmachine.jobs.JobsManager;
+import net.zyuiop.rpmachine.multiverse.MultiverseManager;
+import net.zyuiop.rpmachine.multiverse.MultiverseWorld;
 import net.zyuiop.rpmachine.projects.ProjectCommand;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import net.zyuiop.rpmachine.scoreboards.ScoreboardManager;
@@ -45,6 +47,7 @@ public class RPMachine extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
     private ProjectsManager projectsManager;
     private ShopsManager shopsManager;
+    private MultiverseManager multiverseManager;
 
     public static RPMachine getInstance() {
         return instance;
@@ -91,6 +94,14 @@ public class RPMachine extends JavaPlugin {
         return baseAmount;
     }
 
+    public static boolean isTpEnabled() {
+        return getInstance().getConfig().getBoolean("cityTp.enable", false);
+    }
+
+    public MultiverseManager getMultiverseManager() {
+        return multiverseManager;
+    }
+
     @Override
     public void onEnable() {
         try {
@@ -113,6 +124,7 @@ public class RPMachine extends JavaPlugin {
         this.selectionManager = new SelectionManager(citiesManager);
         this.scoreboardManager = new ScoreboardManager(this);
         this.projectsManager = new ProjectsManager(this);
+        this.multiverseManager = new MultiverseManager();
 
         // Load DB
         if (!loadDatabase()) {
@@ -154,6 +166,9 @@ public class RPMachine extends JavaPlugin {
             Bukkit.getWorld("world").save();
             Bukkit.getLogger().info("Done !");
         }, 20 * 60, 20 * 20 * 60);
+
+        // Create resources world
+        this.multiverseManager.createWorld(new MultiverseWorld("resources", true, false, false));
 
         scheduleReboot();
 
@@ -230,6 +245,9 @@ public class RPMachine extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getLogger().info("Disabling: deleting resources world");
+        multiverseManager.deleteWorld(multiverseManager.getWorld("resources"));
+
         super.onDisable();
     }
 
@@ -243,9 +261,5 @@ public class RPMachine extends JavaPlugin {
 
     public ProjectsManager getProjectsManager() {
         return projectsManager;
-    }
-
-    public static boolean isTpEnabled() {
-        return getInstance().getConfig().getBoolean("cityTp.enable", false);
     }
 }

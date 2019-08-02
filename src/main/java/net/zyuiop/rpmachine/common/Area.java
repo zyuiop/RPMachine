@@ -5,7 +5,9 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
-public class Area {
+import java.util.Iterator;
+
+public class Area implements Iterable<Block> {
 	private String world = "world";
 	private int minX;
 	private int minY;
@@ -41,6 +43,14 @@ public class Area {
 		this.maxX = maxX;
 		this.maxY = maxY;
 		this.maxZ = maxZ;
+	}
+
+	public Location getFirst() {
+		return Bukkit.getWorld(world).getBlockAt(minX, minY, minZ).getLocation();
+	}
+
+	public Location getSecond() {
+		return Bukkit.getWorld(world).getBlockAt(maxX, maxY, maxZ).getLocation();
 	}
 
 	public Area() {
@@ -129,5 +139,45 @@ public class Area {
 
 	public Area getFlatArea() {
 		return new Area(minX, 1, minZ, maxX, 1, maxZ);
+	}
+
+	@Override
+	public Iterator<Block> iterator() {
+		return new Iterator<Block>() {
+			private int x = minX;
+			private int y = minY;
+			private int z = minZ;
+
+			@Override
+			public boolean hasNext() {
+				return z <= maxZ;
+			}
+
+			@Override
+			public Block next() {
+				Block b = Bukkit.getWorld(world).getBlockAt(x, y, z);
+
+				x++;
+				if (x > maxX) {
+					x = minX;
+					y++;
+				}
+
+				if (y > maxY) {
+					y = minY;
+					z++;
+				}
+				return b;
+			}
+		};
+	}
+
+	@Override
+	public String toString() {
+		return world + "-" + minX + "-" + minY + "-" + minZ + "-" + maxX + "-" + maxY + "-" + maxZ;
+	}
+
+	public String getWorld() {
+		return world;
 	}
 }
