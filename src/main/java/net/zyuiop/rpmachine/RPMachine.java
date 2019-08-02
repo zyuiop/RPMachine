@@ -1,6 +1,5 @@
 package net.zyuiop.rpmachine;
 
-import com.google.common.collect.Lists;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.SelectionManager;
 import net.zyuiop.rpmachine.cities.commands.CityCommand;
@@ -9,10 +8,8 @@ import net.zyuiop.rpmachine.cities.commands.CommandRuntaxes;
 import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
-import net.zyuiop.rpmachine.database.DatabaseManager;
-import net.zyuiop.rpmachine.commands.CommandMoney;
-import net.zyuiop.rpmachine.commands.CommandPay;
 import net.zyuiop.rpmachine.common.PlayerListener;
+import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.gui.WindowsListener;
@@ -26,11 +23,7 @@ import net.zyuiop.rpmachine.shops.ShopsManager;
 import net.zyuiop.rpmachine.shops.SignsListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -250,5 +243,9 @@ public class RPMachine extends JavaPlugin {
 
     public ProjectsManager getProjectsManager() {
         return projectsManager;
+    }
+
+    public static boolean isTpEnabled() {
+        return getInstance().getConfig().getBoolean("cityTp.enable", false);
     }
 }

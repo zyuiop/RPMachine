@@ -50,6 +50,14 @@ public class InfoCommand implements SubCommand {
             player.sendMessage(ChatColor.YELLOW + "Nombre d'habitants : " + target.countInhabitants());
             player.sendMessage(ChatColor.YELLOW + "Type de ville : " + ((target.isRequireInvite() ? ChatColor.RED + "Sur invitation" : ChatColor.GREEN + "Publique")));
             player.sendMessage(ChatColor.YELLOW + "Impôts : " + target.getTaxes() + " " + RPMachine.getCurrencyName() + " par semaine");
+            player.sendMessage(ChatColor.YELLOW + "Taxe de vente de parcelle : " + ((int) (100 * target.getPlotSellTaxRate())) + " %");
+
+            if (!target.getInhabitants().contains(player.getUniqueId())) {
+                player.sendMessage(ChatColor.YELLOW + "Taxe de citoyenneté : " + target.getJoinTax() + " " + RPMachine.getCurrencyName());
+
+                if (RPMachine.isTpEnabled())
+                    player.sendMessage(ChatColor.YELLOW + "Taxe de téléportation : " + target.getTpTax() + " " + RPMachine.getCurrencyName());
+            }
 
             CityFloor floor = citiesManager.getFloor(target);
             player.sendMessage(ChatColor.YELLOW + "Palier : " + floor.getName());

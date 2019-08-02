@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.cities.commands;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.citysubcommands.*;
 import net.zyuiop.rpmachine.cities.commands.citysubcommands.params.CityParamsSubCommand;
@@ -20,7 +21,6 @@ public class CityCommand extends CompoundCommand {
         registerSubCommand("council", new CouncilCommand(citiesManager), "conseil", "adjoints");
         registerSubCommand("givemoney", new GiveMoneyCommand(citiesManager), "gm", "gift", "give");
         registerSubCommand("invite", new InviteCommand(citiesManager), "add");
-        registerSubCommand("teleport", new TeleportCommand(citiesManager), "tp");
         registerSubCommand("remove", new RemoveCommand(citiesManager));
         registerSubCommand("setmayor", new SetMayorCommand(citiesManager));
         registerSubCommand("paytaxes", new PayTaxesCommand(citiesManager), "pay");
@@ -30,6 +30,9 @@ public class CityCommand extends CompoundCommand {
         registerSubCommand("create", new CreateCityCommand(citiesManager));
         registerSubCommand("permissions", new PermissionsCommand());
         registerSubCommand("params", new CityParamsSubCommand(citiesManager), "p", "prefs");
+
+        if (RPMachine.isTpEnabled())
+            registerSubCommand("teleport", new TeleportCommand(citiesManager), "tp");
 
         // Will also register a command with the same name
         FloorsCommand fc = new FloorsCommand();
