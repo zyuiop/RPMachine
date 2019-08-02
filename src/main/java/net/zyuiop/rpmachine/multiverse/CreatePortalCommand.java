@@ -53,7 +53,8 @@ public class CreatePortalCommand extends AbstractCommand {
                 Set<BlockFace> faces = new HashSet<>(data.getFaces());
                 b.setType(Material.NETHER_PORTAL, false);
                 Orientable orientable = (Orientable) b.getBlockData();
-                orientable.setAxis(faces.iterator().next().getModZ() != 0 ? Axis.Z : Axis.X);
+                orientable.setAxis(faces.stream().anyMatch(f -> f.getModZ() != 0) ? Axis.Z : Axis.X);
+                b.setBlockData(orientable, false);
             }
         });
         MultiversePortal p = new MultiversePortal(portal, args[0]);
