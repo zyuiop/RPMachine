@@ -4,7 +4,6 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.EconomyPermissions;
 import net.zyuiop.rpmachine.utils.Messages;
@@ -61,7 +60,7 @@ public class PayTaxesCommand implements SubCommand {
                 } else {
                     RPMachine.database().getPlayerData(player).transfer(amount, city);
                     Messages.debit(player, topay, "paiement des impôts");
-                    player.sendMessage(ChatColor.RED + "Vous devez encore " + topay + " " + Economy.getCurrencyName() + " à la ville.");
+                    player.sendMessage(ChatColor.RED + "Vous devez encore " + topay + " " + RPMachine.getCurrencyName() + " à la ville.");
 
                     topay = topay - amount;
                     payer.setUnpaidTaxes(city.getCityName(), topay);

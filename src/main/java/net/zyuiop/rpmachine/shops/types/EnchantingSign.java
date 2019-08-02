@@ -2,13 +2,13 @@ package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.Economy;
-import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.jobs.JobRestrictions;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.json.JsonExclude;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.shops.ShopBuilder;
+import net.zyuiop.rpmachine.shops.ShopsManager;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -110,7 +110,7 @@ public class EnchantingSign extends AbstractShopSign {
             this.level = level;
             this.enchantment = bukkitEnchantment.getKey().getKey();
 
-            player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Votre shop est maintenant totalement opérationnel.");
+            player.sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.GREEN + "Votre shop est maintenant totalement opérationnel.");
 
             display();
         } else {
@@ -134,16 +134,16 @@ public class EnchantingSign extends AbstractShopSign {
                             event.getItem().removeEnchantment(bukkitEnchantment);
                         }
                         available++;
-                        event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous venez d'ajouter " + ChatColor.AQUA + 1 + ChatColor.GREEN + " enchantement à votre shop.");
+                        event.getPlayer().sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.GREEN + "Vous venez d'ajouter " + ChatColor.AQUA + 1 + ChatColor.GREEN + " enchantement à votre shop.");
                     } else {
-                        event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.RED + "L'enchantement " + bukkitEnchantment.getKey().getKey() + " n'est pas du bon niveau.");
+                        event.getPlayer().sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.RED + "L'enchantement " + bukkitEnchantment.getKey().getKey() + " n'est pas du bon niveau.");
                     }
                 } else {
-                    event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.RED + "L'enchantement " + bukkitEnchantment.getKey().getKey() + " n'a pas été trouvé sur l'item.");
+                    event.getPlayer().sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.RED + "L'enchantement " + bukkitEnchantment.getKey().getKey() + " n'a pas été trouvé sur l'item.");
                 }
             }
 
-            event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.YELLOW + "Il y a actuellement " + ChatColor.GOLD + this.available + ChatColor.YELLOW + " items dans la réserve de ce shop.");
+            event.getPlayer().sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.YELLOW + "Il y a actuellement " + ChatColor.GOLD + this.available + ChatColor.YELLOW + " items dans la réserve de ce shop.");
         }
     }
 
@@ -187,10 +187,9 @@ public class EnchantingSign extends AbstractShopSign {
             available--;
             ItemStack stack = item.get();
             stack.addEnchantment(bukkitEnchantment, level);
-            player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Votre item a été enchanté pour " + price + " " + Economy.getCurrencyName());
-
+            Messages.debitEntity(player, token.getLegalEntity(), price, "enchantement");
         } else {
-            player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
+            Messages.notEnoughMoneyEntity(player, token.getLegalEntity(), price);
         }
     }
 
@@ -207,7 +206,7 @@ public class EnchantingSign extends AbstractShopSign {
         String size = (available > 0 ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
 
         return super.describe() + ChatColor.GREEN + "Vente" + ChatColor.YELLOW + " de l'enchantement " + enchantment + " " + level +
-                " pour " + ChatColor.AQUA + price + Economy.getCurrencyName() + ChatColor.YELLOW +
+                " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName() + ChatColor.YELLOW +
                 " (" + size + ChatColor.YELLOW + ")";
     }
 

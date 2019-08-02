@@ -2,12 +2,12 @@ package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.Economy;
-import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.entities.AdminLegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.shops.ShopBuilder;
+import net.zyuiop.rpmachine.shops.ShopsManager;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -132,21 +132,21 @@ public class ItemShopSign extends AbstractShopSign {
 
             itemType = ItemStackStorage.init(event.getItem());
             if (itemType == null) {
-                player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.RED + "Une erreur s'est produite.");
+                player.sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.RED + "Une erreur s'est produite.");
                 return;
             } else if (itemType.maxAmount() < amountPerPackage) {
-                player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.RED + "Cet item ne peut pas être vendu en lots de plus de " + itemType.maxAmount() + ".");
+                player.sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.RED + "Cet item ne peut pas être vendu en lots de plus de " + itemType.maxAmount() + ".");
                 itemType = null;
                 return;
             }
 
-            player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Votre shop est maintenant totalement opérationnel.");
+            player.sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.GREEN + "Votre shop est maintenant totalement opérationnel.");
             if (action == ShopAction.SELL) {
-                player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Cliquez droit avec des items pour les ajouter dans l'inventaire de votre shop.");
+                player.sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.GREEN + "Cliquez droit avec des items pour les ajouter dans l'inventaire de votre shop.");
             } else {
-                player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Cliquez droit pour récupérer le contenu de l'inventaire de votre shop.");
+                player.sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.GREEN + "Cliquez droit pour récupérer le contenu de l'inventaire de votre shop.");
             }
-            player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Casser le panneau droppera l'inventaire du shop au sol.");
+            player.sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.GREEN + "Casser le panneau droppera l'inventaire du shop au sol.");
             display();
         } else {
             if (owner() instanceof AdminLegalEntity) {
@@ -162,9 +162,9 @@ public class ItemShopSign extends AbstractShopSign {
                     int amt = event.getItem().getAmount();
                     available += amt;
                     event.getPlayer().setItemInHand(new ItemStack(Material.AIR, 1));
-                    event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous venez d'ajouter " + ChatColor.AQUA + amt + ChatColor.GREEN + " ressources à votre shop. Il y en a maintenant " + ChatColor.AQUA + available + ChatColor.GREEN + " au total.");
+                    event.getPlayer().sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.GREEN + "Vous venez d'ajouter " + ChatColor.AQUA + amt + ChatColor.GREEN + " ressources à votre shop. Il y en a maintenant " + ChatColor.AQUA + available + ChatColor.GREEN + " au total.");
                 } else {
-                    event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.YELLOW + "Il y a actuellement " + ChatColor.GOLD + this.available + ChatColor.YELLOW + " items dans la réserve de ce shop.");
+                    event.getPlayer().sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.YELLOW + "Il y a actuellement " + ChatColor.GOLD + this.available + ChatColor.YELLOW + " items dans la réserve de ce shop.");
                 }
             } else {
                 if (!tt.checkDelegatedPermission(ShopPermissions.GET_SHOP_STOCK))
@@ -176,9 +176,9 @@ public class ItemShopSign extends AbstractShopSign {
                     if (available >= amountPerPackage) {
                         player.getInventory().addItem(getNewStack());
                         available -= amountPerPackage;
-                        event.getPlayer().sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous venez de récupérer " + ChatColor.AQUA + amountPerPackage + ChatColor.GREEN + " ressources à votre shop. Il en reste " + ChatColor.AQUA + available + ChatColor.GREEN + ".");
+                        event.getPlayer().sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.GREEN + "Vous venez de récupérer " + ChatColor.AQUA + amountPerPackage + ChatColor.GREEN + " ressources à votre shop. Il en reste " + ChatColor.AQUA + available + ChatColor.GREEN + ".");
                     } else {
-                        player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.RED + "Il n'y a aucun item à récupérer.");
+                        player.sendMessage(ShopsManager.SHOPS_PREFIX + ChatColor.RED + "Il n'y a aucun item à récupérer.");
                     }
                 }
             }
@@ -202,7 +202,7 @@ public class ItemShopSign extends AbstractShopSign {
             ItemStack click = event.getItem();
             if (isItemValid(click) && click.getAmount() >= amountPerPackage) {
                 if (owner().transfer(price, token.getLegalEntity())) {
-                    net.zyuiop.rpmachine.utils.Messages.creditEntity(player, token.getLegalEntity(), price, "vente de " + amountPerPackage + " " + itemType.longItemName());
+                    Messages.creditEntity(player, token.getLegalEntity(), price, "vente de " + amountPerPackage + " " + itemType.longItemName());
                     available += amountPerPackage;
                     click.setAmount(click.getAmount() - amountPerPackage);
                 } else {
@@ -224,11 +224,11 @@ public class ItemShopSign extends AbstractShopSign {
             }
 
             if (token.getLegalEntity().transfer(price, owner())) {
-                net.zyuiop.rpmachine.utils.Messages.debitEntity(player, token.getLegalEntity(), price, "achat de " + amountPerPackage + " " + itemType.longItemName());
+                Messages.debitEntity(player, token.getLegalEntity(), price, "achat de " + amountPerPackage + " " + itemType.longItemName());
                 available -= amountPerPackage;
                 player.getInventory().addItem(getNewStack());
             } else {
-                net.zyuiop.rpmachine.utils.Messages.notEnoughMoneyEntity(player, token.getLegalEntity(), price);
+                Messages.notEnoughMoneyEntity(player, token.getLegalEntity(), price);
             }
         }
     }
@@ -250,7 +250,7 @@ public class ItemShopSign extends AbstractShopSign {
         String size = (getAvailable() > getAmountPerPackage() ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
 
         return super.describe() + typeLine + ChatColor.YELLOW + " de lots de " + amountPerPackage + " " + itemType +
-                " pour " + ChatColor.AQUA + price + Economy.getCurrencyName() + ChatColor.YELLOW +
+                " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName() + ChatColor.YELLOW +
                 " (" + size + ChatColor.YELLOW + ")";
     }
 

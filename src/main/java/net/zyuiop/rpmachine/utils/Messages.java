@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.utils;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -38,12 +38,12 @@ public class Messages {
 
     public static void creditEntity(Player player, LegalEntity entity, double amount, String reason) {
         reason = reason == null ? "" : (ChatColor.GRAY + " (" + reason + ChatColor.GRAY + ")");
-        player.sendMessage(entityPrefix(player, entity) + ChatColor.GREEN + " + " + amount + " " + Economy.getCurrencyName() + reason);
+        player.sendMessage(entityPrefix(player, entity) + ChatColor.GREEN + " + " + amount + " " + RPMachine.getCurrencyName() + reason);
     }
 
     public static void debitEntity(Player player, LegalEntity entity, double amount, String reason) {
         reason = reason == null ? "" : (ChatColor.GRAY + " (" + reason + ChatColor.GRAY + ")");
-        player.sendMessage(entityPrefix(player, entity) + ChatColor.AQUA + "[" + entity.shortDisplayable() + ChatColor.AQUA + "] " + ChatColor.RED + " - " + amount + " " + Economy.getCurrencyName() + reason);
+        player.sendMessage(entityPrefix(player, entity) + ChatColor.AQUA + "[" + entity.shortDisplayable() + ChatColor.AQUA + "] " + ChatColor.RED + " - " + amount + " " + RPMachine.getCurrencyName() + reason);
     }
 
     public static void notEnoughMoney(Player player, double amount) {
@@ -51,6 +51,6 @@ public class Messages {
     }
 
     public static void notEnoughMoneyEntity(Player player, LegalEntity entity, double amount) {
-        player.sendMessage(entityPrefix(player, entity) + ChatColor.RED + "Fonds insuffisants. Montant nécessaire : " + ChatColor.DARK_RED + amount + " " + Economy.getCurrencyName());
+        player.sendMessage(entityPrefix(player, entity) + ChatColor.RED + "Fonds insuffisants. Montant nécessaire : " + ChatColor.DARK_RED + amount + " " + RPMachine.getCurrencyName());
     }
 }

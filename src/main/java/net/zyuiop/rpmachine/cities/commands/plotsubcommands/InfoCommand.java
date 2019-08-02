@@ -6,7 +6,6 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Plot;
-import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -46,7 +45,7 @@ public class InfoCommand implements SubCommand {
                 player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
                 player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
                 player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs");
-                player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " " + Economy.getCurrencyName());
+                player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " " + RPMachine.getCurrencyName());
 
                 LegalEntity proprio = plot.owner();
                 if (proprio == null) {

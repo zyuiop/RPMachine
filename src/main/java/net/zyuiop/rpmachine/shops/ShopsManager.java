@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ShopsManager extends FileEntityStore<AbstractShopSign> {
+    public static final String SHOPS_PREFIX = (net.md_5.bungee.api.ChatColor.GOLD + "[" + net.md_5.bungee.api.ChatColor.YELLOW + "Boutiques" + net.md_5.bungee.api.ChatColor.GOLD + "] " + net.md_5.bungee.api.ChatColor.RESET);
     protected final ConcurrentHashMap<Location, AbstractShopSign> signs = new ConcurrentHashMap<>();
     protected final Map<String, ShopBuilder<? extends AbstractShopSign>> shopBuilders = new HashMap<>();
 

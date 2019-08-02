@@ -6,7 +6,6 @@ import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -25,7 +24,7 @@ public class CreateCityCommand implements SubCommand {
 
     @Override
     public String getDescription() {
-        return "crée une ville (coût actuel: " + citiesManager.getCreationPrice() + " " + Economy.getCurrencyName() + ")";
+        return "crée une ville (coût actuel: " + citiesManager.getCreationPrice() + " " + RPMachine.getCurrencyName() + ")";
     }
 
     @Override
@@ -48,7 +47,7 @@ public class CreateCityCommand implements SubCommand {
             } else if (citiesManager.getCity(cityName) != null) {
                 player.sendMessage(ChatColor.RED + "Une ville de ce nom existe déjà.");
             } else if (!confirm) {
-                player.sendMessage(ChatColor.GOLD + "Voulez vous vraiment créer une ville ici ? Cela vous coûtera " + ChatColor.YELLOW + citiesManager.getCreationPrice() + " " + Economy.getCurrencyName());
+                player.sendMessage(ChatColor.GOLD + "Voulez vous vraiment créer une ville ici ? Cela vous coûtera " + ChatColor.YELLOW + citiesManager.getCreationPrice() + " " + RPMachine.getCurrencyName());
                 player.sendMessage(ChatColor.GOLD + "Pour confirmer, tapez /city create " + cityName + " " + type + " confirm");
             } else {
                 PlayerData data = RPMachine.database().getPlayerData(player);

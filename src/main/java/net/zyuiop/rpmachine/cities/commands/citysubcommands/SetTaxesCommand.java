@@ -1,9 +1,9 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.ChatColor;
@@ -47,7 +47,7 @@ public class SetTaxesCommand implements CityMemberSubCommand {
                 }
                 city.setTaxes(value);
                 citiesManager.saveCity(city);
-                player.sendMessage(ChatColor.GREEN + "Les impôts sont désormais de " + value + " " + Economy.getCurrencyName() + "/bloc");
+                player.sendMessage(ChatColor.GREEN + "Les impôts sont désormais de " + value + " " + RPMachine.getCurrencyName() + "/bloc");
             } catch (Exception e) {
                 player.sendMessage(ChatColor.RED + "Le montant est incorrect.");
             }

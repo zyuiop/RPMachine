@@ -3,7 +3,6 @@ package net.zyuiop.rpmachine.jobs;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.AbstractCommand;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import net.zyuiop.rpmachine.shops.types.EnchantingSign;
 import net.zyuiop.rpmachine.shops.types.ItemShopSign;
@@ -89,7 +88,7 @@ public class CommandJob extends AbstractCommand {
                         commandSender.sendMessage(ChatColor.GREEN + "Vous avez bien choisi le métier " + ChatColor.DARK_GREEN + j.getJobName());
                     } else {
                         commandSender.sendMessage(ChatColor.YELLOW + "Voulez vous vraiment adopter le métier " + ChatColor.GOLD + j.getJobName() + ChatColor.YELLOW + " ? Confirmez avec " + ChatColor.GOLD + "/jobs choose " + j.getJobName() + " confirm");
-                        commandSender.sendMessage(ChatColor.YELLOW + "Vous ne pourrez pas changer avant " + ChatColor.GOLD + rpMachine.getJobsManager().getQuitFrequency() + " jours " + ChatColor.YELLOW + " et cela coûtera " + ChatColor.AQUA + rpMachine.getJobsManager().getQuitPrice() + Economy.getCurrencyName());
+                        commandSender.sendMessage(ChatColor.YELLOW + "Vous ne pourrez pas changer avant " + ChatColor.GOLD + rpMachine.getJobsManager().getQuitFrequency() + " jours " + ChatColor.YELLOW + " et cela coûtera " + ChatColor.AQUA + rpMachine.getJobsManager().getQuitPrice() + RPMachine.getCurrencyName());
                     }
                 }
             } else if (com.equalsIgnoreCase("quit")) {
@@ -133,7 +132,7 @@ public class CommandJob extends AbstractCommand {
                         }
                         commandSender.sendMessage(ChatColor.GRAY + "Vos autres boutiques ne seront pas affectées.");
                     }
-                    commandSender.sendMessage(ChatColor.YELLOW + "L'abandon de votre métier coûtera " + ChatColor.AQUA + rpMachine.getJobsManager().getQuitPrice() + Economy.getCurrencyName());
+                    commandSender.sendMessage(ChatColor.YELLOW + "L'abandon de votre métier coûtera " + ChatColor.AQUA + rpMachine.getJobsManager().getQuitPrice() + RPMachine.getCurrencyName());
                     return true;
                 } else if (strings[1].equalsIgnoreCase("confirm")) {
                     int i = 0;

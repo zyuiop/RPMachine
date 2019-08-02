@@ -3,7 +3,6 @@ package net.zyuiop.rpmachine.shops.types;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
-import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
@@ -84,7 +83,7 @@ public class PlotSign extends AbstractShopSign {
 
     @Override
     public String describe() {
-        return super.describe() + ChatColor.DARK_GREEN + "Parcelle" + ChatColor.YELLOW + " " + plotName + " dans " + cityName + " pour " + ChatColor.AQUA + price + Economy.getCurrencyName();
+        return super.describe() + ChatColor.DARK_GREEN + "Parcelle" + ChatColor.YELLOW + " " + plotName + " dans " + cityName + " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName();
     }
 
     @Override
@@ -135,7 +134,7 @@ public class PlotSign extends AbstractShopSign {
 
         LegalEntity data = tt.getLegalEntity();
         if (data.withdrawMoney(price)) {
-            net.zyuiop.rpmachine.utils.Messages.debitEntity(player, data, price, "achat de parcelle");
+            Messages.debitEntity(player, data, price, "achat de parcelle");
 
             if (plot.getOwner() == null) {
                 city.creditMoney(price);
@@ -162,7 +161,7 @@ public class PlotSign extends AbstractShopSign {
             });
             player.sendMessage(ChatColor.GREEN + "Vous êtes désormais propriétaire de cette parcelle.");
         } else {
-            net.zyuiop.rpmachine.utils.Messages.notEnoughMoneyEntity(player, data, price);
+            Messages.notEnoughMoneyEntity(player, data, price);
         }
     }
 

@@ -10,9 +10,8 @@ import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.database.DatabaseManager;
-import net.zyuiop.rpmachine.economy.Economy;
-import net.zyuiop.rpmachine.economy.commands.CommandMoney;
-import net.zyuiop.rpmachine.economy.commands.CommandPay;
+import net.zyuiop.rpmachine.commands.CommandMoney;
+import net.zyuiop.rpmachine.commands.CommandPay;
 import net.zyuiop.rpmachine.economy.listeners.PlayerListener;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
@@ -44,6 +43,8 @@ import java.util.stream.Collectors;
 public class RPMachine extends JavaPlugin {
 
     private static RPMachine instance;
+    private static String moneyName = null;
+    private static double baseAmount = -1;
     private DatabaseManager databaseManager;
     private JobsManager jobsManager;
     private CitiesManager citiesManager;
@@ -81,6 +82,20 @@ public class RPMachine extends JavaPlugin {
 
     public static void setPlayerRoleToken(Player player, LegalEntity token) {
         player.setMetadata("roleToken", new FixedMetadataValue(RPMachine.getInstance(), new RoleToken(player, token)));
+    }
+
+    public static String getCurrencyName() {
+        if (moneyName == null) {
+            moneyName = getInstance().getConfig().getString("money.symbol", "$");
+        }
+        return moneyName;
+    }
+
+    public static double getCreationBalance() {
+        if (baseAmount == -1) {
+            baseAmount = getInstance().getConfig().getDouble("money.baseAmount", 150D);
+        }
+        return baseAmount;
     }
 
     @Override

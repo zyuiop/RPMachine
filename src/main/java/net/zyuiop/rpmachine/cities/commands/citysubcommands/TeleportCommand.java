@@ -5,7 +5,6 @@ import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.Bukkit;
@@ -33,7 +32,7 @@ public class TeleportCommand implements SubCommand {
 
     @Override
     public String getDescription() {
-        return "vous téléporte dans votre ville ou la ville fournie (contre " + price + " " + Economy.getCurrencyName() + ")";
+        return "vous téléporte dans votre ville ou la ville fournie (contre " + price + " " + RPMachine.getCurrencyName() + ")";
     }
 
     @Override
