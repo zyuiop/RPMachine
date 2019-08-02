@@ -64,9 +64,6 @@ public class CreatePortalCommand extends AbstractCommand {
     }
 
     private int walkDirection(Block block, Vector direction, Vector playerAxix) {
-        if (playerAxix.normalize().equals(direction))
-            return (int) block.getLocation().toVector().dot(direction.multiply(direction));
-
         while (block.getType() == Material.NETHER_PORTAL || block.getType() == Material.GLASS_PANE) {
             block = block.getRelative(direction.getBlockX(), direction.getBlockY(), direction.getBlockZ());
         }
