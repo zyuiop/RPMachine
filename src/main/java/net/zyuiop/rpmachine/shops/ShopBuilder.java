@@ -82,11 +82,18 @@ public abstract class ShopBuilder<T extends AbstractShopSign> {
      * @param line the line
      * @return the double
      */
-    protected Optional<Double> extractDouble(String line) {
+    protected Optional<Double> extractPrice(String line) throws SignParseError {
         if (line == null) return Optional.empty();
 
         try {
-            return Optional.of(Double.parseDouble(line));
+            return Optional.of(Double.parseDouble(line)).map(price -> {
+                if (price < 0)
+                    throw new SignParseError("Le prix ne peut pas être négatif");
+                if (price > 100_000_000_000D)
+                    throw new SignParseError("Le prix maximal est dépassé (100 milliards)");
+
+                return price;
+            });
         } catch (NumberFormatException e) {
             return Optional.empty();
         }

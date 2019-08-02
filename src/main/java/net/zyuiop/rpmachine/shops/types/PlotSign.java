@@ -3,14 +3,14 @@ package net.zyuiop.rpmachine.shops.types;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
-import net.zyuiop.rpmachine.economy.EconomyManager;
-import net.zyuiop.rpmachine.economy.Messages;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import net.zyuiop.rpmachine.shops.ShopBuilder;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -84,7 +84,7 @@ public class PlotSign extends AbstractShopSign {
 
     @Override
     public String describe() {
-        return super.describe() + ChatColor.DARK_GREEN + "Parcelle" + ChatColor.YELLOW + " " + plotName + " dans " + cityName + " pour " + ChatColor.AQUA + price + EconomyManager.getMoneyName();
+        return super.describe() + ChatColor.DARK_GREEN + "Parcelle" + ChatColor.YELLOW + " " + plotName + " dans " + cityName + " pour " + ChatColor.AQUA + price + Economy.getCurrencyName();
     }
 
     @Override
@@ -115,15 +115,17 @@ public class PlotSign extends AbstractShopSign {
             return;
         }
 
-        EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-
         if (citizensOnly && !city.getInhabitants().contains(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "Vous n'êtes pas citoyen de cette ville.");
             return;
         }
 
-        if (price < 0) {
-            price *= -1;
+        if (plot.ownerTag() != null && ownerTag() != null && !ownerTag().equals(plot.ownerTag())) {
+            // Un joueur peut pas vendre une parcelle random
+            breakSign(null);
+            player.sendMessage(ChatColor.RED + "Erreur : cette parcelle n'appartient plus à " + owner().shortDisplayable());
+            Bukkit.getLogger().info("Old plot sign found : " + plot.getOwner() + " / sign " + ownerTag());
+            return;
         }
 
         RoleToken tt = RPMachine.getPlayerRoleToken(player);
@@ -132,38 +134,46 @@ public class PlotSign extends AbstractShopSign {
             return;
 
         LegalEntity data = tt.getLegalEntity();
-        manager.withdrawMoneyWithBalanceCheck(data, price, (newAmount, difference) -> {
-            if (!difference) {
-                player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
+        if (data.withdrawMoney(price)) {
+            net.zyuiop.rpmachine.utils.Messages.debitEntity(player, data, price, "achat de parcelle");
+
+            if (plot.getOwner() == null) {
+                city.creditMoney(price);
+
+                Messages.credit(city, price, "vente de parcelle");
             } else {
-                if (plot.ownerTag() != null && ownerTag() != null && !ownerTag().equals(plot.ownerTag())) {
-                    // Un joueur peut pas vendre une parcelle random
-                    breakSign(null);
-                    player.sendMessage(ChatColor.RED + "Erreur : cette parcelle n'appartient plus à " + owner().shortDisplayable());
-                    Bukkit.getLogger().info("Old plot sign found : " + plot.getOwner() + " / sign " + ownerTag());
-                    return;
-                }
+                // On crédite à l'owner du panneau
+                // TODO: make tax customizable
+                Messages.credit(city, price * 0.2D, "taxe sur vente de parcelle");
+                Messages.credit(owner(), price * 0.8D, "vente de parcelle");
 
-                if (plot.getOwner() == null) {
-                    city.creditMoney(price);
-                } else {
-                    // On crédite à l'owner du panneau
-                    owner().creditMoney(price * 0.8D);
-                    city.creditMoney(price * 0.2D);
-                }
-
-                plot.setOwner(data);
-                plot.setPlotMembers(new CopyOnWriteArrayList<>());
-
-                city.getPlots().put(plotName, plot);
-                RPMachine.getInstance().getCitiesManager().saveCity(city);
-                Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
-                    breakSign();
-                    launchfw(location.getLocation(), FireworkEffect.builder().withColor(Color.WHITE, Color.GRAY, Color.BLACK).with(FireworkEffect.Type.STAR).build());
-                });
-                player.sendMessage(ChatColor.GREEN + "Vous êtes désormais propriétaire de cette parcelle.");
+                owner().creditMoney(price * 0.8D);
+                city.creditMoney(price * 0.2D);
             }
-        });
+
+            plot.setOwner(data);
+            plot.setPlotMembers(new CopyOnWriteArrayList<>());
+
+            city.getPlots().put(plotName, plot);
+            RPMachine.getInstance().getCitiesManager().saveCity(city);
+            Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
+                breakSign();
+                launchfw(location.getLocation(), FireworkEffect.builder().withColor(Color.WHITE, Color.GRAY, Color.BLACK).with(FireworkEffect.Type.STAR).build());
+            });
+            player.sendMessage(ChatColor.GREEN + "Vous êtes désormais propriétaire de cette parcelle.");
+        } else {
+            net.zyuiop.rpmachine.utils.Messages.notEnoughMoneyEntity(player, data, price);
+        }
+    }
+
+    @Override
+    public void debug(Player p) {
+        p.sendMessage(ChatColor.YELLOW + "-----[ Débug Shop ] -----");
+        p.sendMessage(ChatColor.YELLOW + "Price : " + getPrice());
+        p.sendMessage(ChatColor.YELLOW + "Owner (Tag/displayable) : " + ownerTag() + " / " + owner().displayable());
+        p.sendMessage(ChatColor.YELLOW + "Parcelle : " + getPlotName());
+        p.sendMessage(ChatColor.YELLOW + "Ville : " + getCityName());
+        p.sendMessage(ChatColor.YELLOW + "Citizens Only : " + isCitizensOnly());
     }
 
     public static class Builder extends ShopBuilder<PlotSign> {
@@ -204,9 +214,7 @@ public class PlotSign extends AbstractShopSign {
                             throw new SignParseError("Le panneau ne se trouve pas dans une ville.");
                         }
                     })
-                    .flatMap(sign -> extractDouble(lines[1]).map(price -> {
-                        if (price > 100_000_000_000D)
-                            throw new SignParseError("Le prix maximal est dépassé (100 milliards)");
+                    .flatMap(sign -> extractPrice(lines[1]).map(price -> {
                         sign.price = price;
                         return sign;
                     }))
@@ -217,15 +225,5 @@ public class PlotSign extends AbstractShopSign {
                         return sign;
                     });
         }
-    }
-
-    @Override
-    public void debug(Player p) {
-        p.sendMessage(ChatColor.YELLOW + "-----[ Débug Shop ] -----");
-        p.sendMessage(ChatColor.YELLOW + "Price : " + getPrice());
-        p.sendMessage(ChatColor.YELLOW + "Owner (Tag/displayable) : " + ownerTag() + " / " + owner().displayable());
-        p.sendMessage(ChatColor.YELLOW + "Parcelle : " + getPlotName());
-        p.sendMessage(ChatColor.YELLOW + "Ville : " + getCityName());
-        p.sendMessage(ChatColor.YELLOW + "Citizens Only : " + isCitizensOnly());
     }
 }

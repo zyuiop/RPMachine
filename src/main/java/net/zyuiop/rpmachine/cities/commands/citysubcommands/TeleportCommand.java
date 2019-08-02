@@ -5,8 +5,9 @@ import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -32,7 +33,7 @@ public class TeleportCommand implements SubCommand {
 
     @Override
     public String getDescription() {
-        return "vous téléporte dans votre ville ou la ville fournie (contre " + price + " " + EconomyManager.getMoneyName() + ")";
+        return "vous téléporte dans votre ville ou la ville fournie (contre " + price + " " + Economy.getCurrencyName() + ")";
     }
 
     @Override
@@ -74,17 +75,13 @@ public class TeleportCommand implements SubCommand {
             spawn.getChunk().load();
 
         if (pay) {
-            RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), price, (newAmount, difference) -> {
-                if (!difference) {
-                    player.sendMessage(ChatColor.RED + "Vous n'avez pas assez d'argent pour faire cela.");
-                } else {
-                    target.creditMoney(price);
-                    citiesManager.saveCity(target);
-                    Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
-                    ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);
-                    player.sendMessage(ChatColor.GOLD + "Vous avez été téléporté et " + price + " " + EconomyManager.getMoneyName() + " vous a été débité.");
-                }
-            });
+            if (!RPMachine.database().getPlayerData(player).transfer(price, target)) {
+                Messages.notEnoughMoney(player, price);
+            } else {
+                Messages.debit(player, price, "téléportation vers " + target.getCityName());
+                Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
+                ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);
+            }
         } else {
             Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
             ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);

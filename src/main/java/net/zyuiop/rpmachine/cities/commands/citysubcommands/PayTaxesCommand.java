@@ -4,14 +4,14 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.EconomyPermissions;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class PayTaxesCommand implements SubCommand {
-
     private final CitiesManager citiesManager;
 
     public PayTaxesCommand(CitiesManager citiesManager) {
@@ -52,16 +52,19 @@ public class PayTaxesCommand implements SubCommand {
             } else {
                 double amount = payer.getBalance();
                 if (amount >= topay) {
-                    RPMachine.getInstance().getEconomyManager().withdrawMoney(player.getUniqueId(), topay);
-                    payer.setUnpaidTaxes(city.getCityName(), 0D);
+                    RPMachine.database().getPlayerData(player).transfer(topay, city);
+                    Messages.debit(player, topay, "paiement des impôts");
                     player.sendMessage(ChatColor.GREEN + "Vous ne devez plus rien à cette ville.");
+
+                    payer.setUnpaidTaxes(city.getCityName(), 0D);
                     city.pay(payer, topay);
                 } else {
-                    RPMachine.getInstance().getEconomyManager().withdrawMoney(player.getUniqueId(), amount);
-                    city.creditMoney(amount);
+                    RPMachine.database().getPlayerData(player).transfer(amount, city);
+                    Messages.debit(player, topay, "paiement des impôts");
+                    player.sendMessage(ChatColor.RED + "Vous devez encore " + topay + " " + Economy.getCurrencyName() + " à la ville.");
+
                     topay = topay - amount;
                     payer.setUnpaidTaxes(city.getCityName(), topay);
-                    player.sendMessage(ChatColor.RED + "Vous devez encore " + topay + " " + EconomyManager.getMoneyName() + " à la ville.");
                     city.pay(payer, amount);
                 }
                 citiesManager.saveCity(city);

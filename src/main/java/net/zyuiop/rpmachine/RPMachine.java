@@ -10,22 +10,21 @@ import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.database.DatabaseManager;
-import net.zyuiop.rpmachine.shops.ShopsManager;
-import net.zyuiop.rpmachine.economy.EconomyManager;
-import net.zyuiop.rpmachine.entities.RoleToken;
-import net.zyuiop.rpmachine.economy.TransactionsHelper;
-import net.zyuiop.rpmachine.jobs.CommandJob;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.economy.commands.CommandMoney;
 import net.zyuiop.rpmachine.economy.commands.CommandPay;
-import net.zyuiop.rpmachine.shops.CommandShops;
-import net.zyuiop.rpmachine.jobs.JobsManager;
 import net.zyuiop.rpmachine.economy.listeners.PlayerListener;
-import net.zyuiop.rpmachine.shops.SignsListener;
 import net.zyuiop.rpmachine.entities.LegalEntity;
+import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.gui.WindowsListener;
+import net.zyuiop.rpmachine.jobs.CommandJob;
+import net.zyuiop.rpmachine.jobs.JobsManager;
 import net.zyuiop.rpmachine.projects.ProjectCommand;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import net.zyuiop.rpmachine.scoreboards.ScoreboardManager;
+import net.zyuiop.rpmachine.shops.CommandShops;
+import net.zyuiop.rpmachine.shops.ShopsManager;
+import net.zyuiop.rpmachine.shops.SignsListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -40,13 +39,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class RPMachine extends JavaPlugin {
 
     private static RPMachine instance;
     private DatabaseManager databaseManager;
-    private TransactionsHelper transactionsHelper;
-    private EconomyManager economyManager;
     private JobsManager jobsManager;
     private CitiesManager citiesManager;
     private SelectionManager selectionManager;
@@ -69,6 +67,12 @@ public class RPMachine extends JavaPlugin {
 
         setPlayerRoleToken(player, database().getPlayerData(player.getUniqueId()));
         return getPlayerRoleToken(player);
+    }
+
+    public static List<Player> getPlayersActingAs(String tag) {
+        return Bukkit.getOnlinePlayers().stream()
+                .filter(pl -> getPlayerRoleToken(pl).getTag().equals(tag))
+                .collect(Collectors.toList());
     }
 
     public static LegalEntity getPlayerActAs(Player player) {
@@ -96,8 +100,6 @@ public class RPMachine extends JavaPlugin {
         saveDefaultConfig();
 
         // Load useful and non db dependent managers
-        this.economyManager = new EconomyManager();
-        this.transactionsHelper = new TransactionsHelper(this.economyManager);
         this.jobsManager = new JobsManager(this);
         this.citiesManager = new CitiesManager(this);
         this.selectionManager = new SelectionManager(citiesManager);
@@ -223,14 +225,6 @@ public class RPMachine extends JavaPlugin {
 
     public JobsManager getJobsManager() {
         return jobsManager;
-    }
-
-    public TransactionsHelper getTransactionsHelper() {
-        return transactionsHelper;
-    }
-
-    public EconomyManager getEconomyManager() {
-        return economyManager;
     }
 
     public ShopsManager getShopsManager() {

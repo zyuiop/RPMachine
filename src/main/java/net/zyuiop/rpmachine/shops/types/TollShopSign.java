@@ -3,14 +3,13 @@ package net.zyuiop.rpmachine.shops.types;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.json.JsonExclude;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.shops.ShopBuilder;
 import net.zyuiop.rpmachine.utils.Symbols;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -223,21 +222,19 @@ public class TollShopSign extends AbstractShopSign {
             if (!token.checkDelegatedPermission(ShopPermissions.USE_TOLL))
                 return;
 
-            EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-            manager.transferMoneyBalanceCheck(token.getLegalEntity(), owner(), price, result -> {
-                if (result) {
-                    player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Le passage a bien été ouvert pour " + price + " " + EconomyManager.getMoneyName());
-                    player.playSound(getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-                    door.open();
+            if (token.getLegalEntity().transfer(price, owner())) {
+                net.zyuiop.rpmachine.utils.Messages.debitEntity(player, token.getLegalEntity(), price, "péage");
 
-                    Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), () -> {
-                        door.close();
-                        player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.YELLOW + "Le passage s'est refermé.");
-                    }, 100L);
-                } else {
-                    player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
-                }
-            });
+                player.playSound(getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
+                door.open();
+
+                Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), () -> {
+                    door.close();
+                    player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.YELLOW + "Le passage s'est refermé.");
+                }, 100L);
+            } else {
+                net.zyuiop.rpmachine.utils.Messages.notEnoughMoneyEntity(player, token.getLegalEntity(), price);
+            }
         }
     }
 
@@ -263,7 +260,7 @@ public class TollShopSign extends AbstractShopSign {
         @Override
         public Optional<TollShopSign> parseSign(Block block, RoleToken tt, String[] lines) throws SignPermissionError, SignParseError {
             return Optional.of(new TollShopSign(block.getLocation()))
-                    .flatMap(sign -> extractDouble(lines[1]).map(price -> {
+                    .flatMap(sign -> extractPrice(lines[1]).map(price -> {
                         if (price > 100_000_000_000D)
                             throw new SignParseError("Le prix maximal est dépassé (100 milliards)");
                         sign.price = price;
@@ -293,6 +290,6 @@ public class TollShopSign extends AbstractShopSign {
 
     @Override
     public String describe() {
-        return super.describe() + ChatColor.DARK_AQUA + "Péage" + ChatColor.YELLOW + " pour " + ChatColor.AQUA + price + EconomyManager.getMoneyName();
+        return super.describe() + ChatColor.DARK_AQUA + "Péage" + ChatColor.YELLOW + " pour " + ChatColor.AQUA + price + Economy.getCurrencyName();
     }
 }

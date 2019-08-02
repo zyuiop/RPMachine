@@ -12,9 +12,8 @@ import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import net.zyuiop.rpmachine.permissions.Permission;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
+import net.zyuiop.rpmachine.utils.Messages;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
@@ -79,6 +78,20 @@ public class City implements LegalEntity, StoredEntity {
 
 	public Set<UUID> getCouncils() {
 		return councils.keySet();
+	}
+
+	public Set<UUID> getAdministrators() {
+		Set<UUID> set = new HashSet<>(councils.keySet());
+		set.add(mayor);
+		return set;
+	}
+
+	public Set<Player> getOnlineAdministrators() {
+		return getAdministrators().stream()
+				.map(Bukkit::getPlayer)
+				.filter(Objects::nonNull)
+				.filter(OfflinePlayer::isOnline)
+				.collect(Collectors.toSet());
 	}
 
 	public Map<String, Plot> getPlots() {
@@ -234,19 +247,17 @@ public class City implements LegalEntity, StoredEntity {
 
 				if (force || lastPaid == null || !sameDay(lastPaid)) {
 					double toPay = plot.getArea().getSquareArea() * taxes;
-					RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(ownerData, toPay, (newAmount, difference) -> {
-						if (!difference) {
-							money += toPay;
-						} else {
-							double lateTaxes = ownerData.getUnpaidTaxes(getCityName());
-							lateTaxes += toPay;
-							ownerData.setUnpaidTaxes(getCityName(), lateTaxes);
 
-							taxesToPay.merge(owner, toPay, Double::sum);
-						}
+					if (!ownerData.transfer(toPay, this)) {
+						double lateTaxes = ownerData.getUnpaidTaxes(getCityName());
+						lateTaxes += toPay;
+						ownerData.setUnpaidTaxes(getCityName(), lateTaxes);
+						taxesToPay.merge(owner, toPay, Double::sum);
+					} else {
+						money += toPay;
+					}
 
-						ownerData.setLastTaxes(getCityName(), new Date());
-					});
+					ownerData.setLastTaxes(getCityName(), new Date());
 				}
 			}
 		}

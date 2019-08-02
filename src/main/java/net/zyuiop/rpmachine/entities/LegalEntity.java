@@ -2,13 +2,14 @@ package net.zyuiop.rpmachine.entities;
 
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A legal entity is an abstraction for anything that can own goods, lands, shops, pay taxes, ...
@@ -58,4 +59,17 @@ public interface LegalEntity extends AccountHolder {
 	 * Returns a very short (<= 16 c) or this entity
 	 */
 	String shortDisplayable();
+
+	/**
+	 * Returns a list of players that can administrate this entity
+	 */
+	Set<UUID> getAdministrators();
+
+	default Set<Player> getOnlineAdministrators() {
+		return getAdministrators().stream()
+				.map(Bukkit::getPlayer)
+				.filter(Objects::nonNull)
+				.filter(OfflinePlayer::isOnline)
+				.collect(Collectors.toSet());
+	}
 }

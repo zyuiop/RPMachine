@@ -2,7 +2,7 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.ChatColor;
@@ -29,7 +29,7 @@ public class SimulateTaxesCommand implements CityMemberSubCommand {
     @Override
     public boolean run(Player player, @Nonnull City city, String[] args) {
         player.sendMessage(ChatColor.GOLD + "-----[ Simulation d'impôts ]-----");
-        player.sendMessage(ChatColor.YELLOW + "Les impôts actuels de votre ville vous rapportent " + ChatColor.GREEN + "" + city.simulateTaxes() + " " + EconomyManager.getMoneyName() + " par semaine.");
+        player.sendMessage(ChatColor.YELLOW + "Les impôts actuels de votre ville vous rapportent " + ChatColor.GREEN + "" + city.simulateTaxes() + " " + Economy.getCurrencyName() + " par semaine.");
 
         return true;
     }

@@ -2,7 +2,7 @@ package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.entities.AdminLegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
@@ -22,16 +22,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Optional;
 
 public class ItemShopSign extends AbstractShopSign {
-    public enum ShopAction {
-        SELL,
-        BUY
-    }
-
     private ItemStackStorage itemType;
     private int amountPerPackage;
     private ShopAction action;
     private int available;
-
     public ItemShopSign(Location location) {
         super(location);
     }
@@ -207,17 +201,13 @@ public class ItemShopSign extends AbstractShopSign {
 
             ItemStack click = event.getItem();
             if (isItemValid(click) && click.getAmount() >= amountPerPackage) {
-                EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-                manager.transferMoneyBalanceCheck(owner(), token.getLegalEntity(), price, result -> {
-                    if (result) {
-                        available += amountPerPackage;
-                        player.sendMessage(Messages.RECEIVED_MONEY.getMessage().replace("{AMT}", "" + price).replace("{FROM}", owner().displayable()));
-                        click.setAmount(click.getAmount() - amountPerPackage);
-                        player.getInventory().setItemInHand(click);
-                    } else {
-                        player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.RED + "L'acheteur n'a plus assez d'argent pour cela.");
-                    }
-                });
+                if (owner().transfer(price, token.getLegalEntity())) {
+                    net.zyuiop.rpmachine.utils.Messages.creditEntity(player, token.getLegalEntity(), price, "vente de " + amountPerPackage + " " + itemType.longItemName());
+                    available += amountPerPackage;
+                    click.setAmount(click.getAmount() - amountPerPackage);
+                } else {
+                    player.sendMessage(ChatColor.RED + "L'acheteur n'a plus assez d'argent.");
+                }
             } else {
                 player.sendMessage(ChatColor.RED + "Vous devez cliquer sur la panneau en tenant " + ChatColor.AQUA + itemType.longItemName() + ChatColor.RED + " en main.");
             }
@@ -233,17 +223,40 @@ public class ItemShopSign extends AbstractShopSign {
                 return;
             }
 
-            EconomyManager manager = RPMachine.getInstance().getEconomyManager();
-            manager.transferMoneyBalanceCheck(token.getLegalEntity(), owner(), price, result -> {
-                if (result) {
-                    player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + itemType.longItemName() + " pour " + price + " " + EconomyManager.getMoneyName());
-                    available -= amountPerPackage;
-                    player.getInventory().addItem(getNewStack());
-                } else {
-                    player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
-                }
-            });
+            if (token.getLegalEntity().transfer(price, owner())) {
+                net.zyuiop.rpmachine.utils.Messages.debitEntity(player, token.getLegalEntity(), price, "achat de " + amountPerPackage + " " + itemType.longItemName());
+                available -= amountPerPackage;
+                player.getInventory().addItem(getNewStack());
+            } else {
+                net.zyuiop.rpmachine.utils.Messages.notEnoughMoneyEntity(player, token.getLegalEntity(), price);
+            }
         }
+    }
+
+    @Override
+    public void debug(Player p) {
+        p.sendMessage(ChatColor.YELLOW + "-----[ Débug Shop ] -----");
+        p.sendMessage(ChatColor.YELLOW + "Price : " + getPrice());
+        p.sendMessage(ChatColor.YELLOW + "Owner (Tag/displayable) : " + ownerTag() + " / " + owner().displayable());
+        p.sendMessage(ChatColor.YELLOW + "Action : " + getAction());
+        p.sendMessage(ChatColor.YELLOW + "Item : " + itemName());
+        p.sendMessage(ChatColor.YELLOW + "Amount per package : " + getAmountPerPackage());
+        p.sendMessage(ChatColor.YELLOW + "Available items : " + getAvailable());
+    }
+
+    @Override
+    public String describe() {
+        String typeLine = getAction() == ItemShopSign.ShopAction.BUY ? net.md_5.bungee.api.ChatColor.RED + "Achat" : net.md_5.bungee.api.ChatColor.GREEN + "Vente";
+        String size = (getAvailable() > getAmountPerPackage() ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
+
+        return super.describe() + typeLine + ChatColor.YELLOW + " de lots de " + amountPerPackage + " " + itemType +
+                " pour " + ChatColor.AQUA + price + Economy.getCurrencyName() + ChatColor.YELLOW +
+                " (" + size + ChatColor.YELLOW + ")";
+    }
+
+    public enum ShopAction {
+        SELL,
+        BUY
     }
 
     public static class Builder extends ShopBuilder<ItemShopSign> {
@@ -268,7 +281,7 @@ public class ItemShopSign extends AbstractShopSign {
         @Override
         public Optional<ItemShopSign> parseSign(Block block, RoleToken tt, String[] lines) throws SignPermissionError, SignParseError {
             return Optional.of(new ItemShopSign(block.getLocation()))
-                    .flatMap(sign -> extractDouble(lines[1]).map(price -> {
+                    .flatMap(sign -> extractPrice(lines[1]).map(price -> {
                         if (price > 100_000_000_000D)
                             throw new SignParseError("Le prix maximal est dépassé (100 milliards)");
                         sign.price = price;
@@ -300,26 +313,5 @@ public class ItemShopSign extends AbstractShopSign {
                         return sign;
                     });
         }
-    }
-
-    @Override
-    public void debug(Player p) {
-        p.sendMessage(ChatColor.YELLOW + "-----[ Débug Shop ] -----");
-        p.sendMessage(ChatColor.YELLOW + "Price : " + getPrice());
-        p.sendMessage(ChatColor.YELLOW + "Owner (Tag/displayable) : " + ownerTag() + " / " + owner().displayable());
-        p.sendMessage(ChatColor.YELLOW + "Action : " + getAction());
-        p.sendMessage(ChatColor.YELLOW + "Item : " + itemName());
-        p.sendMessage(ChatColor.YELLOW + "Amount per package : " + getAmountPerPackage());
-        p.sendMessage(ChatColor.YELLOW + "Available items : " + getAvailable());
-    }
-
-    @Override
-    public String describe() {
-        String typeLine = getAction() == ItemShopSign.ShopAction.BUY ? net.md_5.bungee.api.ChatColor.RED + "Achat" : net.md_5.bungee.api.ChatColor.GREEN + "Vente";
-        String size = (getAvailable() > getAmountPerPackage() ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
-
-        return super.describe() + typeLine + ChatColor.YELLOW + " de lots de " + amountPerPackage + " " + itemType +
-                " pour " + ChatColor.AQUA + price + EconomyManager.getMoneyName() + ChatColor.YELLOW +
-                " (" + size + ChatColor.YELLOW + ")";
     }
 }

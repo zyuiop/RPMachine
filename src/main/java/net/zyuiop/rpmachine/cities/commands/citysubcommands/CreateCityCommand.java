@@ -5,7 +5,9 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.VirtualChunk;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.economy.Economy;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -23,7 +25,7 @@ public class CreateCityCommand implements SubCommand {
 
     @Override
     public String getDescription() {
-        return "crée une ville (coût actuel: " + citiesManager.getCreationPrice() + " " + EconomyManager.getMoneyName() + ")";
+        return "crée une ville (coût actuel: " + citiesManager.getCreationPrice() + " " + Economy.getCurrencyName() + ")";
     }
 
     @Override
@@ -46,31 +48,33 @@ public class CreateCityCommand implements SubCommand {
             } else if (citiesManager.getCity(cityName) != null) {
                 player.sendMessage(ChatColor.RED + "Une ville de ce nom existe déjà.");
             } else if (!confirm) {
-                player.sendMessage(ChatColor.GOLD + "Voulez vous vraiment créer une ville ici ? Cela vous coûtera " + ChatColor.YELLOW + citiesManager.getCreationPrice() + " " + EconomyManager.getMoneyName());
+                player.sendMessage(ChatColor.GOLD + "Voulez vous vraiment créer une ville ici ? Cela vous coûtera " + ChatColor.YELLOW + citiesManager.getCreationPrice() + " " + Economy.getCurrencyName());
                 player.sendMessage(ChatColor.GOLD + "Pour confirmer, tapez /city create " + cityName + " " + type + " confirm");
             } else {
-                RPMachine.getInstance().getEconomyManager().withdrawMoneyWithBalanceCheck(player.getUniqueId(), citiesManager.getCreationPrice(), (newAmount, success) -> {
-                    if (!success) {
-                        player.sendMessage(ChatColor.RED + "Erreur : vous n'avez pas assez d'argent pour cela.");
+                PlayerData data = RPMachine.database().getPlayerData(player);
+                double amt = citiesManager.getCreationPrice();
+
+                if (!data.withdrawMoney(amt)) {
+                    Messages.notEnoughMoney(player, amt);
+                } else {
+                    City city = new City();
+                    city.setCityName(cityName);
+                    city.addChunk(new VirtualChunk(player.getLocation().getChunk()));
+                    city.addInhabitant(player.getUniqueId());
+                    city.setMayor(player.getUniqueId());
+                    city.setRequireInvite(type.equalsIgnoreCase("private"));
+                    city.setTaxes(0.0);
+                    city.setMayorWage(0.0);
+                    city.setSpawn(null);
+                    boolean result = citiesManager.createCity(city);
+                    if (result) {
+                        player.sendMessage(ChatColor.GOLD + "Vous créez une ville sur ce chunk.");
+                        Messages.debit(player, amt, "création de ville");
                     } else {
-                        City city = new City();
-                        city.setCityName(cityName);
-                        city.addChunk(new VirtualChunk(player.getLocation().getChunk()));
-                        city.addInhabitant(player.getUniqueId());
-                        city.setMayor(player.getUniqueId());
-                        city.setRequireInvite(type.equalsIgnoreCase("private"));
-                        city.setTaxes(0.0);
-                        city.setMayorWage(0.0);
-                        city.setSpawn(null);
-                        boolean result = citiesManager.createCity(city);
-                        if (result) {
-                            player.sendMessage(ChatColor.GOLD + "Vous créez une ville sur ce chunk.");
-                        } else {
-                            RPMachine.getInstance().getEconomyManager().giveMoney(player.getUniqueId(), newAmount);
-                            player.sendMessage(ChatColor.RED + "Une erreur s'est produite.");
-                        }
+                        data.creditMoney(amt);
+                        player.sendMessage(ChatColor.RED + "Une erreur s'est produite.");
                     }
-                });
+                }
             }
             return true;
         } else {

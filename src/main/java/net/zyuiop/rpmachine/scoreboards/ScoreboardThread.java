@@ -6,7 +6,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import net.zyuiop.rpmachine.utils.DirectionArrows;
@@ -85,7 +85,7 @@ public class ScoreboardThread implements Runnable {
 
 		sign.setLine(1, ChatColor.RED + "  ");
 		sign.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
-		sign.setLine(3, ChatColor.AQUA + "" + money + " " + EconomyManager.getMoneyName());
+		sign.setLine(3, ChatColor.AQUA + "" + money + " " + Economy.getCurrencyName());
 		sign.setLine(4, ChatColor.RED + "   ");
 		sign.setLine(5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Métier");
 		sign.setLine(6, job);
@@ -113,7 +113,7 @@ public class ScoreboardThread implements Runnable {
 
 		sign.setLine(1, ChatColor.RED + "  ");
 		sign.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
-		sign.setLine(3, ChatColor.AQUA + "" + city.getBalance() + " " + EconomyManager.getMoneyName());
+		sign.setLine(3, ChatColor.AQUA + "" + city.getBalance() + " " + Economy.getCurrencyName());
 		sign.setLine(4, ChatColor.RED + "   ");
 		sign.setLine(5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Habitants");
 		sign.setLine(6, ChatColor.AQUA + "" + city.countInhabitants() + " Hab.");

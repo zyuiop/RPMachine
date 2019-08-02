@@ -3,10 +3,8 @@ package net.zyuiop.rpmachine.economy.commands;
 import net.md_5.bungee.api.ChatColor;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.AbstractCommand;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.entities.LegalEntity;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CommandMoney extends AbstractCommand {
@@ -19,9 +17,9 @@ public class CommandMoney extends AbstractCommand {
 		LegalEntity entity = RPMachine.getPlayerActAs(player);
 		LegalEntity playerEntity = RPMachine.database().getPlayerData(player.getUniqueId());
 
-		player.sendMessage(ChatColor.YELLOW + "Vous avez actuellement " + ChatColor.GOLD + playerEntity.getBalance() + EconomyManager.getMoneyName());
+		player.sendMessage(ChatColor.YELLOW + "Vous avez actuellement " + ChatColor.GOLD + playerEntity.getBalance() + Economy.getCurrencyName());
 		if (entity != playerEntity) {
-			player.sendMessage(entity.displayable() + ChatColor.YELLOW + " a actuellement " + ChatColor.GOLD + entity.getBalance() + EconomyManager.getMoneyName());
+			player.sendMessage(entity.displayable() + ChatColor.YELLOW + " a actuellement " + ChatColor.GOLD + entity.getBalance() + Economy.getCurrencyName());
 		}
 		return false;
 	}

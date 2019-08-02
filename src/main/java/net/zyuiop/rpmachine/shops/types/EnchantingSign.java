@@ -2,7 +2,7 @@ package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.economy.Messages;
 import net.zyuiop.rpmachine.jobs.JobRestrictions;
 import net.zyuiop.rpmachine.entities.RoleToken;
@@ -187,7 +187,7 @@ public class EnchantingSign extends AbstractShopSign {
             available--;
             ItemStack stack = item.get();
             stack.addEnchantment(bukkitEnchantment, level);
-            player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Votre item a été enchanté pour " + price + " " + EconomyManager.getMoneyName());
+            player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Votre item a été enchanté pour " + price + " " + Economy.getCurrencyName());
 
         } else {
             player.sendMessage(Messages.NOT_ENOUGH_MONEY.getMessage());
@@ -207,7 +207,7 @@ public class EnchantingSign extends AbstractShopSign {
         String size = (available > 0 ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
 
         return super.describe() + ChatColor.GREEN + "Vente" + ChatColor.YELLOW + " de l'enchantement " + enchantment + " " + level +
-                " pour " + ChatColor.AQUA + price + EconomyManager.getMoneyName() + ChatColor.YELLOW +
+                " pour " + ChatColor.AQUA + price + Economy.getCurrencyName() + ChatColor.YELLOW +
                 " (" + size + ChatColor.YELLOW + ")";
     }
 
@@ -231,7 +231,7 @@ public class EnchantingSign extends AbstractShopSign {
         @Override
         public Optional<EnchantingSign> parseSign(Block block, RoleToken tt, String[] lines) throws SignPermissionError, SignParseError {
             return Optional.of(new EnchantingSign(block.getLocation()))
-                    .flatMap(sign -> extractDouble(lines[1]).map(price -> {
+                    .flatMap(sign -> extractPrice(lines[1]).map(price -> {
                         if (price > 100_000_000_000D)
                             throw new SignParseError("Le prix maximal est dépassé (100 milliards)");
                         sign.price = price;

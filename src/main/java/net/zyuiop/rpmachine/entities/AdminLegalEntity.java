@@ -1,12 +1,13 @@
 package net.zyuiop.rpmachine.entities;
 
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author zyuiop
@@ -86,5 +87,10 @@ public class AdminLegalEntity implements LegalEntity, LegalEntityRepository<Admi
 	@Override
 	public String shortDisplayable() {
 		return ChatColor.RED + "Confédération";
+	}
+
+	@Override
+	public Set<UUID> getAdministrators() {
+		return Bukkit.getOperators().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toSet());
 	}
 }

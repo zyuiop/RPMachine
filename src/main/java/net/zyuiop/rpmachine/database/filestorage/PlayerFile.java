@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import com.google.common.collect.Sets;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.database.PlayerData;
@@ -140,6 +142,11 @@ public class PlayerFile implements PlayerData {
 	@Override
 	public String shortDisplayable() {
 		return ChatColor.GOLD + getName();
+	}
+
+	@Override
+	public Set<UUID> getAdministrators() {
+		return Sets.newHashSet(uuid);
 	}
 
 	@Override

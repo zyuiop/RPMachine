@@ -181,6 +181,13 @@ public class Project extends Plot implements LegalEntity, StoredEntity {
         return ChatColor.DARK_GREEN + getPlotName();
     }
 
+    @Override
+    public Set<UUID> getAdministrators() {
+        Set<UUID> admins = new HashSet<>(this.admins.keySet());
+        admins.addAll(owner().getAdministrators());
+        return admins;
+    }
+
     public boolean canActAsProject(Player player) {
         // Permission donnée par le propriétaire de manager ses projets
         if (owner().hasDelegatedPermission(player, ProjectPermissions.ACT_AS_PROJECT))

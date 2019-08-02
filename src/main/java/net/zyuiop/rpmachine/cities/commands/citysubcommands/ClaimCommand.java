@@ -6,7 +6,7 @@ import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.common.VirtualChunk;
-import net.zyuiop.rpmachine.economy.EconomyManager;
+import net.zyuiop.rpmachine.economy.Economy;
 import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.ChatColor;
@@ -57,7 +57,7 @@ public class ClaimCommand implements CityMemberSubCommand {
             player.sendMessage(ChatColor.RED + "Ce chunk n'est pas adjacent à votre ville.");
             return false;
         } else if (city.getBalance() < floor.getChunkPrice()) {
-            player.sendMessage(ChatColor.RED + "Votre ville ne dispose pas d'assez d'argent pour faire cela. Il lui faut " + floor.getChunkPrice() + " " + EconomyManager.getMoneyName() + " au minimum.");
+            player.sendMessage(ChatColor.RED + "Votre ville ne dispose pas d'assez d'argent pour faire cela. Il lui faut " + floor.getChunkPrice() + " " + Economy.getCurrencyName() + " au minimum.");
             return false;
         } else if (city.getChunks().size() >= floor.getMaxsurface()) {
             player.sendMessage(ChatColor.RED + "Votre ville a atteind sa taille maximale.");
@@ -69,7 +69,7 @@ public class ClaimCommand implements CityMemberSubCommand {
             player.sendMessage(ChatColor.GREEN + "Votre ville a bien été agrandie sur ce terrain !");
             return true;
         } else {
-            player.sendMessage(ChatColor.GOLD + "Êtes vous certain de vouloir acheter ce chunk ? Cela vous coûtera " + ChatColor.YELLOW + floor.getChunkPrice() + " " + EconomyManager.getMoneyName());
+            player.sendMessage(ChatColor.GOLD + "Êtes vous certain de vouloir acheter ce chunk ? Cela vous coûtera " + ChatColor.YELLOW + floor.getChunkPrice() + " " + Economy.getCurrencyName());
             player.sendMessage(ChatColor.GOLD + "Tapez " + ChatColor.YELLOW + "/city claim confirm" + ChatColor.GOLD + " pour valider.");
             return true;
         }
