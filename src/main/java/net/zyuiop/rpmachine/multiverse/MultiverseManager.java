@@ -57,6 +57,8 @@ public class MultiverseManager extends FileEntityStore<MultiverseWorld> {
         if (mvWorld.getWorldName().equalsIgnoreCase("world"))
             return;
 
+        Bukkit.getLogger().info("Deleting multiverse " + mvWorld.getWorldName());
+
         removeEntity(mvWorld);
 
         // Remove portals
@@ -66,6 +68,7 @@ public class MultiverseManager extends FileEntityStore<MultiverseWorld> {
         // Relocate players
         World world = mvWorld.getWorld();
         world.getPlayers().forEach(p -> {
+            Bukkit.getLogger().info("Player " + p.getName() + " is in the deleted world, relocating...");
             Location target = p.getLocation().clone();
             target.setWorld(Bukkit.getWorld("world"));
             target.setY(Bukkit.getWorld("world").getHighestBlockYAt(target));
@@ -77,7 +80,7 @@ public class MultiverseManager extends FileEntityStore<MultiverseWorld> {
 
         File worldDir = world.getWorldFolder();
         try {
-            Bukkit.getLogger().info("Deleting world " + worldDir.getAbsolutePath());
+            Bukkit.getLogger().info("Deleting world folder " + worldDir.getAbsolutePath());
             FileUtils.deleteDirectory(worldDir);
         } catch (IOException e) {
             e.printStackTrace();

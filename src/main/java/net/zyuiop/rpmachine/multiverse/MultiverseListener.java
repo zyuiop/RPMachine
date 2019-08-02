@@ -2,14 +2,12 @@ package net.zyuiop.rpmachine.multiverse;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.common.Area;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -24,6 +22,16 @@ public class MultiverseListener implements Listener {
 
     public MultiverseListener(MultiverseManager manager) {
         this.manager = manager;
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent ev) {
+        Location loc = ev.getPlayer().getLocation();
+        if (loc.getWorld().getName().equalsIgnoreCase("world")) {
+            if (!loc.getBlock().isEmpty() && !loc.getBlock().isLiquid()) {
+                ev.getPlayer().teleport(loc.getWorld().getHighestBlockAt(loc).getLocation().add(0,1,0));
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -89,8 +97,15 @@ public class MultiverseListener implements Listener {
 
             if (other == null) {
                 if (target.isAllowGeneration()) {
-                    event.getPlayer().sendMessage(ChatColor.YELLOW + "Patientez, création du portail en cours...");
+                    Bukkit.getScheduler().runTaskAsynchronously(RPMachine.getInstance(), () -> {
+                        Bukkit.broadcastMessage(ChatColor.YELLOW + "Création d'un portail en monde ressources, risque de lag.");
+                        event.getPlayer().sendMessage(ChatColor.YELLOW + "Patientez, création du portail en cours...");
+                    });
+
                     l.info(".. Creating sibling portal at " + opposite + " for " + portal.getPortalArea());
+                    Bukkit.savePlayers();
+                    Bukkit.getWorld("world").save();
+
                     // Generate target portal
                     Location first = portal.getPortalArea().getFirst();
                     Location second = portal.getPortalArea().getSecond();
