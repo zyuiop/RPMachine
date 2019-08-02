@@ -1,202 +1,322 @@
 # Montant nécessaire pour créeer une ville :
 createcity:
-   price: 1500
+   price: 500
    incrfactor: 1000
 
 jobs:
- - name: Mineur
-   description: "Le mineur vend des ressources essentielles à l'économie"
-   items:
-      - IRON_INGOT
-      - GOLD_INGOT
-      - DIAMOND
-      - COAL
-      - REDSTONE
-      - LAPIS_BLOCK
-      - GOLDEN_APPLE
-      - IRON_BLOCK
-      - GOLD_BLOCK
-      - DIAMOND_BLOCK
-      - COAL_BLOCK
-      - REDSTONE_BLOCK
-      - STONE
-      - MOSSY_COBBLESTONE
-      - COBBLESTONE
-      - OBSIDIAN
-      - INK_SACK
-      - QUARTZ
-      - QUARTZ_BLOCK
-      - ENDER_STONE
- - name: Ingénieur
-   description: "L'ingénieur vend toutes sortes de choses utiles pour construire un système complèxe"
-   items:
-      - REDSTONE
-      - REDSTONE_BLOCK
-      - PISTON_BASE
-      - PISTON_STICKY_BASE
-      - DISPENSER
-      - TRIPWIRE_HOOK
-      - DIODE
-      - REDSTONE_COMPARATOR
-      - HOPPER
-      - DROPPER
-      - GOLD_PLATE
-      - IRON_PLATE
-      - DAYLIGHT_DETECTOR
-      - NOTE_BLOCK
-      - RAILS
-      - ACTIVATOR_RAIL
-      - DETECTOR_RAIL
-      - POWERED_RAIL
- - name: Fermier
-   description: "Le fermier a l'immense honneur de nourrir le serveur."
-   items:
-      - GOLDEN_APPLE
-      - APPLE
-      - MUSHROOM_SOUP
-      - BREAD
-      - GRILLED_PORK
-      - PORK
-      - RAW_FISH
-      - COOKED_FISH
-      - CAKE
-      - WHEAT
-      - COOKIE
-      - MELON
-      - RAW_BEEF
-      - COOKED_BEEF
-      - SUGAR_CANE
-      - RAW_CHICKEN
-      - COOKED_CHICKEN
-      - CARROT_ITEM
-      - POTATO_ITEM
-      - BAKED_POTATO
-      - PUMPKIN_PIE
-      - RABBIT
-      - COOKED_RABBIT
-      - RABBIT_STEW
-      - MUTTON
-      - COOKED_MUTTON
- - name: Menuisier
-   description: "Elément indispensable de toute construction !"
-   items:
-      - LOG
-      - LOG_2
-      - WOOD
-      - WOODEN_DOOR
-      - ACACIA_DOOR
-      - BIRCH_DOOR
-      - JUNGLE_DOOR
-      - SPRUCE_DOOR
-      - TRAP_DOOR
-      - WOOD_STEP
-      - WOOD_DOUBLE_STEP
-      - BOOKSHELF
-      - FENCE
-      - ACACIA_FENCE
-      - BIRCH_FENCE
-      - JUNGLE_FENCE
-      - SPRUCE_FENCE
-      - FENCE_GATE
-      - DARK_OAK_FENCE
-      - ACACIA_FENCE_GATE
-      - BIRCH_FENCE_GATE
-      - JUNGLE_FENCE_GATE
-      - SPRUCE_FENCE_GATE
- - name: Forgeron
-   description: "Créez les outils indispensables à tous."
-   items:
-      - DIAMOND_AXE
-      - GOLD_AXE
-      - IRON_AXE
-      - DIAMOND_PICKAXE
-      - GOLD_PICKAXE
-      - IRON_PICKAXE
-      - DIAMOND_HOE
-      - GOLD_HOE
-      - IRON_HOE
-      - DIAMOND_SWORD
-      - GOLD_SWORD
-      - IRON_SWORD
-      - DIAMOND_SPADE
-      - GOLD_SPADE
-      - IRON_SPADE
-      - DIAMOND_HELMET
-      - GOLD_HELMET
-      - IRON_HELMET
-      - DIAMOND_CHESTPLATE
-      - GOLD_CHESTPLATE
-      - IRON_CHESTPLATE
-      - DIAMOND_LEGGINGS
-      - GOLD_LEGGINGS
-      - IRON_LEGGINGS
-      - DIAMOND_BOOTS
-      - GOLD_BOOTS
-      - IRON_BOOTS
- - name: Chasseur
-   description: "Parcourez la terre à la recherche de loots"
-   items:
-      - BONE
-      - SKULL
-      - SKULL_ITEM
-      - GHAST_TEAR
-      - SULPHUR
-      - BLAZE_ROD
+  - name: Décorateur
+    description: "Fournit des ressources avant tout décoratives"
+    restrictedItems:
+      - BLACK_STAINED_GLASS
+      - BLACK_STAINED_GLASS_PANE
+      - BLUE_STAINED_GLASS
+      - BLUE_STAINED_GLASS_PANE
+      - BROWN_STAINED_GLASS
+      - BROWN_STAINED_GLASS_PANE
+      - CYAN_STAINED_GLASS
+      - CYAN_STAINED_GLASS_PANE
+      - GRAY_STAINED_GLASS
+      - GRAY_STAINED_GLASS_PANE
+      - GREEN_STAINED_GLASS
+      - GREEN_STAINED_GLASS_PANE
+      - BLUE_STAINED_GLASS
+      - BLUE_STAINED_GLASS_PANE
+      - GRAY_STAINED_GLASS
+      - GRAY_STAINED_GLASS_PANE
+      - LIME_STAINED_GLASS
+      - LIME_STAINED_GLASS_PANE
+      - MAGENTA_STAINED_GLASS
+      - MAGENTA_STAINED_GLASS_PANE
+      - ORANGE_STAINED_GLASS
+      - ORANGE_STAINED_GLASS_PANE
+      - PINK_STAINED_GLASS
+      - PINK_STAINED_GLASS_PANE
+      - PURPLE_STAINED_GLASS
+      - PURPLE_STAINED_GLASS_PANE
+      - RED_STAINED_GLASS
+      - RED_STAINED_GLASS_PANE
+      - WHITE_STAINED_GLASS
+      - WHITE_STAINED_GLASS_PANE
+      - YELLOW_STAINED_GLASS
+      - YELLOW_STAINED_GLASS_PANE
+      - LEGACY_STAINED_GLASS
+      - LEGACY_STAINED_GLASS_PANE
+      - BLACK_CARPET
+      - BLUE_CARPET
+      - BROWN_CARPET
+      - CYAN_CARPET
+      - GRAY_CARPET
+      - GREEN_CARPET
+      - BLUE_CARPET
+      - GRAY_CARPET
+      - LIME_CARPET
+      - MAGENTA_CARPET
+      - ORANGE_CARPET
+      - PINK_CARPET
+      - PURPLE_CARPET
+      - RED_CARPET
+      - WHITE_CARPET
+      - YELLOW_CARPET
+      - LEGACY_CARPET
+      - BLACK_CONCRETE
+      - BLUE_CONCRETE
+      - BROWN_CONCRETE
+      - CYAN_CONCRETE
+      - GRAY_CONCRETE
+      - GREEN_CONCRETE
+      - BLUE_CONCRETE
+      - GRAY_CONCRETE
+      - LIME_CONCRETE
+      - MAGENTA_CONCRETE
+      - ORANGE_CONCRETE
+      - PINK_CONCRETE
+      - PURPLE_CONCRETE
+      - RED_CONCRETE
+      - WHITE_CONCRETE
+      - YELLOW_CONCRETE
+      - LEGACY_CONCRETE
+      - BLACK_GLAZED_TERRACOTTA
+      - BLUE_GLAZED_TERRACOTTA
+      - BROWN_GLAZED_TERRACOTTA
+      - CYAN_GLAZED_TERRACOTTA
+      - GRAY_GLAZED_TERRACOTTA
+      - GREEN_GLAZED_TERRACOTTA
+      - BLUE_GLAZED_TERRACOTTA
+      - GRAY_GLAZED_TERRACOTTA
+      - LIME_GLAZED_TERRACOTTA
+      - MAGENTA_GLAZED_TERRACOTTA
+      - ORANGE_GLAZED_TERRACOTTA
+      - PINK_GLAZED_TERRACOTTA
+      - PURPLE_GLAZED_TERRACOTTA
+      - RED_GLAZED_TERRACOTTA
+      - WHITE_GLAZED_TERRACOTTA
+      - YELLOW_GLAZED_TERRACOTTA
+      - WHITE_GLAZED_TERRACOTTA
+      - ORANGE_GLAZED_TERRACOTTA
+      - MAGENTA_GLAZED_TERRACOTTA
+      - BLUE_GLAZED_TERRACOTTA
+      - YELLOW_GLAZED_TERRACOTTA
+      - LIME_GLAZED_TERRACOTTA
+      - PINK_GLAZED_TERRACOTTA
+      - GRAY_GLAZED_TERRACOTTA
+      - SILVER_GLAZED_TERRACOTTA
+      - CYAN_GLAZED_TERRACOTTA
+      - PURPLE_GLAZED_TERRACOTTA
+      - BLUE_GLAZED_TERRACOTTA
+      - BROWN_GLAZED_TERRACOTTA
+      - GREEN_GLAZED_TERRACOTTA
+      - RED_GLAZED_TERRACOTTA
+      - BLACK_GLAZED_TERRACOTTA
+      - BLACK_TERRACOTTA
+      - BLUE_TERRACOTTA
+      - BROWN_TERRACOTTA
+      - CYAN_TERRACOTTA
+      - GRAY_TERRACOTTA
+      - GREEN_TERRACOTTA
+      - LIME_TERRACOTTA
+      - MAGENTA_TERRACOTTA
+      - ORANGE_TERRACOTTA
+      - PINK_TERRACOTTA
+      - PURPLE_TERRACOTTA
+      - RED_TERRACOTTA
+      - WHITE_TERRACOTTA
+      - YELLOW_TERRACOTTA
+      - BLACK_BANNER
+      - BLACK_WALL_BANNER
+      - BLUE_BANNER
+      - BLUE_WALL_BANNER
+      - BROWN_BANNER
+      - BROWN_WALL_BANNER
+      - CREEPER_BANNER_PATTERN
+      - CYAN_BANNER
+      - CYAN_WALL_BANNER
+      - FLOWER_BANNER_PATTERN
+      - GLOBE_BANNER_PATTERN
+      - GRAY_BANNER
+      - GRAY_WALL_BANNER
+      - GREEN_BANNER
+      - GREEN_WALL_BANNER
+      - LIGHT_BLUE_BANNER
+      - LIGHT_BLUE_WALL_BANNER
+      - LIGHT_GRAY_BANNER
+      - LIGHT_GRAY_WALL_BANNER
+      - LIME_BANNER
+      - LIME_WALL_BANNER
+      - MAGENTA_BANNER
+      - MAGENTA_WALL_BANNER
+      - MOJANG_BANNER_PATTERN
+      - ORANGE_BANNER
+      - ORANGE_WALL_BANNER
+      - PINK_BANNER
+      - PINK_WALL_BANNER
+      - PURPLE_BANNER
+      - PURPLE_WALL_BANNER
+      - RED_BANNER
+      - RED_WALL_BANNER
+      - SKULL_BANNER_PATTERN
+      - WHITE_BANNER
+      - WHITE_WALL_BANNER
+      - YELLOW_BANNER
+      - YELLOW_WALL_BANNER
+      - LEGACY_STANDING_BANNER
+      - LEGACY_WALL_BANNER
+      - LEGACY_BANNER
+    restrictedBlocks:
+      - LOOM
+  - name: Enchanteur
+    description: "L'enchanteur peut vendre des enchantements pour les items"
+    restrictedBlocks:
+      - ENCHANTING_TABLE
+      # - ANVIL # a discuter
+    restrictedItems:
+      - BOOK
+    restrictions:
+      - ENCHANTING
+  - name: Alchimiste
+    description: "L'alchimiste confectionne et vend les potions et feux d'artifice"
+    restrictedBlocks:
+      - BREWING_STAND
+    restrictedItems:
+      - LINGERING_POTION
+      - POTION
+      - SPLASH_POTION
+      - LEGACY_POTION
+      - LEGACY_SPLASH_POTION
+      - LEGACY_LINGERING_POTION
+      - GLASS_BOTTLE
+      - FIREWORK_ROCKET
+      - FIREWORK_STAR
+      - LEGACY_FIREWORK
+      - LEGACY_FIREWORK_CHARGE
       - BLAZE_POWDER
-      - STRING
-      - SPIDER_EYE
-      - EYE_OF_ENDER
-      - ENDER_PEARL
-      - SLIME_BALL
-      - NETHER_STAR
-      - LEATHER
-      - WOOL
-      - ROTTEN_FLESH
-      - ARROW
-      - FEATHER
-      - CHAINMAIL_HELMET
-      - CHAINMAIL_BOOTS
-      - CHAINMAIL_CHESTPLATE
-      - CHAINMAIL_LEGGINGS
-      - SADDLE
-      - DIAMOND_BARDING
-      - GOLD_BARDING
-      - IRON_BARDING
-      - NAME_TAG
- - name: Constructeur
-   description: Vendez les matériaux essentiels à la construction
-   items:
-      - WOOL
-      - HARD_CLAY
-      - STAINED_CLAY
-      - BRICK
-      - BRICK_STAIRS
-      - WOODEN_DOOR
-      - ACACIA_DOOR
-      - BIRCH_DOOR
-      - JUNGLE_DOOR
-      - SPRUCE_DOOR
-      - TRAP_DOOR
-      - STEP
-      - DOUBLE_STEP
-      - SMOOTH_STAIRS
-      - COBBLESTONE_STAIRS
-      - SANDSTONE
-      - SANDSTONE_STAIRS
-      - SMOOTH_STAIRS
-      - GLASS
-      - THIN_GLASS
-      - STAINED_GLASS
-      - STAINED_GLASS_PANE
-      - STONE
-      - COBBLESTONE
-      - STONE_SLAB2
-      - DOUBLE_STONE_SLAB2
-      - 97
-      - 98
-      - 168
-      - 109
-
+  - name: Ingénieur
+    description: "L'ingénieur vend toutes sortes de choses utiles pour construire un système complèxe"
+    restrictedItems:
+       - PISTON
+       - STICKY_PISTON
+       - DISPENSER
+       - TRIPWIRE_HOOK
+       - OBSERVER
+       - COMPARATOR
+       - HOPPER
+       - DROPPER
+       - GOLD_PLATE
+       - IRON_PLATE
+       - DAYLIGHT_DETECTOR
+       - REDSTONE_LAMP
+       - RAIL
+       - ACTIVATOR_RAIL
+       - DETECTOR_RAIL
+       - POWERED_RAIL
+  - name: Fermier
+    description: "Le fermier est le seul à pouvoir entretenir des cultures et un troupeau."
+    restrictions:
+      - FARMING
+      - BREEDING
+    restrictedItems:
+       - GOLDEN_APPLE
+       - APPLE
+       - ENCHANTED_GOLDEN_APPLE
+       - MUSHROOM_STEW
+       - BREAD
+       - COOKED_PORKCHOP
+       - PORKCHOP
+       - CAKE
+       - COOKIE
+       - MELON_SLICE
+       - MELON
+       - BEEF
+       - COOKED_BEEF
+       - CHICKEN
+       - COOKED_CHICKEN
+       - CARROT
+       - POTATO
+       - BAKED_POTATO
+       - PUMPKIN_PIE
+       - RABBIT
+       - COOKED_RABBIT
+       - RABBIT_STEW
+       - MUTTON
+       - COOKED_MUTTON
+       - SUGAR_CANE
+       - BEETROOT
+       - BEETROOT_SOUP
+  - name: Chasseur
+    description: "Parcourez la terre à la recherche de loots"
+    restrictedItems:
+       - WITHER_SKELETON_SKULL
+       - SKELETON_SKULL
+       - CREEPER_HEAD
+       - DRAGON_HEAD
+       - ZOMBIE_HEAD
+       - SHULKER_SHELL
+       - BLACK_SHULKER_BOX
+       - BLUE_SHULKER_BOX
+       - BROWN_SHULKER_BOX
+       - CYAN_SHULKER_BOX
+       - GRAY_SHULKER_BOX
+       - GREEN_SHULKER_BOX
+       - LIGHT_BLUE_SHULKER_BOX
+       - LIGHT_GRAY_SHULKER_BOX
+       - LIME_SHULKER_BOX
+       - MAGENTA_SHULKER_BOX
+       - ORANGE_SHULKER_BOX
+       - PINK_SHULKER_BOX
+       - PURPLE_SHULKER_BOX
+       - RED_SHULKER_BOX
+       - SHULKER_BOX
+       - WHITE_SHULKER_BOX
+       - YELLOW_SHULKER_BOX
+       - LEGACY_WHITE_SHULKER_BOX
+       - LEGACY_ORANGE_SHULKER_BOX
+       - LEGACY_MAGENTA_SHULKER_BOX
+       - LEGACY_LIGHT_BLUE_SHULKER_BOX
+       - LEGACY_YELLOW_SHULKER_BOX
+       - LEGACY_LIME_SHULKER_BOX
+       - LEGACY_PINK_SHULKER_BOX
+       - LEGACY_GRAY_SHULKER_BOX
+       - LEGACY_SILVER_SHULKER_BOX
+       - LEGACY_CYAN_SHULKER_BOX
+       - LEGACY_PURPLE_SHULKER_BOX
+       - LEGACY_BLUE_SHULKER_BOX
+       - LEGACY_BROWN_SHULKER_BOX
+       - LEGACY_GREEN_SHULKER_BOX
+       - LEGACY_RED_SHULKER_BOX
+       - LEGACY_BLACK_SHULKER_BOX
+       - BEACON
+       - CONDUIT
+       - COD
+       - SALMON
+       - TROPICAL_FISH
+       - PUFFERFISH
+       - COOKED_COD
+       - COOKED_SALMON
+       - MUSIC_DISC_11
+       - MUSIC_DISC_13
+       - MUSIC_DISC_BLOCKS
+       - MUSIC_DISC_CAT
+       - MUSIC_DISC_CHIRP
+       - MUSIC_DISC_FAR
+       - MUSIC_DISC_MALL
+       - MUSIC_DISC_MELLOHI
+       - MUSIC_DISC_STAL
+       - MUSIC_DISC_STRAD
+       - MUSIC_DISC_WAIT
+       - MUSIC_DISC_WARD
+       - NETHER_STAR
+       - HEART_OF_THE_SEA
+       - NAUTILUS_SHELL
+       - GHAST_TEAR
+       - SULPHUR
+       - BLAZE_ROD
+       - BLAZE_POWDER
+       - STRING
+       - SPIDER_EYE
+       - EYE_OF_ENDER
+       - ENDER_PEARL
+       - SLIME_BALL
+       - TOTEM_OF_UNDYING
+       - TRIDENT
 jobsquit:
   price: 100
   mindays: 7
@@ -237,8 +357,8 @@ floors:
       chunk-price: 100
 
 money:
-  symbol: $
-  baseAmount: 150.0
+  symbol: "$"
+  baseAmount: 1500.0
 
 database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
 

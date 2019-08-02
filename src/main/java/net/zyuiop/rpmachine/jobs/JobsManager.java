@@ -70,7 +70,7 @@ public class JobsManager {
 			this.restrictedBlocks.addAll(restrictedBlocks);
 			this.restrictedItems.addAll(restrictedItems);
 
-			jobs.put(name, new Job(name, description, restrictedItems, restrictedBlocks, restrictions));
+			jobs.put(name.toLowerCase(), new Job(name, description, restrictedItems, restrictedBlocks, restrictions));
 		}
 
 		// Enable enabled restrictions
@@ -148,7 +148,7 @@ public class JobsManager {
 	}
 
 	public Job getJob(String job) {
-		return jobs.get(job);
+		return jobs.get(job.toLowerCase());
 	}
 
 	public int getQuitPrice() {
