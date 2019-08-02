@@ -5,6 +5,7 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
+import net.zyuiop.rpmachine.commands.ConfirmationCommand;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.Permission;
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 
-public class ClaimCommand implements CityMemberSubCommand {
+public class ClaimCommand implements CityMemberSubCommand, ConfirmationCommand {
 
     private final CitiesManager citiesManager;
 
@@ -38,7 +39,7 @@ public class ClaimCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         if (!player.getLocation().getWorld().getName().equals("world")) {
             player.sendMessage(ChatColor.RED + "Il est impossible d'agrandir votre ville sur cette carte.");
             return false;
@@ -61,16 +62,16 @@ public class ClaimCommand implements CityMemberSubCommand {
         } else if (city.getChunks().size() >= floor.getMaxsurface()) {
             player.sendMessage(ChatColor.RED + "Votre ville a atteind sa taille maximale.");
             return false;
-        } else if (args.length >= 1 && args[0].equals("confirm")) {
-            city.getChunks().add(new VirtualChunk(chunk));
-            city.withdrawMoney(floor.getChunkPrice());
-            citiesManager.saveCity(city);
-            player.sendMessage(ChatColor.GREEN + "Votre ville a bien été agrandie sur ce terrain !");
-            return true;
         } else {
-            player.sendMessage(ChatColor.GOLD + "Êtes vous certain de vouloir acheter ce chunk ? Cela vous coûtera " + ChatColor.YELLOW + floor.getChunkPrice() + " " + RPMachine.getCurrencyName());
-            player.sendMessage(ChatColor.GOLD + "Tapez " + ChatColor.YELLOW + "/city claim confirm" + ChatColor.GOLD + " pour valider.");
+            String confirmMessage = ChatColor.GOLD + "Êtes vous certain de vouloir acheter ce chunk ? Cela coûtera " + ChatColor.YELLOW + floor.getChunkPrice() + " " + RPMachine.getCurrencyName();
+            if (requestConfirm(player, confirmMessage, command + " " + subcommand, args)) {
+                city.getChunks().add(new VirtualChunk(chunk));
+                city.withdrawMoney(floor.getChunkPrice());
+                citiesManager.saveCity(city);
+                player.sendMessage(ChatColor.GREEN + "Votre ville a bien été agrandie sur ce terrain !");
+            }
             return true;
+
         }
     }
 }

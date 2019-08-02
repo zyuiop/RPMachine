@@ -43,7 +43,7 @@ public class Messages {
 
     public static void debitEntity(Player player, LegalEntity entity, double amount, String reason) {
         reason = reason == null ? "" : (ChatColor.GRAY + " (" + reason + ChatColor.GRAY + ")");
-        player.sendMessage(entityPrefix(player, entity) + ChatColor.AQUA + "[" + entity.shortDisplayable() + ChatColor.AQUA + "] " + ChatColor.RED + " - " + amount + " " + RPMachine.getCurrencyName() + reason);
+        player.sendMessage(entityPrefix(player, entity) + ChatColor.RED + " - " + amount + " " + RPMachine.getCurrencyName() + reason);
     }
 
     public static void notEnoughMoney(Player player, double amount) {

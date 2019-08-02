@@ -27,7 +27,7 @@ public class ListCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         boolean claimed = true;
         boolean empty = true;
         if (args.length > 0) {

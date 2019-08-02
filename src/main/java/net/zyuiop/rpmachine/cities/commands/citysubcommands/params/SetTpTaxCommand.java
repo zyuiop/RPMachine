@@ -35,7 +35,7 @@ public class SetTpTaxCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         if (args.length < 1) {
             player.sendMessage(ChatColor.YELLOW + "Taxe de téléportation actuelle : " + ChatColor.GOLD + city.getTpTax() + " " + RPMachine.getCurrencyName());
             return true;

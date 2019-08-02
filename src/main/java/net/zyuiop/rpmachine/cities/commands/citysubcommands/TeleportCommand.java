@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.commands.ConfirmationCommand;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import net.zyuiop.rpmachine.utils.Messages;
@@ -12,7 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class TeleportCommand implements SubCommand {
+public class TeleportCommand implements SubCommand, ConfirmationCommand {
     private final CitiesManager citiesManager;
     private final double price;
     private final boolean fromCityOnly;
@@ -74,7 +75,10 @@ public class TeleportCommand implements SubCommand {
             spawn.getChunk().load();
 
         if (price > 0) {
-            if (args.length > 1 && args[1].equalsIgnoreCase("confirm")) {
+            if (requestConfirm(player, ChatColor.YELLOW + "La téléportation vers " + target.shortDisplayable() +
+                    ChatColor.YELLOW + " coûte " + ChatColor.GOLD + price + " " + RPMachine.getCurrencyName() +
+                    ChatColor.YELLOW + ".", command + " " + subCommand, args)) {
+
                 if (!RPMachine.database().getPlayerData(player).transfer(price, target)) {
                     Messages.notEnoughMoney(player, price);
                 } else {
@@ -82,11 +86,6 @@ public class TeleportCommand implements SubCommand {
                     Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
                     ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);
                 }
-            } else {
-                player.sendMessage(ChatColor.YELLOW + "La téléportation vers " + target.shortDisplayable() +
-                        ChatColor.YELLOW + " coûte " + ChatColor.GOLD + price + " " + RPMachine.getCurrencyName() +
-                        ChatColor.YELLOW + ". Confirmer l'opération avec " + ChatColor.GOLD + "/" + command + " " +
-                        subCommand + " " + target.getCityName() + " confirm");
             }
         } else {
             Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));

@@ -13,7 +13,6 @@ import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
@@ -41,7 +40,7 @@ public class CreateCommand implements CityMemberSubCommand {
 	}
 
 	@Override
-	public boolean run(Player player, @Nonnull City city, String[] args) {
+	public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
 		if (RPMachine.getInstance().getSelectionManager().getSelection(player.getUniqueId()) == null) {
 			player.sendMessage(ChatColor.RED + "Vous n'avez sélectionné aucune région.");
 			return false;

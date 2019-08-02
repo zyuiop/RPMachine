@@ -28,7 +28,7 @@ public class UnpaidTaxesCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         player.sendMessage(ChatColor.GOLD + "-----[ Impôts impayés ]-----");
         for (Map.Entry<String, Double> entry : city.getTaxesToPay().entrySet()) {
             String name = LegalEntity.getEntity(entry.getKey()).displayable();

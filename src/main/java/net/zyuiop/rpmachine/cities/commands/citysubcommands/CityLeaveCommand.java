@@ -20,7 +20,7 @@ public class CityLeaveCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         if (city.getMayor().equals(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "Vous ne pouvez quitter une ville dont vous êtes le maire. Si vous souhaitez supprimer votre ville, contactez le staff. Sinon, nommez un autre maire avec /city setmayor <pseudo>");
             return false;

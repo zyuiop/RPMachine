@@ -34,7 +34,7 @@ public interface CityMemberSubCommand extends SubCommand {
     @Override
     default boolean run(Player player, String command, String subCommand, String[] args) {
         City city = RPMachine.getInstance().getCitiesManager().getPlayerCity(player.getUniqueId());
-        return run(player, city, args);
+        return run(player, city, command, subCommand, args);
     }
 
     default Permission requiresPermission() {
@@ -49,5 +49,5 @@ public interface CityMemberSubCommand extends SubCommand {
         return false;
     }
 
-    boolean run(Player player, @Nonnull City city, String[] args);
+    boolean run(Player player, @Nonnull City city, String command, String subCommand, String[] args);
 }

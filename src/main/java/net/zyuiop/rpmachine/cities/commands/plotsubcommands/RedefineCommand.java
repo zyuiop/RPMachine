@@ -39,7 +39,7 @@ public class RedefineCommand implements CityMemberSubCommand {
 	}
 
 	@Override
-	public boolean run(Player player, @Nonnull City city, String[] args) {
+	public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
 		if (RPMachine.getInstance().getSelectionManager().getSelection(player.getUniqueId()) == null) {
 			player.sendMessage(ChatColor.RED + "Vous n'avez sélectionné aucune région.");
 			return false;

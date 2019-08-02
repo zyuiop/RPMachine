@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.jobs;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.AbstractCommand;
+import net.zyuiop.rpmachine.commands.ConfirmationCommand;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import net.zyuiop.rpmachine.shops.types.EnchantingSign;
@@ -15,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CommandJob extends AbstractCommand {
+public class CommandJob extends AbstractCommand implements ConfirmationCommand {
     private static final String ATTRIBUTE_LAST_CHANGE = "job.lastChange";
 
     public CommandJob() {
@@ -81,14 +82,16 @@ public class CommandJob extends AbstractCommand {
                 if (data.getJob() != null)
                     commandSender.sendMessage(ChatColor.RED + "Vous avez déjà un métier. " + ChatColor.YELLOW + "/jobs quit" + ChatColor.RED + " pour le quitter.");
                 else {
-                    if (strings.length >= 3 && strings[2].equalsIgnoreCase("confirm")) {
+
+                    if (requestConfirm(commandSender,
+                            ChatColor.YELLOW + "Voulez vous vraiment adopter le métier " + ChatColor.GOLD + j.getJobName() + ChatColor.YELLOW + " ? " +
+                                    "Vous ne pourrez pas changer avant " + ChatColor.GOLD + rpMachine.getJobsManager().getQuitFrequency() + " jours " + ChatColor.YELLOW +
+                                    " et le prochain changement coûtera " + ChatColor.AQUA + rpMachine.getJobsManager().getQuitPrice() + RPMachine.getCurrencyName(),
+                            command, strings)) {
                         data.setJob(j.getJobName());
                         data.setAttribute(ATTRIBUTE_LAST_CHANGE, System.currentTimeMillis());
 
                         commandSender.sendMessage(ChatColor.GREEN + "Vous avez bien choisi le métier " + ChatColor.DARK_GREEN + j.getJobName());
-                    } else {
-                        commandSender.sendMessage(ChatColor.YELLOW + "Voulez vous vraiment adopter le métier " + ChatColor.GOLD + j.getJobName() + ChatColor.YELLOW + " ? Confirmez avec " + ChatColor.GOLD + "/jobs choose " + j.getJobName() + " confirm");
-                        commandSender.sendMessage(ChatColor.YELLOW + "Vous ne pourrez pas changer avant " + ChatColor.GOLD + rpMachine.getJobsManager().getQuitFrequency() + " jours " + ChatColor.YELLOW + " et cela coûtera " + ChatColor.AQUA + rpMachine.getJobsManager().getQuitPrice() + RPMachine.getCurrencyName());
                     }
                 }
             } else if (com.equalsIgnoreCase("quit")) {
@@ -108,8 +111,6 @@ public class CommandJob extends AbstractCommand {
                         commandSender.sendMessage(ChatColor.RED + "Vous ne pouvez pas quitter votre métier avant le " + ChatColor.DARK_RED + DateFormat.getDateTimeInstance().format(new Date(nextChange)));
                         return true;
                     }
-                } else {
-
                 }
 
                 // Get shops
@@ -122,6 +123,7 @@ public class CommandJob extends AbstractCommand {
                     return false;
                 }).collect(Collectors.toList());
 
+                // TODO: maybe adapt to confirmation command via new method
                 if (strings.length < 2) {
                     if (signs.isEmpty()) {
                         commandSender.sendMessage(ChatColor.RED + "Voulez vous vraiment quitter votre métier ? Merci de confirmer l'opération avec /jobs quit confirm");

@@ -20,7 +20,7 @@ public class MembersCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, City city, String[] args) {
+    public boolean run(Player player, City city, String command, String subcommand, String[] args) {
         player.sendMessage(ChatColor.GOLD + "-----[ Liste des Habitants ]-----");
         for (UUID inhabitant : city.getInhabitants()) {
             String name = RPMachine.database().getUUIDTranslator().getName(inhabitant);

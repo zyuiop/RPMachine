@@ -25,7 +25,7 @@ public class CouncilCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         if (args.length == 1 && args[0].equals("list")) {
             player.sendMessage(ChatColor.GOLD + "-----[ Liste des Conseillers ]-----");
             for (UUID council : city.getCouncils()) {

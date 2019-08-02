@@ -29,7 +29,7 @@ public class WandCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
             player.sendMessage(ChatColor.RED + "Vous avez déjà un item en main.");
         } else {

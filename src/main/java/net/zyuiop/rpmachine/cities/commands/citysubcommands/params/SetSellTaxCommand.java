@@ -1,6 +1,5 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands.params;
 
-import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
@@ -35,7 +34,7 @@ public class SetSellTaxCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         if (args.length < 1) {
             player.sendMessage(ChatColor.YELLOW + "Taxe de vente de parcelle actuelle : " + ChatColor.GOLD + ((int) (100*city.getPlotSellTaxRate())) + " %");
             return true;

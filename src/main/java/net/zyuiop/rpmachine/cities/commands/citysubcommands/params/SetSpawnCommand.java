@@ -36,7 +36,7 @@ public class SetSpawnCommand implements CityMemberSubCommand {
 	}
 
 	@Override
-	public boolean run(Player player, @Nonnull City city, String[] args) {
+	public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
 		Location loc = player.getLocation();
 		if (!loc.getWorld().getName().equals("world") || !city.getChunks().contains(new VirtualChunk(loc.getChunk()))) {
 			player.sendMessage(ChatColor.RED + "Le point de spawn doit se trouver dans votre ville.");

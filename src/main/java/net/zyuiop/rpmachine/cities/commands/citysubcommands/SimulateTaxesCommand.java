@@ -27,7 +27,7 @@ public class SimulateTaxesCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         player.sendMessage(ChatColor.GOLD + "-----[ Simulation d'impôts ]-----");
         player.sendMessage(ChatColor.YELLOW + "Les impôts actuels de votre ville vous rapportent " + ChatColor.GREEN + "" + city.simulateTaxes() + " " + RPMachine.getCurrencyName() + " par semaine.");
 

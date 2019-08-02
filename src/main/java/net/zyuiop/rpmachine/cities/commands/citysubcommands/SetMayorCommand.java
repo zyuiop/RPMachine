@@ -34,7 +34,7 @@ public class SetMayorCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, City city, String[] args) {
+    public boolean run(Player player, City city, String command, String subcommand, String[] args) {
         if (args.length < 1) {
             player.sendMessage(ChatColor.RED + "Utilisation incorrecte : /city setmayor " + getUsage());
         } else {

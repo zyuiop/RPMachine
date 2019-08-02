@@ -30,7 +30,7 @@ public class SetTypeCommand implements CityMemberSubCommand {
     }
 
     @Override
-    public boolean run(Player player, @Nonnull City city, String[] args) {
+    public boolean run(Player player, @Nonnull City city, String command, String subcommand, String[] args) {
         if (args.length < 1) {
             player.sendMessage(ChatColor.RED + "Utilisation incorrecte : /city settype " + getUsage());
             return false;
