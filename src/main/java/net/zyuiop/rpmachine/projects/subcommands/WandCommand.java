@@ -27,7 +27,7 @@ public class WandCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player player, String[] args) {
+    public boolean run(Player player, String command, String subCommand, String[] args) {
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
             player.sendMessage(ChatColor.RED + "Vous avez déjà un item en main.");
         } else {

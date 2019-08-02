@@ -29,7 +29,7 @@ public class CommandShops extends CompoundCommand {
             }
 
             @Override
-            public boolean run(Player player, String[] args) {
+            public boolean run(Player player, String command, String subCommand, String[] args) {
                 player.sendMessage(ChatColor.YELLOW + " ---[Liste de vos boutiques]--- ");
                 RPMachine.getInstance().getShopsManager().getPlayerShops(player).forEach(s -> player.sendMessage(ChatColor.GOLD + "- " + s.describe()));
                 return true;
@@ -55,7 +55,7 @@ public class CommandShops extends CompoundCommand {
             }
 
             @Override
-            public boolean run(Player sender, String[] args) {
+            public boolean run(Player sender, String command, String subCommand, String[] args) {
                 sender.sendMessage(ChatColor.GRAY + "Voici le format des panneaux de " + helpName + " :");
                 builder.describeFormat(sender);
                 return true;

@@ -70,7 +70,7 @@ public class CommandActAs extends CompoundCommand {
             }
 
             @Override
-            public boolean run(Player sender, String[] args) {
+            public boolean run(Player sender, String command, String subCommand, String[] args) {
                 Optional<String> arg = args.length > 0 ? Optional.of(args[0]) : Optional.empty();
                 Optional<T> result = entityFetcher.apply(sender, arg);
 

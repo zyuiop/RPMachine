@@ -33,7 +33,7 @@ public class CreateCityCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player player, String[] strings) {
+    public boolean run(Player player, String command, String subCommand, String[] strings) {
         if (strings.length >= 2) {
             String cityName = strings[0];
             String type = strings[1];

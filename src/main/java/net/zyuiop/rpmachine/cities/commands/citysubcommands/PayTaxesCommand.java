@@ -33,7 +33,7 @@ public class PayTaxesCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player player, String[] args) {
+    public boolean run(Player player, String command, String subCommand, String[] args) {
         if (args.length < 1) {
             player.sendMessage(ChatColor.RED + "Utilisation incorrecte : utilisez /city paytaxes " + getUsage());
             return false;

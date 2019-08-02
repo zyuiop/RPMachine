@@ -18,7 +18,7 @@ public class ListCommand implements SubCommand {
 	}
 
 	@Override
-	public boolean run(Player sender, String[] args) {
+	public boolean run(Player sender, String command, String subCommand, String[] args) {
 		sender.sendMessage(ChatColor.GOLD + "-----[ Liste des Villes : ]-----");
 		for (City city : RPMachine.getInstance().getCitiesManager().getCities().values()) {
 			sender.sendMessage(ChatColor.YELLOW + "- " +city.getCityName() + ", " + ChatColor.GOLD + RPMachine.getInstance().getCitiesManager().getFloor(city).getName() + " " + ChatColor.YELLOW + "de " + ChatColor.GOLD + city.countInhabitants() + " habitants.");

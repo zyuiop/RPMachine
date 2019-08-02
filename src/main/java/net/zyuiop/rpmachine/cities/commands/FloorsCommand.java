@@ -15,7 +15,7 @@ public class FloorsCommand extends AbstractCommand implements SubCommand {
 
     @Override
     protected boolean onPlayerCommand(Player player, String command, String[] args) {
-        return run(player, args);
+        return run(player, command, "", args);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class FloorsCommand extends AbstractCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player commandSender, String[] args) {
+    public boolean run(Player commandSender, String command, String subCommand, String[] args) {
         commandSender.sendMessage(ChatColor.GOLD + " -----[ Paliers de Villes ] -----");
         commandSender.sendMessage(ChatColor.YELLOW + "Voici la liste des paliers disponibles :");
         for (CityFloor floor : RPMachine.getInstance().getCitiesManager().getFloors()) {

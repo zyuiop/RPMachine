@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.cities.commands.citysubcommands;
+package net.zyuiop.rpmachine.cities.commands.citysubcommands.params;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
@@ -44,6 +44,7 @@ public class SetTaxesCommand implements CityMemberSubCommand {
                 Double value = Double.valueOf(args[0]);
                 if (value > citiesManager.getFloor(city).getMaxtaxes()) {
                     player.sendMessage(ChatColor.RED + "Votre montant est supérieur au montant maximal pour votre palier.");
+                    return true;
                 }
                 city.setTaxes(value);
                 citiesManager.saveCity(city);

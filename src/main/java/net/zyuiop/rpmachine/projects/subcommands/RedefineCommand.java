@@ -32,7 +32,7 @@ public class RedefineCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player player, String[] args) {
+    public boolean run(Player player, String command, String subCommand, String[] args) {
         if (RPMachine.getInstance().getSelectionManager().getSelection(player.getUniqueId()) == null) {
             player.sendMessage(ChatColor.RED + "Vous n'avez sélectionné aucune région.");
         } else {

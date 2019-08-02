@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.cities.commands.citysubcommands;
+package net.zyuiop.rpmachine.cities.commands.citysubcommands.params;
 
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.CitiesManager;

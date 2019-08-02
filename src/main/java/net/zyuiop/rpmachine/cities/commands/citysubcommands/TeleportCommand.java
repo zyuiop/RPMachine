@@ -36,7 +36,7 @@ public class TeleportCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player player, String[] args) {
+    public boolean run(Player player, String command, String subCommand, String[] args) {
         if (fromCityOnly && !RPMachine.getInstance().getCitiesManager().checkCityTeleport(player)) {
             return true;
         }

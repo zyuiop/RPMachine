@@ -28,7 +28,7 @@ public class MembersCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player player, String[] args) {
+    public boolean run(Player player, String command, String subCommand, String[] args) {
         if (args.length < 4) {
             player.sendMessage(ChatColor.RED + "Utilisation : /project members " + getUsage());
             return false;

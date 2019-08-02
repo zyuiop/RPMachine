@@ -31,7 +31,7 @@ public class InfoCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player player, String[] args) {
+    public boolean run(Player player, String command, String subCommand, String[] args) {
 
         City city = citiesManager.getCityHere(player.getLocation().getChunk());
         if (city == null) {

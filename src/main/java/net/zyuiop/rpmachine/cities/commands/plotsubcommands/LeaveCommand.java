@@ -32,7 +32,7 @@ public class LeaveCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player player, String[] args) {
+    public boolean run(Player player, String command, String subCommand, String[] args) {
         if (args.length < 2) {
             player.sendMessage(ChatColor.RED + "Utilisation : /plot leave " + getUsage());
             return true;

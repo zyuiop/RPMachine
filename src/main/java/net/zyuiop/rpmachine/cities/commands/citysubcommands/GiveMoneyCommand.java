@@ -34,7 +34,7 @@ public class GiveMoneyCommand implements SubCommand {
     }
 
     @Override
-    public boolean run(Player player, String[] args) {
+    public boolean run(Player player, String command, String subCommand, String[] args) {
         City c = citiesManager.getPlayerCity(player.getUniqueId());
         if (c == null && args.length < 2) {
             player.sendMessage(ChatColor.RED + "Vous n'êtes membre d'aucune ville.");

@@ -16,7 +16,7 @@ public interface SubCommand {
         return true;
     }
 
-    boolean run(Player sender, String[] args);
+    boolean run(Player sender, String command, String subCommand, String[] args);
 
     default boolean hasHelp() {
         return true;
