@@ -213,6 +213,7 @@ jobs:
     restrictions:
       - FARMING
       - BREEDING
+      - CAPTURING
     restrictedItems:
        - GOLDEN_APPLE
        - APPLE
@@ -241,6 +242,19 @@ jobs:
        - SUGAR_CANE
        - BEETROOT
        - BEETROOT_SOUP
+       - CHICKEN_SPAWN_EGG
+       - COW_SPAWN_EGG
+       - DONKEY_SPAWN_EGG
+       - FOX_SPAWN_EGG
+       - HORSE_SPAWN_EGG
+       - LLAMA_SPAWN_EGG
+       - MOOSHROOM_SPAWN_EGG
+       - MULE_SPAWN_EGG
+       - OCELOT_SPAWN_EGG
+       - PIG_SPAWN_EGG
+       - RABBIT_SPAWN_EGG
+       - SHEEP_SPAWN_EGG
+       - WOLF_SPAWN_EGG
   - name: Chasseur
     description: "Parcourez la terre à la recherche de loots"
     restrictions:

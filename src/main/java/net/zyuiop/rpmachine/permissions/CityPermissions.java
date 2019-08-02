@@ -27,7 +27,8 @@ public enum CityPermissions implements DirectPermission {
     CHECK_TAXES("vérifier les impots en retard"),
 
     // Council
-    ADD_COUNCIL("ajouter un nouveau conseiller à la ville (peut changer ses propres permissions!)"),
+    ADD_COUNCIL("ajouter un nouveau conseiller à la ville"),
+    CHANGE_COUNCIL_PERMS("changer les permissions des conseillers de la ville"),
     REMOVE_COUNCIL("supprimer un conseiller de la ville");
 
     private final String description;

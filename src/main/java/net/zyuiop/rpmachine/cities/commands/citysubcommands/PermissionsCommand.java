@@ -5,6 +5,8 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.CitiesPermGui;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.permissions.CityPermissions;
+import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -13,8 +15,8 @@ import java.util.UUID;
 
 public class PermissionsCommand implements CityMemberSubCommand {
     @Override
-    public boolean requiresMayorPrivilege() {
-        return true;
+    public Permission requiresPermission() {
+        return CityPermissions.CHANGE_COUNCIL_PERMS;
     }
 
     @Override
