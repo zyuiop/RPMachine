@@ -69,8 +69,11 @@ public class ScoreboardSign_v1_14_R1 implements ScoreboardSign {
 
 	public void setLine(int line, String value) {
 		String oldLine = getLine(line);
-		if (oldLine != null && created)
+		if (oldLine != null && created) {
+			if (oldLine.equals(value))
+				return; // do nothing
 			getPlayer().sendPacket(removeLine(oldLine));
+		}
 
 		lines[line] = value;
 		sendLine(line);
