@@ -5,6 +5,7 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.entities.RoleToken;
 import org.bukkit.*;
 import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.Monster;
@@ -153,6 +154,8 @@ public class CitiesListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
         UUID id = event.getPlayer().getUniqueId();
+        String tag = RPMachine.getPlayerRoleToken(event.getPlayer()).getTag();
+
         if (!isSameChunk(event.getFrom(), event.getTo())) {
             City c1 = manager.getCityHere(event.getFrom().getChunk());
             City c2 = manager.getCityHere(event.getTo().getChunk());
@@ -169,15 +172,13 @@ public class CitiesListener implements Listener {
 
                 boolean pOverride = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
 
-                if (plot != null && (id.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
-                    //event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+                if (plot != null && (tag.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
                     leaving = true;
                 } else if (pOverride && plot != null) {
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + plot.getPlotName());
                 }
 
-                if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
-                    //event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+                if (to != null && (tag.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
                     entering = true;
                 } else if (pOverride && to != null) {
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
@@ -191,8 +192,7 @@ public class CitiesListener implements Listener {
                 boolean c1Override = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
                 Plot from = c1.getPlotHere(event.getFrom());
 
-                if (from != null && (id.equals(from.getOwner()) || from.getPlotMembers().contains(id))) {
-                    //event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
+                if (from != null && (tag.equals(from.getOwner()) || from.getPlotMembers().contains(id))) {
                     leaving = true;
                 } else if (c1Override && from != null) {
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + from.getPlotName());
@@ -205,8 +205,7 @@ public class CitiesListener implements Listener {
                 boolean c2Override = (c2.getCouncils().contains(id) || c2.getMayor().equals(id));
                 Plot to = c2.getPlotHere(event.getTo());
 
-                if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
-                    //event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
+                if (to != null && (tag.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
                     entering = true;
                 } else if (c2Override && to != null) {
                     event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());
@@ -231,13 +230,13 @@ public class CitiesListener implements Listener {
             if (plot != null && to != null && plot.getPlotName().equals(to.getPlotName()))
                 return;
 
-            if (plot != null && (id.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
+            if (plot != null && (tag.equals(plot.getOwner()) || plot.getPlotMembers().contains(id))) {
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez votre parcelle.");
             } else if (pOverride && plot != null) {
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous quittez la parcelle " + plot.getPlotName());
             }
 
-            if (to != null && (id.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
+            if (to != null && (tag.equals(to.getOwner()) || to.getPlotMembers().contains(id))) {
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur votre parcelle.");
             } else if (pOverride && to != null) {
                 event.getPlayer().sendMessage(ChatColor.YELLOW + "Vous entrez sur la parcelle " + to.getPlotName());

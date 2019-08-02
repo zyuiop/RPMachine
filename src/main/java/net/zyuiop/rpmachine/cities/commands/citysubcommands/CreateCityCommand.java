@@ -80,7 +80,7 @@ public class CreateCityCommand implements SubCommand {
             }
             return true;
         } else {
-            player.sendMessage(ChatColor.RED + "Syntaxe invalide : '/createcity help' pour de l'aide");
+            player.sendMessage(ChatColor.RED + "Syntaxe invalide : '/" + command + " help " + subCommand + "' pour de l'aide");
             return false;
         }
     }

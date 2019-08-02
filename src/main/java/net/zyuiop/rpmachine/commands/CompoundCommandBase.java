@@ -53,6 +53,28 @@ interface CompoundCommandBase {
 
             @Override
             public boolean run(Player player, String command, String subCommand, String... args) {
+                if (args.length > 0) {
+                    SubCommand sc = subCommands().get(args[0].toLowerCase());
+                    if (sc == null) {
+                        player.sendMessage(ChatColor.RED + "Commande introuvable. Essayez " + ChatColor.DARK_RED + "/" + command + " help" + ChatColor.RED + " pour plus d'informations.");
+                    } else if (!sc.canUse(player)) {
+                        player.sendMessage(ChatColor.RED + "Vous ne pouvez pas exécuter cette sous commande (permission ou conditions manquantes). Essayez " + ChatColor.DARK_RED + "/" + command + " help" + ChatColor.RED + " pour plus d'informations.");
+                    } else {
+                        StringBuilder help = new StringBuilder("§e/").append(command);
+                        String usage = sc.getUsage();
+                        String helpText = sc.getDescription();
+
+                        if (usage != null) {
+                            help.append(" ").append(subCommand).append(" ").append(usage);
+                        }
+
+                        if (helpText != null) {
+                            help.append(": §r").append(helpText);
+                        }
+
+                        player.sendMessage(help.toString());
+                    }
+                }
                 printHelp(player, command);
                 return true;
             }
