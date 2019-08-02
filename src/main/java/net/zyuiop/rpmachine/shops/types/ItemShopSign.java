@@ -27,7 +27,7 @@ public class ItemShopSign extends AbstractShopSign {
         BUY
     }
 
-    private Material itemType;
+    private ItemStackStorage itemType;
     private int amountPerPackage;
     private ShopAction action;
     private int available;
@@ -41,15 +41,19 @@ public class ItemShopSign extends AbstractShopSign {
     }
 
     public boolean isItemValid(ItemStack itemStack) {
-        return itemStack != null && itemStack.getType() == itemType;
+        return itemType.isItemValid(itemStack);
     }
 
     public ItemStack getNewStack() {
-        return new ItemStack(itemType, amountPerPackage);
+        return itemType.createItemStack(amountPerPackage);
+    }
+
+    public String itemName() {
+        return itemType.itemName();
     }
 
     public Material getItemType() {
-        return itemType;
+        return itemType.getItemType();
     }
 
     public int getAmountPerPackage() {
@@ -83,11 +87,11 @@ public class ItemShopSign extends AbstractShopSign {
                 } else {
                     sign.setLine(1, ChatColor.BLUE + "vend " + amountPerPackage);
                 }
-                sign.setLine(2, ChatColor.BOLD + itemType.toString());
+                sign.setLine(2, ChatColor.BOLD + itemName());
                 sign.setLine(3, ChatColor.BLUE + "Prix : " + price);
             }
 
-            Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> sign.update());
+            Bukkit.getScheduler().runTask(RPMachine.getInstance(), (Runnable) sign::update);
         } else {
             Bukkit.getLogger().info("Error : sign is not a sign, at " + location.toString());
         }
@@ -96,7 +100,7 @@ public class ItemShopSign extends AbstractShopSign {
     @Override
     public void breakSign() {
         for (; available > 0; available--) {
-            Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), new ItemStack(itemType, 1));
+            Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), getNewStack());
         }
 
         super.breakSign();
@@ -132,7 +136,16 @@ public class ItemShopSign extends AbstractShopSign {
             } else if (!tt.checkDelegatedPermission(ShopPermissions.CREATE_BUY_SHOPS))
                 return;
 
-            itemType = type;
+            itemType = ItemStackStorage.init(event.getItem());
+            if (itemType == null) {
+                player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.RED + "Une erreur s'est produite.");
+                return;
+            } else if (itemType.maxAmount() < amountPerPackage) {
+                player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.RED + "Cet item ne peut pas être vendu en lots de plus de " + itemType.maxAmount() + ".");
+                itemType = null;
+                return;
+            }
+
             player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Votre shop est maintenant totalement opérationnel.");
             if (action == ShopAction.SELL) {
                 player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Cliquez droit avec des items pour les ajouter dans l'inventaire de votre shop.");
@@ -181,6 +194,11 @@ public class ItemShopSign extends AbstractShopSign {
     void clickUser(Player player, PlayerInteractEvent event) {
         RoleToken token = RPMachine.getPlayerRoleToken(player);
 
+        if (event.getPlayer().isSneaking() && itemType != null) {
+            player.sendMessage(ChatColor.GRAY + "Ce shop vend " + ChatColor.YELLOW + itemType.longItemName());
+            return;
+        }
+
         if (itemType == null) {
             player.sendMessage(ChatColor.RED + "Le créateur de ce shop n'a pas terminé sa configuration.");
         } else if (action == ShopAction.BUY) {
@@ -201,7 +219,7 @@ public class ItemShopSign extends AbstractShopSign {
                     }
                 });
             } else {
-                player.sendMessage(ChatColor.RED + "Vous devez cliquer sur la panneau en tenant " + ChatColor.AQUA + itemType.toString() + ChatColor.RED + " en main.");
+                player.sendMessage(ChatColor.RED + "Vous devez cliquer sur la panneau en tenant " + ChatColor.AQUA + itemType.longItemName() + ChatColor.RED + " en main.");
             }
         } else if (action == ShopAction.SELL) {
             if (!token.checkDelegatedPermission(ShopPermissions.BUY_ITEMS))
@@ -218,7 +236,7 @@ public class ItemShopSign extends AbstractShopSign {
             EconomyManager manager = RPMachine.getInstance().getEconomyManager();
             manager.transferMoneyBalanceCheck(token.getLegalEntity(), owner(), price, result -> {
                 if (result) {
-                    player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + itemType.toString() + " pour " + price + " " + EconomyManager.getMoneyName());
+                    player.sendMessage(Messages.SHOPS_PREFIX.getMessage() + ChatColor.GREEN + "Vous avez bien acheté " + amountPerPackage + itemType.longItemName() + " pour " + price + " " + EconomyManager.getMoneyName());
                     available -= amountPerPackage;
                     player.getInventory().addItem(getNewStack());
                 } else {
@@ -290,7 +308,7 @@ public class ItemShopSign extends AbstractShopSign {
         p.sendMessage(ChatColor.YELLOW + "Price : " + getPrice());
         p.sendMessage(ChatColor.YELLOW + "Owner (Tag/displayable) : " + ownerTag() + " / " + owner().displayable());
         p.sendMessage(ChatColor.YELLOW + "Action : " + getAction());
-        p.sendMessage(ChatColor.YELLOW + "Item : " + getItemType());
+        p.sendMessage(ChatColor.YELLOW + "Item : " + itemName());
         p.sendMessage(ChatColor.YELLOW + "Amount per package : " + getAmountPerPackage());
         p.sendMessage(ChatColor.YELLOW + "Available items : " + getAvailable());
     }
