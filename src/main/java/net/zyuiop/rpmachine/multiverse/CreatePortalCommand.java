@@ -2,11 +2,19 @@ package net.zyuiop.rpmachine.multiverse;
 
 import net.zyuiop.rpmachine.commands.AbstractCommand;
 import net.zyuiop.rpmachine.common.Area;
+import org.bukkit.Axis;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.MultipleFacing;
+import org.bukkit.block.data.Orientable;
+import org.bukkit.block.data.type.GlassPane;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Louis Vialar
@@ -33,12 +41,21 @@ public class CreatePortalCommand extends AbstractCommand {
         }
 
         Block block = player.getLocation().getBlock().getRelative(player.getFacing());
-        if (block.getType() != Material.NETHER_PORTAL) {
+        if (block.getType() != Material.NETHER_PORTAL && block.getType() != Material.GLASS_PANE) {
             player.sendMessage(ChatColor.RED + "Vous devez vous trouver devant le portail pour utiliser cette commande.");
             return true;
         }
 
         Area portal = detectPortal(player.getFacing().getDirection(), block);
+        portal.forEach(b -> {
+            if (b.getType() == Material.GLASS_PANE) {
+                MultipleFacing data = (MultipleFacing) b.getBlockData();
+                Set<BlockFace> faces = new HashSet<>(data.getFaces());
+                b.setType(Material.NETHER_PORTAL, false);
+                Orientable orientable = (Orientable) b.getBlockData();
+                orientable.setAxis(faces.iterator().next().getModZ() != 0 ? Axis.Z : Axis.X);
+            }
+        });
         MultiversePortal p = new MultiversePortal(portal, args[0]);
         manager.createPortal(p);
         player.sendMessage(ChatColor.GREEN + "Portal détecté (" + portal + ") et créé.");
@@ -50,7 +67,7 @@ public class CreatePortalCommand extends AbstractCommand {
         if (playerAxix.normalize().equals(direction))
             return (int) block.getLocation().toVector().dot(direction.multiply(direction));
 
-        while (block.getType() == Material.NETHER_PORTAL) {
+        while (block.getType() == Material.NETHER_PORTAL || block.getType() == Material.GLASS_PANE) {
             block = block.getRelative(direction.getBlockX(), direction.getBlockY(), direction.getBlockZ());
         }
 

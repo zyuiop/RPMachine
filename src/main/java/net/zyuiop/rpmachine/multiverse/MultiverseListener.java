@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -30,6 +31,25 @@ public class MultiverseListener implements Listener {
         if (loc.getWorld().getName().equalsIgnoreCase("world")) {
             if (!loc.getBlock().isEmpty() && !loc.getBlock().isLiquid()) {
                 ev.getPlayer().teleport(loc.getWorld().getHighestBlockAt(loc).getLocation().add(0,1,0));
+            }
+        }
+    }
+
+    @EventHandler
+    public void blockBreak(BlockBreakEvent ev) {
+        World current = ev.getBlock().getWorld();
+        MultiverseWorld world = manager.getWorld(current.getName());
+
+        if (world != null) {
+            MultiversePortal portal = world.getPortal(ev.getBlock().getLocation());
+
+            if (portal != null) {
+                if (ev.getPlayer().hasPermission("admin.breakportal")) {
+                    ev.getPlayer().sendMessage(ChatColor.RED + "Portail supprimé.");
+                    manager.deletePortal(portal);
+                } else {
+                    ev.setCancelled(true);
+                }
             }
         }
     }

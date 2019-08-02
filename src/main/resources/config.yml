@@ -398,6 +398,13 @@ money:
 
 database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
 
+multiverses:
+  - name: resources
+    generatePlatform: true
+    allowNether: false
+    allowEnd: false
+    regenFrequency: MONTHLY
+
 citytp:
   # If true, one can teleport to an other city only if he is himself in a city
   fromCityOnly: false

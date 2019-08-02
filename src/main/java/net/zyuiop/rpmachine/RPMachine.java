@@ -168,7 +168,7 @@ public class RPMachine extends JavaPlugin {
         }, 20 * 60, 20 * 20 * 60);
 
         // Create resources world
-        this.multiverseManager.createWorld(new MultiverseWorld("resources", true, false, false));
+        this.multiverseManager.generateWorlds();
 
         scheduleReboot();
 
@@ -203,6 +203,8 @@ public class RPMachine extends JavaPlugin {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
+                    multiverseManager.onShutdown(true);
+
                     Bukkit.getServer().shutdown();
                 }
             }, sched);
@@ -246,7 +248,7 @@ public class RPMachine extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("Disabling: deleting resources world");
-        multiverseManager.deleteWorld(multiverseManager.getWorld("resources"));
+        this.multiverseManager.onShutdown(false);
 
         super.onDisable();
     }
