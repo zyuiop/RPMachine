@@ -243,6 +243,8 @@ jobs:
        - BEETROOT_SOUP
   - name: Chasseur
     description: "Parcourez la terre à la recherche de loots"
+    restrictions:
+      - CAPTURING
     restrictedItems:
        - WITHER_SKELETON_SKULL
        - SKELETON_SKULL
@@ -317,6 +319,26 @@ jobs:
        - SLIME_BALL
        - TOTEM_OF_UNDYING
        - TRIDENT
+       - CAT_SPAWN_EGG
+       - CHICKEN_SPAWN_EGG
+       - COW_SPAWN_EGG
+       - DOLPHIN_SPAWN_EGG
+       - DONKEY_SPAWN_EGG
+       - FOX_SPAWN_EGG
+       - HORSE_SPAWN_EGG
+       - LLAMA_SPAWN_EGG
+       - MOOSHROOM_SPAWN_EGG
+       - MULE_SPAWN_EGG
+       - OCELOT_SPAWN_EGG
+       - PANDA_SPAWN_EGG
+       - PARROT_SPAWN_EGG
+       - PIG_SPAWN_EGG
+       - POLAR_BEAR_SPAWN_EGG
+       - RABBIT_SPAWN_EGG
+       - SHEEP_SPAWN_EGG
+       - SLIME_SPAWN_EGG
+       - TURTLE_SPAWN_EGG
+       - WOLF_SPAWN_EGG
 jobsquit:
   price: 100
   mindays: 7

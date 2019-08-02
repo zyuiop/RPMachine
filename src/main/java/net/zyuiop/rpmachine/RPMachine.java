@@ -12,7 +12,7 @@ import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.commands.CommandMoney;
 import net.zyuiop.rpmachine.commands.CommandPay;
-import net.zyuiop.rpmachine.economy.listeners.PlayerListener;
+import net.zyuiop.rpmachine.common.PlayerListener;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.gui.WindowsListener;
@@ -162,17 +162,6 @@ public class RPMachine extends JavaPlugin {
             Bukkit.getLogger().info("Done !");
         }, 20 * 60, 20 * 20 * 60);
 
-        ItemStack capturator = new ItemStack(Material.SPAWNER);
-        ItemMeta meta = capturator.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "PokeBall");
-        meta.setLore(Lists.newArrayList(ChatColor.GRAY + "Clic droit sur un animal pour le capturer !", ChatColor.RED + "Attention !", ChatColor.RED + "Les données de l'entité ne sont pas conservées"));
-        capturator.setItemMeta(meta);
-        ShapedRecipe recipe = new ShapedRecipe(capturator);
-        recipe.shape("XXX", "XCX", "XXX");
-        recipe.setIngredient('X', Material.IRON_BARS);
-        recipe.setIngredient('C', Material.CHEST);
-
-        Bukkit.addRecipe(recipe);
         scheduleReboot();
 
         Calendar calendar = new GregorianCalendar();

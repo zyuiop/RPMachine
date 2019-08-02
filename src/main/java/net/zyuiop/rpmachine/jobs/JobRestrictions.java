@@ -1,6 +1,7 @@
 package net.zyuiop.rpmachine.jobs;
 
 import net.zyuiop.rpmachine.jobs.restrictions.BreedingRestriction;
+import net.zyuiop.rpmachine.jobs.restrictions.CapturingRestriction;
 import net.zyuiop.rpmachine.jobs.restrictions.EnchantingRestriction;
 import net.zyuiop.rpmachine.jobs.restrictions.FarmingRestriction;
 
@@ -10,6 +11,7 @@ import net.zyuiop.rpmachine.jobs.restrictions.FarmingRestriction;
 public enum JobRestrictions {
     ENCHANTING(EnchantingRestriction.class),
     FARMING(FarmingRestriction.class),
+    CAPTURING(CapturingRestriction.class),
     BREEDING(BreedingRestriction.class);
 
     private final Class<? extends JobRestriction> restrictionClass;

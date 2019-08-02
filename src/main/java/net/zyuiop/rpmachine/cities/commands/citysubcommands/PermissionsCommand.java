@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 
 public class PermissionsCommand implements CityMemberSubCommand {
-    // TODO: update ofc
     @Override
     public boolean requiresMayorPrivilege() {
         return true;
