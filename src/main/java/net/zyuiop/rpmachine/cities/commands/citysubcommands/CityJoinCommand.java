@@ -1,8 +1,10 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
@@ -50,12 +52,23 @@ public class CityJoinCommand implements SubCommand {
 			player.sendMessage(ChatColor.RED + "Vous n'avez pas l'invitation requise pour rejoindre cette ville.");
 			return false;
 		} else {
-			city.addInhabitant(player.getUniqueId());
-			citiesManager.saveCity(city);
-			player.sendMessage(ChatColor.GREEN + "Bravo ! Vous êtes désormais citoyen de la ville " + ChatColor.DARK_GREEN + "" + city.getCityName() + "" + ChatColor.GREEN + " !");
+			if (args.length > 1 && args[1].equalsIgnoreCase("confirm")) {
+				if (city.getJoinTax() > 0) {
+					if (!RPMachine.database().getPlayerData(player).transfer(city.getJoinTax(), city)) {
+						Messages.notEnoughMoney(player, city.getJoinTax());
+					} else {
+						Messages.debit(player, city.getJoinTax(), "taxe de citoyenneté");
+					}
+				}
+
+				city.addInhabitant(player.getUniqueId());
+				citiesManager.saveCity(city);
+				player.sendMessage(ChatColor.GREEN + "Bravo ! Vous êtes désormais citoyen de la ville " + ChatColor.DARK_GREEN + "" + city.getCityName() + "" + ChatColor.GREEN + " !");
+			} else {
+				String cost = city.getJoinTax() > 0 ? "Cela coûte " + ChatColor.GOLD + city.getJoinTax() + " " + RPMachine.getCurrencyName() : ChatColor.YELLOW + "L'opération est gratuite.";
+				player.sendMessage(ChatColor.YELLOW + "Voulez vous devenir citoyen de la ville ? " + cost + ChatColor.YELLOW + ". Confirmez avec " + ChatColor.GOLD + "/" + command + " " + subCommand + " " + city.getCityName() + " confirm");
+			}
 			return true;
 		}
-
-		// TODO: émolument pour rejoindre la ville
 	}
 }

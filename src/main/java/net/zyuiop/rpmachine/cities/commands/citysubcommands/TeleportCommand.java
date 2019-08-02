@@ -43,7 +43,7 @@ public class TeleportCommand implements SubCommand {
 
         City playerCity = citiesManager.getPlayerCity(player.getUniqueId());
         City target;
-        boolean pay = false;
+        int price = 0;
         if (args.length > 0) {
             target = citiesManager.getCity(args[0]);
             if (target == null) {
@@ -53,7 +53,7 @@ public class TeleportCommand implements SubCommand {
                 player.sendMessage(ChatColor.RED + "Cette ville est privée.");
                 return true;
             } else if (playerCity == null || !playerCity.getCityName().equalsIgnoreCase(target.getCityName())) {
-                pay = true;
+                price = target.getTpTax();
             }
         } else {
             target = playerCity;
@@ -73,13 +73,20 @@ public class TeleportCommand implements SubCommand {
         if (!spawn.getChunk().isLoaded())
             spawn.getChunk().load();
 
-        if (pay) {
-            if (!RPMachine.database().getPlayerData(player).transfer(price, target)) {
-                Messages.notEnoughMoney(player, price);
+        if (price > 0) {
+            if (args.length > 1 && args[1].equalsIgnoreCase("confirm")) {
+                if (!RPMachine.database().getPlayerData(player).transfer(price, target)) {
+                    Messages.notEnoughMoney(player, price);
+                } else {
+                    Messages.debit(player, price, "téléportation vers " + target.getCityName());
+                    Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
+                    ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);
+                }
             } else {
-                Messages.debit(player, price, "téléportation vers " + target.getCityName());
-                Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));
-                ReflectionUtils.getVersion().playEndermanTeleport(spawn, player);
+                player.sendMessage(ChatColor.YELLOW + "La téléportation vers " + target.shortDisplayable() +
+                        ChatColor.YELLOW + " coûte " + ChatColor.GOLD + price + " " + RPMachine.getCurrencyName() +
+                        ChatColor.YELLOW + ". Confirmer l'opération avec " + ChatColor.GOLD + "/" + command + " " +
+                        subCommand + " " + target.getCityName() + " confirm");
             }
         } else {
             Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> player.teleport(spawn));

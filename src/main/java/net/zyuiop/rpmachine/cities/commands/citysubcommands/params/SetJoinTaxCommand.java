@@ -11,22 +11,22 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 
-public class SetTaxesCommand implements CityMemberSubCommand {
+public class SetJoinTaxCommand implements CityMemberSubCommand {
 
     private final CitiesManager citiesManager;
 
-    public SetTaxesCommand(CitiesManager citiesManager) {
+    public SetJoinTaxCommand(CitiesManager citiesManager) {
         this.citiesManager = citiesManager;
     }
 
     @Override
     public String getUsage() {
-        return "[taxes par block]";
+        return "[taxe de citoyenneté]";
     }
 
     @Override
     public String getDescription() {
-        return "modifie les taxes de votre ville (en $/bloc de surface)";
+        return "modifie le prix payé pour devenir citoyen";
     }
 
     @Override
@@ -37,19 +37,19 @@ public class SetTaxesCommand implements CityMemberSubCommand {
     @Override
     public boolean run(Player player, @Nonnull City city, String[] args) {
         if (args.length < 1) {
-            player.sendMessage(ChatColor.YELLOW + "Taxes actuelles : " + ChatColor.GOLD + city.getTaxes() + " " + RPMachine.getCurrencyName() + "/bloc");
+            player.sendMessage(ChatColor.YELLOW + "Taxe de citoyenneté actuelle : " + ChatColor.GOLD + city.getJoinTax() + " " + RPMachine.getCurrencyName());
             return true;
         } else {
             try {
-                Double value = Double.valueOf(args[0]);
-                if (value > citiesManager.getFloor(city).getMaxtaxes()) {
+                int value = Integer.parseInt(args[0]);
+                if (value > citiesManager.getFloor(city).getMaxJoinTax()) {
                     player.sendMessage(ChatColor.RED + "Votre montant est supérieur au montant maximal pour votre palier.");
                     return true;
                 }
-                city.setTaxes(value);
+                city.setJoinTax(value);
                 citiesManager.saveCity(city);
-                player.sendMessage(ChatColor.GREEN + "Les impôts sont désormais de " + value + " " + RPMachine.getCurrencyName() + "/bloc");
-            } catch (Exception e) {
+                player.sendMessage(ChatColor.GREEN + "La taxe de citoyenneté est désormais de " + ChatColor.DARK_GREEN + value + " " + RPMachine.getCurrencyName());
+            } catch (NumberFormatException e) {
                 player.sendMessage(ChatColor.RED + "Le montant est incorrect.");
             }
             return true;

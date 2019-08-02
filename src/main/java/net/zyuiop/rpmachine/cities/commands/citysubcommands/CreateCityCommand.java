@@ -64,6 +64,9 @@ public class CreateCityCommand implements SubCommand {
                     city.setRequireInvite(type.equalsIgnoreCase("private"));
                     city.setTaxes(0.0);
                     city.setMayorWage(0.0);
+                    city.setTpTax(1);
+                    city.setPlotSellTaxRate(0.2);
+                    city.setJoinTax(0);
                     city.setSpawn(null);
                     boolean result = citiesManager.createCity(city);
                     if (result) {

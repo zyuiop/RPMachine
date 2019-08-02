@@ -11,22 +11,22 @@ import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 
-public class SetTaxesCommand implements CityMemberSubCommand {
+public class SetSellTaxCommand implements CityMemberSubCommand {
 
     private final CitiesManager citiesManager;
 
-    public SetTaxesCommand(CitiesManager citiesManager) {
+    public SetSellTaxCommand(CitiesManager citiesManager) {
         this.citiesManager = citiesManager;
     }
 
     @Override
     public String getUsage() {
-        return "[taxes par block]";
+        return "[taxe de revente]";
     }
 
     @Override
     public String getDescription() {
-        return "modifie les taxes de votre ville (en $/bloc de surface)";
+        return "modifie le taux versé à la ville lors de la vente d'une parcelle";
     }
 
     @Override
@@ -37,19 +37,19 @@ public class SetTaxesCommand implements CityMemberSubCommand {
     @Override
     public boolean run(Player player, @Nonnull City city, String[] args) {
         if (args.length < 1) {
-            player.sendMessage(ChatColor.YELLOW + "Taxes actuelles : " + ChatColor.GOLD + city.getTaxes() + " " + RPMachine.getCurrencyName() + "/bloc");
+            player.sendMessage(ChatColor.YELLOW + "Taxe de vente de parcelle actuelle : " + ChatColor.GOLD + ((int) (100*city.getPlotSellTaxRate())) + " %");
             return true;
         } else {
             try {
-                Double value = Double.valueOf(args[0]);
-                if (value > citiesManager.getFloor(city).getMaxtaxes()) {
-                    player.sendMessage(ChatColor.RED + "Votre montant est supérieur au montant maximal pour votre palier.");
+                double value = Integer.parseInt(args[0]) / 100D;
+                if (value > citiesManager.getFloor(city).getMaxPlotSellTax()) {
+                    player.sendMessage(ChatColor.RED + "Votre taux est supérieur au taux maximal pour votre palier.");
                     return true;
                 }
-                city.setTaxes(value);
+                city.setPlotSellTaxRate(value);
                 citiesManager.saveCity(city);
-                player.sendMessage(ChatColor.GREEN + "Les impôts sont désormais de " + value + " " + RPMachine.getCurrencyName() + "/bloc");
-            } catch (Exception e) {
+                player.sendMessage(ChatColor.GREEN + "La taxe de vente de parcelle est désormais de " + ChatColor.DARK_GREEN + ((int) (value * 100)) + " %");
+            } catch (NumberFormatException e) {
                 player.sendMessage(ChatColor.RED + "Le montant est incorrect.");
             }
             return true;

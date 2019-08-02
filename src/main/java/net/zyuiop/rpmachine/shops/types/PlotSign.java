@@ -143,11 +143,15 @@ public class PlotSign extends AbstractShopSign {
             } else {
                 // On crédite à l'owner du panneau
                 // TODO: make tax customizable
-                Messages.credit(city, price * 0.2D, "taxe sur vente de parcelle");
-                Messages.credit(owner(), price * 0.8D, "vente de parcelle");
 
-                owner().creditMoney(price * 0.8D);
-                city.creditMoney(price * 0.2D);
+                double cityRate = city.getPlotSellTaxRate();
+                double userRate = 1 - city.getPlotSellTaxRate();
+
+                Messages.credit(city, price * cityRate, "taxe sur vente de parcelle");
+                Messages.credit(owner(), price * userRate, "vente de parcelle");
+
+                owner().creditMoney(price * userRate);
+                city.creditMoney(price * cityRate);
             }
 
             plot.setOwner(data);

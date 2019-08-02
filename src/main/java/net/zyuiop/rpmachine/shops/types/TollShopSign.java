@@ -73,7 +73,6 @@ public class TollShopSign extends AbstractShopSign {
     }
 
     private Door getDoor(Block block) {
-        // TODO: check door is in bounds
         BlockData data = block.getBlockData();
         if (data instanceof org.bukkit.block.data.type.Door || data instanceof Gate) {
             Openable door = (Openable) data;

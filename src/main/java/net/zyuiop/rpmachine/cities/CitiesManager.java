@@ -15,10 +15,7 @@ import com.google.gson.Gson;
 import org.bukkit.entity.Player;
 
 import java.io.*;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CitiesManager extends FileEntityStore<City> implements LegalEntityRepository<City> {
@@ -56,8 +53,11 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 			int maxsurface = (Integer) floor.get("max-chunks");
 			int maxtaxes = (Integer) floor.get("max-taxes");
 			int chunkPrice = (Integer) floor.get("chunk-price");
+			int tpTax = (Integer) ((Optional) Optional.ofNullable(floor.get("max-tp-tax"))).orElse(1);
+			int maxJoinTax = (Integer) ((Optional) Optional.ofNullable(floor.get("max-join-tax"))).orElse(0);
+			double plotTax = (Double) ((Optional) Optional.ofNullable(floor.get("max-plot-sell-tax"))).orElse(0.2D);
 
-			floors.add(new CityFloor(name, inhabitants, maxsurface, maxtaxes, chunkPrice));
+			floors.add(new CityFloor(name, inhabitants, maxsurface, maxtaxes, tpTax, maxJoinTax, plotTax, chunkPrice));
 			plugin.getLogger().info("Loaded CityFloor " + name);
 		}
 

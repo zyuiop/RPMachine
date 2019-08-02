@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-// TODO: on init, find restrictions, and if they are used init their listener
 public class JobsManager {
 	private final RPMachine rpMachine;
 	private HashMap<String, Job> jobs = new HashMap<>();

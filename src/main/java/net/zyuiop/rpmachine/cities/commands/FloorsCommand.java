@@ -35,8 +35,11 @@ public class FloorsCommand extends AbstractCommand implements SubCommand {
         for (CityFloor floor : RPMachine.getInstance().getCitiesManager().getFloors()) {
             commandSender.sendMessage(ChatColor.YELLOW + " - " + ChatColor.GOLD + floor.getName() + ChatColor.YELLOW + ", débloqué à " + ChatColor.GOLD + floor.getInhabitants() + " habitants.");
             commandSender.sendMessage(ChatColor.DARK_AQUA + "Prix par chunk : " + ChatColor.AQUA + floor.getChunkPrice() + " " + RPMachine.getCurrencyName());
-            commandSender.sendMessage(ChatColor.DARK_AQUA + "Impôt maximal : " + ChatColor.AQUA + floor.getMaxtaxes() + " " + RPMachine.getCurrencyName());
-            commandSender.sendMessage(ChatColor.DARK_AQUA + "Taille maximale : " + ChatColor.AQUA + floor.getMaxsurface() + " Chunks");
+            commandSender.sendMessage(ChatColor.DARK_AQUA + "Impôt max : " + ChatColor.AQUA + floor.getMaxtaxes() + " " + RPMachine.getCurrencyName());
+            commandSender.sendMessage(ChatColor.DARK_AQUA + "Taille max : " + ChatColor.AQUA + floor.getMaxsurface() + " " + RPMachine.getCurrencyName());
+            commandSender.sendMessage(ChatColor.DARK_AQUA + "Taxe TP max : " + ChatColor.AQUA + floor.getMaxTpTax() + " " + RPMachine.getCurrencyName());
+            commandSender.sendMessage(ChatColor.DARK_AQUA + "Taxe vente max : " + ChatColor.AQUA + ((int) (100 * floor.getMaxPlotSellTax())) + " %");
+            commandSender.sendMessage(ChatColor.DARK_AQUA + "Taxe citoyenneté max : " + ChatColor.AQUA + floor.getMaxJoinTax() + " " + RPMachine.getCurrencyName());
         }
         return true;
     }
