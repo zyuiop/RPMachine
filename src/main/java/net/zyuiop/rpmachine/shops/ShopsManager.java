@@ -49,6 +49,12 @@ public class ShopsManager extends FileEntityStore<AbstractShopSign> {
         if (builder == null)
             return;
 
+        if (!builder.hasPermission(tt)) {
+            event.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas placer ce type de panneau.");
+            event.getBlock().breakNaturally();
+            return;
+        }
+
         // Try to build the shop
         try {
             Optional<? extends AbstractShopSign> sign = builder.parseSign(event.getBlock(), tt, event.getLines());
