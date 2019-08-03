@@ -4,16 +4,19 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.common.Area;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -71,77 +74,78 @@ public class MultiverseListener implements Listener {
         }
     }
 
-    private MultiversePortal changeDimensionTeleport(PlayerPortalEvent event, World.Environment source, World.Environment target) {
-        Location from = event.getFrom().clone();
-        Location to = event.getTo().clone();
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onChangeWorld(EntityPortalEvent event) {
+        if (event.getEntity() instanceof Player)
+            return;
 
+        Logger l = RPMachine.getInstance().getLogger();
+        l.info(event.getEntity() + " changes world");
+
+        // Where are we
+        World current = event.getFrom().getWorld();
+        if (current == null) {
+            l.info(".. Abort hijack: current world is null");
+            return; // don't care
+        }
+
+        try {
+            Location target = changeDimensionTeleport(event.getFrom(), event.getTo(), event.getEntity(), null, current.getEnvironment(), event.getTo().getWorld().getEnvironment());
+
+            if (target == null)
+                event.setCancelled(true);
+            else
+                event.setTo(target);
+        } catch (MultiverseException e) {
+            event.setCancelled(true);
+            l.warning("Exception while changing dimension : " + e.getMessage());
+        }
+
+    }
+
+
+    private Location changeDimensionTeleport(Location from, Location to, Entity teleporting, @Nullable PlayerPortalEvent event, World.Environment source, World.Environment target) throws MultiverseException {
         if (source == World.Environment.NETHER) {
-            // Locations already divided by Minecraft, and Y doesn't seem to change
-            String actualWorldName = from.getWorld().getName().replaceAll("_nether", "");
-            World actualWorld = Bukkit.getWorld(actualWorldName);
-
-            to.setWorld(actualWorld);
-            event.setTo(to);
-
-            RPMachine.getInstance().getLogger().info("Hijack dimension change going from " + from.getWorld().getName() + " to " + actualWorldName);
-            // Done here :)
-            return null;
+            return rerouteNetherReturn(from, to);
         } else if (target == World.Environment.NETHER) {
             MultiverseWorld world = manager.getWorld(from.getWorld().getName());
             if (world == null) {
                 RPMachine.getInstance().getLogger().warning("No MultiverseWorld found for " + from.getWorld().getName() + ". Target is nether, letting it pass.");
-                return null;
+                return to;
             }
 
-            MultiversePortal portal = world.getPortal(event.getFrom());
+            MultiversePortal portal = world.getPortal(from);
             if (portal == null) {
-                RPMachine.getInstance().getLogger().info(".. No portal found at " + event.getFrom());
-
-                if (world.isAllowNether()) {
-                    RPMachine.getInstance().getLogger().info(".. Rerouting nether teleport");
-
-                    String actualWorldName = from.getWorld().getName() + "_nether";
-                    World actualWorld = Bukkit.getWorld(actualWorldName);
-
-                    to.setWorld(actualWorld);
-                    event.setTo(to);
-                    RPMachine.getInstance().getLogger().info(".. Changed target world to " + actualWorldName);
-                    // Done here :)
+                Location redirect = rerouteNether(world, from, to);
+                if (redirect != null) {
+                    return redirect;
                 } else {
-                    RPMachine.getInstance().getLogger().info(".. Nether is not allowed, cancelling");
-                    event.getPlayer().sendMessage(ChatColor.RED + "Le nether n'est pas autorisé depuis ce monde.");
-                    event.setCancelled(true);
+                    throw new MultiverseException("Le nether n'est pas autorisé depuis ce monde");
                 }
-                return null;
+            } else {
+                try {
+                    Location tp = rerouteMultiverse(portal, from, to, event);
+
+                    if (tp != null) {
+                        RPMachine.getInstance().getLogger().info(".. Changing event target to " + tp);
+
+                        if (event != null)
+                            event.getPlayer().sendMessage(ChatColor.YELLOW + "Téléportation vers " + tp.getWorld().getName() + " !");
+                        teleporting.teleport(tp);
+                    }
+
+                    return null;
+                } catch (MultiverseException e) {
+                    manager.deletePortal(portal);
+                    throw e; // Rethrow after deleting portal
+                }
             }
-
-            return portal;
+        } else {
+            return null;
         }
-
-        return null; // Handle the end in the future
-    }
-
-    @EventHandler
-    public void onRespawn(PlayerRespawnEvent event) {
-        World fromWorld = event.getPlayer().getWorld();
-        /*if (fromWorld.getEnvironment() == World.Environment.THE_END) {
-            // Respawning from end: change target
-            String actualWorldName = fromWorld.getName().replaceAll("_the_end", "");
-            World actualWorld = Bukkit.getWorld(actualWorldName);
-
-            // check if bedspawn and handle accordingly
-            // it's kind of a nightmare
-
-            assert actualWorld != null;
-            event.setRespawnLocation(actualWorld.getSpawnLocation());
-            event.setTo(to);
-
-            RPMachine.getInstance().getLogger().info("Hijack dimension change going from " + from.getWorld().getName() + " to " + actualWorldName);
-        }*/
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    // TOOD split method
     public void onChangeWorld(PlayerPortalEvent event) {
         Logger l = RPMachine.getInstance().getLogger();
         l.info(event.getPlayer() + " changes world " + event.getCause());
@@ -156,146 +160,17 @@ public class MultiverseListener implements Listener {
                 return; // don't care
             }
 
-            MultiversePortal portal = changeDimensionTeleport(event, current.getEnvironment(), event.getTo().getWorld().getEnvironment());
-            if (portal == null)
-                return; // Already handled, this is no portal, let it go
+            try {
+                Location target = changeDimensionTeleport(event.getFrom(), event.getTo(), event.getPlayer(), event, current.getEnvironment(), event.getTo().getWorld().getEnvironment());
 
-            MultiverseWorld target = manager.getWorld(portal.getTargetWorld());
-            if (target == null || target.getWorld() == null) {
-                event.getPlayer().sendMessage(ChatColor.RED + "Le monde cible n'existe pas...");
+                if (target == null)
+                    event.setCancelled(true);
+                else
+                    event.setTo(target);
+            } catch (MultiverseException e) {
                 event.setCancelled(true);
-                return;
+                event.getPlayer().sendMessage(ChatColor.RED + e.getMessage());
             }
-
-            int playerYDiff = event.getFrom().getBlockY() - portal.getPortalArea().getMinY();
-
-            // Portal detection
-            Location opposite = event.getFrom().clone();
-            opposite.setWorld(target.getWorld());
-            opposite.setY(target.getWorld().getHighestBlockYAt(opposite));
-            MultiversePortal other = null;
-
-            main:
-            for (int x = -3; x < 3; ++x) {
-                for (int y = 0; y < 250; ++y) {
-                    for (int z = -3; z < 3; ++z) {
-                        Location loc = opposite.clone().add(x, 0, z);
-                        loc.setY(y);
-                        other = target.getPortal(loc);
-
-                        if (other != null) {
-                            opposite.setY(other.getPortalArea().getMinY());
-                            break main;
-                        }
-                    }
-                }
-            }
-
-            event.setCancelled(true);
-
-            if (other == null) {
-                if (target.isAllowGeneration()) {
-                    Bukkit.broadcastMessage(ChatColor.YELLOW + "Création d'un portail en monde " + ChatColor.GOLD + target.getWorldName() + ChatColor.YELLOW + ", risque de lag.");
-                    event.getPlayer().sendMessage(ChatColor.YELLOW + "Patientez, création du portail en cours...");
-                    l.info(".. Creating sibling portal at " + opposite + " for " + portal.getPortalArea());
-                    l.info(".. Saving");
-                    Bukkit.savePlayers();
-                    Bukkit.getWorld("world").save();
-                    l.info(".. Done");
-
-                    Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), () -> {
-                        l.info(".. Building portal");
-                        // Generate target portal
-                        Location first = portal.getPortalArea().getFirst();
-                        Location second = portal.getPortalArea().getSecond();
-
-                        first.setY(opposite.getY());
-                        first.setWorld(target.getWorld());
-
-                        second.setY(first.getY() + (portal.getPortalArea().getMaxY() - portal.getPortalArea().getMinY()));
-                        second.setWorld(target.getWorld());
-
-                        Area npArea = new Area(first, second);
-                        MultiversePortal nPortal = new MultiversePortal(npArea, current.getName());
-
-                        // Clear area around portal
-                        Area clearArea = new Area(opposite.getWorld().getName(),
-                                opposite.getBlockX() - 5, opposite.getBlockY() - 1, opposite.getBlockZ() - 5,
-                                opposite.getBlockX() + 5, opposite.getBlockY() + 10, opposite.getBlockZ() + 5);
-
-                        l.info(".. Clearing area " + clearArea);
-                        clearArea.iterator().forEachRemaining(b -> b.setType(Material.AIR));
-
-                        // Build a platform
-                        Area platformArea = new Area(opposite.getWorld().getName(),
-                                opposite.getBlockX() - 5, opposite.getBlockY() - 1, opposite.getBlockZ() - 5,
-                                opposite.getBlockX() + 5, opposite.getBlockY() - 1, opposite.getBlockZ() + 5);
-
-                        l.info(".. Making platform area " + platformArea);
-                        platformArea.iterator().forEachRemaining(b -> b.setType(Material.BEDROCK));
-
-                        // Clone the portal
-                        Iterator<Block> srcBlocks = portal.getPortalArea().iterator();
-                        Iterator<Block> newBlocks = nPortal.getPortalArea().iterator();
-
-                        l.info(".. Creating portal area " + nPortal.getPortalArea());
-
-                        while (srcBlocks.hasNext() && newBlocks.hasNext()) {
-                            Block s = srcBlocks.next();
-                            Block t = newBlocks.next();
-
-                            t.setType(s.getType(), false);
-                            t.setBlockData(s.getBlockData().clone(), false);
-                        }
-
-                        // Take random blocks from around the portal
-                        Location from = event.getFrom().clone();
-                        Area overworldArea = new Area(from.getWorld().getName(),
-                                from.getBlockX() - 5, from.getBlockY() - 1, from.getBlockZ() - 5,
-                                from.getBlockX() + 5, from.getBlockY() + 10, from.getBlockZ() + 5);
-
-                        srcBlocks = overworldArea.iterator();
-                        newBlocks = clearArea.iterator();
-                        Random rnd = new Random(); // We have 10 * 10 * 10 = 1000 blocks ; would be nice to have 20% of them (up to 200)
-                        while (srcBlocks.hasNext() && newBlocks.hasNext()) {
-                            Block s = srcBlocks.next();
-                            Block t = newBlocks.next();
-
-                            if (npArea.isInside(t.getLocation()))
-                                continue; // don't replace portal
-
-                            if (rnd.nextDouble() > 0.2)
-                                continue;
-
-                            t.setType(s.getType(), false);
-                            t.setBlockData(s.getBlockData().clone(), false);
-                        }
-
-                        // Register the portal
-                        manager.createPortal(nPortal);
-
-                        // Do teleport
-                        event.getPlayer().sendMessage(ChatColor.YELLOW + "Téléportation vers " + target.getWorldName() + " !");
-
-                        opposite.setY(opposite.getY() + playerYDiff);
-                        l.info(".. Changing event target to " + opposite);
-
-                        event.getPlayer().teleport(opposite);
-                    }, 5L);
-                } else {
-                    event.getPlayer().sendMessage(ChatColor.RED + "Le portail cible n'existe pas...");
-                    manager.deletePortal(portal);
-                }
-            } else {
-                // TP ok, same coords, different world
-                event.getPlayer().sendMessage(ChatColor.YELLOW + "Téléportation vers " + target.getWorldName() + " !");
-
-                opposite.setY(opposite.getY() + playerYDiff);
-                l.info(".. Changing event target to " + opposite);
-
-                event.getPlayer().teleport(opposite);
-            }
-
         } else if (event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL) {
             if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) {
                 // TODO: test this piece
@@ -320,4 +195,191 @@ public class MultiverseListener implements Listener {
             }
         }
     }
+
+    /**
+     * Find the new location for a player entering a portal from the nether
+     *
+     * @param from the source location
+     * @param to   the current target location
+     * @return the new target location
+     */
+    private Location rerouteNetherReturn(Location from, Location to) {
+        String actualWorldName = from.getWorld().getName().replaceAll("_nether", "");
+        World actualWorld = Bukkit.getWorld(actualWorldName);
+
+        to.setWorld(actualWorld);
+
+        RPMachine.getInstance().getLogger().info("Hijack dimension change going from " + from.getWorld().getName() + " to " + actualWorldName);
+        return to;
+    }
+
+    /**
+     * Find the new location for a player entering a portal targeting the nether that is not a MV portal
+     *
+     * @param from the source location
+     * @param to   the current target location
+     * @return the new target location
+     */
+    private Location rerouteNether(MultiverseWorld currentWorld, Location from, Location to) {
+        if (currentWorld.isAllowNether()) {
+            RPMachine.getInstance().getLogger().info(".. Rerouting nether teleport");
+
+            String actualWorldName = from.getWorld().getName() + "_nether";
+            World actualWorld = Bukkit.getWorld(actualWorldName);
+
+            to.setWorld(actualWorld);
+            RPMachine.getInstance().getLogger().info(".. Changed target world to " + actualWorldName);
+            return to;
+            // Done here :)
+        } else {
+            RPMachine.getInstance().getLogger().info(".. Nether is not allowed, cancelling");
+            return null;
+        }
+    }
+
+    private static class MultiverseException extends Exception {
+        public MultiverseException(String message) {
+            super(message);
+        }
+    }
+
+    private Location rerouteMultiverse(MultiversePortal portal, Location from, Location to, @Nullable PlayerPortalEvent event) throws MultiverseException {
+        MultiverseWorld target = manager.getWorld(portal.getTargetWorld());
+        if (target == null || target.getWorld() == null) {
+            throw new MultiverseException("Le monde cible n'existe pas.");
+        }
+
+        int playerYDiff = from.getBlockY() - portal.getPortalArea().getMinY();
+
+        // Portal detection
+        Location opposite = from.clone();
+        opposite.setWorld(target.getWorld());
+        opposite.setY(target.getWorld().getHighestBlockYAt(opposite));
+        MultiversePortal other = null;
+
+        main:
+        for (int x = -3; x < 3; ++x) {
+            for (int y = 0; y < 250; ++y) {
+                for (int z = -3; z < 3; ++z) {
+                    Location loc = opposite.clone().add(x, 0, z);
+                    loc.setY(y);
+                    other = target.getPortal(loc);
+
+                    if (other != null) {
+                        opposite.setY(other.getPortalArea().getMinY());
+                        break main;
+                    }
+                }
+            }
+        }
+
+        if (other == null) {
+            if (target.isAllowGeneration() && event != null) {
+                generatePortal(event, opposite, portal, from.getWorld(), target, playerYDiff);
+                return null;
+            } else {
+                throw new MultiverseException("Le portail cible n'existe pas...");
+            }
+        } else {
+            // TP ok, same coords, different world
+
+            opposite.setY(opposite.getY() + playerYDiff);
+            return opposite;
+        }
+
+    }
+
+
+    private void generatePortal(PlayerPortalEvent event, Location opposite, MultiversePortal portal, World current, MultiverseWorld target, int playerYDiff) {
+        Logger l = RPMachine.getInstance().getLogger();
+        Bukkit.broadcastMessage(ChatColor.YELLOW + "Création d'un portail en monde " + ChatColor.GOLD + target.getWorldName() + ChatColor.YELLOW + ", risque de lag.");
+        event.getPlayer().sendMessage(ChatColor.YELLOW + "Patientez, création du portail en cours...");
+        l.info(".. Creating sibling portal at " + opposite + " for " + portal.getPortalArea());
+        l.info(".. Saving");
+        Bukkit.savePlayers();
+        Bukkit.getWorld("world").save();
+        l.info(".. Done");
+
+        Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), () -> {
+            l.info(".. Building portal");
+            // Generate target portal
+            Location first = portal.getPortalArea().getFirst();
+            Location second = portal.getPortalArea().getSecond();
+
+            first.setY(opposite.getY());
+            first.setWorld(target.getWorld());
+
+            second.setY(first.getY() + (portal.getPortalArea().getMaxY() - portal.getPortalArea().getMinY()));
+            second.setWorld(target.getWorld());
+
+            Area npArea = new Area(first, second);
+            MultiversePortal nPortal = new MultiversePortal(npArea, current.getName());
+
+            // Clear area around portal
+            Area clearArea = new Area(opposite.getWorld().getName(),
+                    opposite.getBlockX() - 5, opposite.getBlockY() - 1, opposite.getBlockZ() - 5,
+                    opposite.getBlockX() + 5, opposite.getBlockY() + 10, opposite.getBlockZ() + 5);
+
+            l.info(".. Clearing area " + clearArea);
+            clearArea.iterator().forEachRemaining(b -> b.setType(Material.AIR));
+
+            // Build a platform
+            Area platformArea = new Area(opposite.getWorld().getName(),
+                    opposite.getBlockX() - 5, opposite.getBlockY() - 1, opposite.getBlockZ() - 5,
+                    opposite.getBlockX() + 5, opposite.getBlockY() - 1, opposite.getBlockZ() + 5);
+
+            l.info(".. Making platform area " + platformArea);
+            platformArea.iterator().forEachRemaining(b -> b.setType(Material.BEDROCK));
+
+            // Clone the portal
+            Iterator<Block> srcBlocks = portal.getPortalArea().iterator();
+            Iterator<Block> newBlocks = nPortal.getPortalArea().iterator();
+
+            l.info(".. Creating portal area " + nPortal.getPortalArea());
+
+            while (srcBlocks.hasNext() && newBlocks.hasNext()) {
+                Block s = srcBlocks.next();
+                Block t = newBlocks.next();
+
+                t.setType(s.getType(), false);
+                t.setBlockData(s.getBlockData().clone(), false);
+            }
+
+            // Take random blocks from around the portal
+            Location from = event.getFrom().clone();
+            Area overworldArea = new Area(from.getWorld().getName(),
+                    from.getBlockX() - 5, from.getBlockY() - 1, from.getBlockZ() - 5,
+                    from.getBlockX() + 5, from.getBlockY() + 10, from.getBlockZ() + 5);
+
+            srcBlocks = overworldArea.iterator();
+            newBlocks = clearArea.iterator();
+            Random rnd = new Random(); // We have 10 * 10 * 10 = 1000 blocks ; would be nice to have 20% of them (up to 200)
+            while (srcBlocks.hasNext() && newBlocks.hasNext()) {
+                Block s = srcBlocks.next();
+                Block t = newBlocks.next();
+
+                if (npArea.isInside(t.getLocation()))
+                    continue; // don't replace portal
+
+                if (rnd.nextDouble() > 0.2)
+                    continue;
+
+                t.setType(s.getType(), false);
+                t.setBlockData(s.getBlockData().clone(), false);
+            }
+
+            // Register the portal
+            manager.createPortal(nPortal);
+
+            // Do teleport
+            event.getPlayer().sendMessage(ChatColor.YELLOW + "Téléportation vers " + target.getWorldName() + " !");
+
+            opposite.setY(opposite.getY() + playerYDiff);
+            l.info(".. Changing event target to " + opposite);
+
+            event.getPlayer().teleport(opposite);
+        }, 5L);
+    }
+
+
 }
