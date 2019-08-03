@@ -85,7 +85,7 @@ public class CapturingRestriction extends JobRestriction {
                         ItemStack egg = new SpawnEgg(type).toItemStack(1);
 
                         // Check if capture is allowed by target item type
-                        if (!RPMachine.getInstance().getJobsManager().isItemAllowed(player, egg.getType())) {
+                        if (!RPMachine.getInstance().getJobsManager().canCraft(player, egg.getType())) {
                             player.sendMessage(ChatColor.RED + "Vous ne pouvez pas capturer cette entité avec votre métier actuel.");
                             return;
                         }

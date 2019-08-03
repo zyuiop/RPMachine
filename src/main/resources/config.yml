@@ -6,7 +6,7 @@ createcity:
 jobs:
   - name: Décorateur
     description: "Fournit des ressources avant tout décoratives"
-    restrictedItems:
+    restrictCraft:
       - BLACK_STAINED_GLASS
       - BLACK_STAINED_GLASS_PANE
       - BLUE_STAINED_GLASS
@@ -161,8 +161,9 @@ jobs:
       - LEGACY_STANDING_BANNER
       - LEGACY_WALL_BANNER
       - LEGACY_BANNER
-    restrictedBlocks:
+    restrictUse:
       - LOOM
+      - STONECUTTER
   - name: Enchanteur
     description: "L'enchanteur peut vendre des enchantements pour les items"
     restrictedBlocks:
@@ -176,7 +177,7 @@ jobs:
     description: "L'alchimiste confectionne et vend les potions et feux d'artifice"
     restrictedBlocks:
       - BREWING_STAND
-    restrictedItems:
+    restrictCraft:
       - LINGERING_POTION
       - POTION
       - SPLASH_POTION
@@ -191,7 +192,7 @@ jobs:
       - BLAZE_POWDER
   - name: Ingénieur
     description: "L'ingénieur vend toutes sortes de choses utiles pour construire un système complèxe"
-    restrictedItems:
+    restrictCraft:
        - PISTON
        - STICKY_PISTON
        - DISPENSER
@@ -214,7 +215,7 @@ jobs:
       - FARMING
       - BREEDING
       - CAPTURING
-    restrictedItems:
+    restrictSale:
        - GOLDEN_APPLE
        - APPLE
        - ENCHANTED_GOLDEN_APPLE
@@ -240,8 +241,10 @@ jobs:
        - MUTTON
        - COOKED_MUTTON
        - SUGAR_CANE
+       - HAY_BLOCK
        - BEETROOT
        - BEETROOT_SOUP
+    restrictCraft:
        - CHICKEN_SPAWN_EGG
        - COW_SPAWN_EGG
        - DONKEY_SPAWN_EGG
@@ -259,7 +262,7 @@ jobs:
     description: "Parcourez la terre à la recherche de loots"
     restrictions:
       - CAPTURING
-    restrictedItems:
+    restrictSale:
        - WITHER_SKELETON_SKULL
        - SKELETON_SKULL
        - CREEPER_HEAD
@@ -280,7 +283,6 @@ jobs:
        - PINK_SHULKER_BOX
        - PURPLE_SHULKER_BOX
        - RED_SHULKER_BOX
-       - SHULKER_BOX
        - WHITE_SHULKER_BOX
        - YELLOW_SHULKER_BOX
        - LEGACY_WHITE_SHULKER_BOX
@@ -300,7 +302,7 @@ jobs:
        - LEGACY_RED_SHULKER_BOX
        - LEGACY_BLACK_SHULKER_BOX
        - BEACON
-       - CONDUIT
+       - CONDUIT # maybe restrict craft?
        - COD
        - SALMON
        - TROPICAL_FISH
@@ -333,6 +335,8 @@ jobs:
        - SLIME_BALL
        - TOTEM_OF_UNDYING
        - TRIDENT
+    restrictCraft:
+       - SHULKER_BOX
        - CAT_SPAWN_EGG
        - CHICKEN_SPAWN_EGG
        - COW_SPAWN_EGG

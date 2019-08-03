@@ -17,8 +17,9 @@ public class JobsManager {
 	private final RPMachine rpMachine;
 	private HashMap<String, Job> jobs = new HashMap<>();
 	private Set<JobRestrictions> enabledRestrictions = new HashSet<>();
-	private Set<Material> restrictedItems = new HashSet<>(); // items that can only be crafted/sold by specific job
-	private Set<Material> restrictedBlocks = new HashSet<>(); // blocks that can only be placed/used by specific job
+	private Set<Material> restrictSale = new HashSet<>();
+	private Set<Material> restrictCraft = new HashSet<>();
+	private Set<Material> restrictUse = new HashSet<>();
 
 	private int quitPrice;
 	private int quitFrequency;
@@ -55,8 +56,9 @@ public class JobsManager {
 		for (Map<?, ?> map : rpMachine.getConfig().getMapList("jobs")) {
 			String name = (String) map.get("name");
 			String description = (String) map.get("description");
-			Set<Material> restrictedItems = parseMaterialSet((List<?>) map.get("restrictedItems"));
-			Set<Material> restrictedBlocks = parseMaterialSet((List<?>) map.get("restrictedBlocks"));
+			Set<Material> restrictSale = parseMaterialSet((List<?>) map.get("restrictSale"));
+			Set<Material> restrictCraft = parseMaterialSet((List<?>) map.get("restrictCraft"));
+			Set<Material> restrictUse = parseMaterialSet((List<?>) map.get("restrictUse"));
 
 
 			HashSet<JobRestrictions> restrictions = new HashSet<>();
@@ -66,10 +68,11 @@ public class JobsManager {
 			}
 
 			enabledRestrictions.addAll(restrictions);
-			this.restrictedBlocks.addAll(restrictedBlocks);
-			this.restrictedItems.addAll(restrictedItems);
+			this.restrictCraft.addAll(restrictCraft);
+			this.restrictUse.addAll(restrictUse);
+			this.restrictSale.addAll(restrictSale);
 
-			jobs.put(name.toLowerCase(), new Job(name, description, restrictedItems, restrictedBlocks, restrictions));
+			jobs.put(name.toLowerCase(), new Job(name, description, restrictSale, restrictCraft, restrictUse, restrictions));
 		}
 
 		// Enable enabled restrictions
@@ -98,20 +101,28 @@ public class JobsManager {
 		return getJob(p) != null && getJob(p).getRestrictions().contains(r);
 	}
 
-	public boolean isItemRestricted(Material m) {
-		return restrictedItems.contains(m);
+	public boolean isFreeToSell(Material m) {
+		return !restrictSale.contains(m) && isFreeToCraft(m);
 	}
 
-	public boolean isItemAllowed(Player p, Material m) {
-		return !isItemRestricted(m) || (getJob(p) != null && getJob(p).getRestrictedItems().contains(m));
+	public boolean isFreeToCraft(Material m) {
+		return !restrictCraft.contains(m) && isFreeToUse(m);
 	}
 
-	public boolean isBlockRestricted(Material m) {
-		return restrictedBlocks.contains(m);
+	public boolean isFreeToUse(Material m) {
+		return !restrictUse.contains(m);
 	}
 
-	public boolean isBlockAllowed(Player p, Material m) {
-		return !isBlockRestricted(m) || (getJob(p) != null && getJob(p).getRestrictedBlocks().contains(m));
+	public boolean canSell(Player p, Material m) {
+		return isFreeToSell(m) || (getJob(p) != null && getJob(p).canSell(m));
+	}
+
+	public boolean canCraft(Player p, Material m) {
+		return isFreeToCraft(m) || (getJob(p) != null && getJob(p).canCraft(m));
+	}
+
+	public boolean canUse(Player p, Material m) {
+		return isFreeToUse(m) || (getJob(p) != null && getJob(p).canUse(m));
 	}
 
 	public Job getJob(UUID player) {
@@ -134,12 +145,16 @@ public class JobsManager {
 		player.sendMessage(ChatColor.RED + message + " Métiers autorisés : " + ChatColor.YELLOW + availableJobs);
 	}
 
-	public void printAvailableJobsForItem(Material item, Player player) {
-		printAvailableJobs(j -> j.getRestrictedItems().contains(item), "Cet objet ne peut être crafté et vendu que par certains métiers.", player);
+	public void printAvailableJobsToSell(Material item, Player player) {
+		printAvailableJobs(j -> j.canSell(item), "Cet objet ne peut vendu que par certains métiers.", player);
 	}
 
-	public void printAvailableJobsForBlock(Material block, Player player) {
-		printAvailableJobs(j -> j.getRestrictedBlocks().contains(block), "Ce block ne peut être crafté, vendu, placé et utilisé que par certains métiers.", player);
+	public void printAvailableJobsToCraft(Material item, Player player) {
+		printAvailableJobs(j -> j.canCraft(item), "Cet objet ne peut être crafté et vendu que par certains métiers.", player);
+	}
+
+	public void printAvailableJobsToUse(Material block, Player player) {
+		printAvailableJobs(j -> j.canUse(block), "Ce block ne peut être crafté, vendu, placé et utilisé que par certains métiers.", player);
 	}
 
 	public HashMap<String, Job> getJobs() {

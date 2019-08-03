@@ -51,14 +51,25 @@ public class CommandJob extends AbstractCommand implements ConfirmationCommand {
                 }
 
                 commandSender.sendMessage(ChatColor.GOLD + "Informations sur le métier " + ChatColor.YELLOW + j.getJobName());
-                commandSender.sendMessage(ChatColor.GOLD + "Vous pouvez vendre/crafter les items suivants :");
-                for (Material mat : j.getRestrictedItems())
-                    commandSender.sendMessage(ChatColor.YELLOW + "- " + mat.toString());
-                if (!j.getRestrictedBlocks().isEmpty()) {
-                    commandSender.sendMessage(ChatColor.GOLD + "Vous pouvez placer/utiliser les blocs suivants :");
-                    for (Material mat : j.getRestrictedBlocks())
+
+                if (!j.getRestrictUse().isEmpty()) {
+                    commandSender.sendMessage(ChatColor.GOLD + "Vous pouvez crafter/placer/utiliser les blocs suivants :");
+                    for (Material mat : j.getRestrictUse())
                         commandSender.sendMessage(ChatColor.YELLOW + "- " + mat.toString());
                 }
+
+                if (!j.getRestrictCraft().isEmpty()) {
+                    commandSender.sendMessage(ChatColor.GOLD + "Vous pouvez crafter et vendre les items suivants :");
+                    for (Material mat : j.getRestrictCraft())
+                        commandSender.sendMessage(ChatColor.YELLOW + "- " + mat.toString());
+                }
+
+                if (!j.getRestrictSale().isEmpty()) {
+                    commandSender.sendMessage(ChatColor.GOLD + "Vous pouvez vendre les items suivants :");
+                    for (Material mat : j.getRestrictSale())
+                        commandSender.sendMessage(ChatColor.YELLOW + "- " + mat.toString());
+                }
+
                 if (!j.getRestrictions().isEmpty()) {
                     commandSender.sendMessage(ChatColor.GOLD + "Vous avez accès aux actions suivantes :");
                     for (JobRestrictions r : j.getRestrictions())
@@ -117,7 +128,7 @@ public class CommandJob extends AbstractCommand implements ConfirmationCommand {
                 List<AbstractShopSign> signs = rpMachine.getShopsManager().getPlayerShops(commandSender).stream().filter(shop -> {
                     if (shop instanceof ItemShopSign)
                         return ((ItemShopSign) shop).getAction() == ItemShopSign.ShopAction.SELL &&
-                                (rpMachine.getJobsManager().isItemRestricted(((ItemShopSign) shop).getItemType()) || rpMachine.getJobsManager().isBlockRestricted(((ItemShopSign) shop).getItemType()));
+                                (!rpMachine.getJobsManager().isFreeToSell(((ItemShopSign) shop).getItemType()));
                     else if (shop instanceof EnchantingSign)
                         return RPMachine.getInstance().getJobsManager().isRestrictionEnabled(JobRestrictions.ENCHANTING);
                     return false;

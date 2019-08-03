@@ -31,14 +31,9 @@ public class JobsListener implements Listener {
         if (crafter instanceof Player && crafted != null) {
             Player p = (Player) crafter;
             Material m = crafted.getType();
-            if (manager.isItemRestricted(m)) {
-                if (!manager.isItemAllowed(p, m)) {
-                    manager.printAvailableJobsForItem(m, p);
-                    event.setCancelled(true);
-                }
-            } else if (manager.isBlockRestricted(m)) {
-                if (!manager.isBlockAllowed(p, m)) {
-                    manager.printAvailableJobsForBlock(m, p);
+            if (!manager.isFreeToCraft(m)) {
+                if (!manager.canCraft(p, m)) {
+                    manager.printAvailableJobsToCraft(m, p);
                     event.setCancelled(true);
                 }
             }
@@ -49,9 +44,9 @@ public class JobsListener implements Listener {
         if (crafter instanceof Player && block != null) {
             Player p = (Player) crafter;
             Material m = block.getType();
-            if (manager.isBlockRestricted(m)) {
-                if (!manager.isBlockAllowed(p, m)) {
-                    manager.printAvailableJobsForBlock(m, p);
+            if (!manager.isFreeToUse(m)) {
+                if (!manager.canUse(p, m)) {
+                    manager.printAvailableJobsToUse(m, p);
                     event.setCancelled(true);
                 }
             }
