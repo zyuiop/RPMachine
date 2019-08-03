@@ -96,8 +96,8 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
      * Breaks the sign, effectively removing the block and its content
      */
     public void breakSign() {
-        location.getLocation().getBlock().breakNaturally();
         RPMachine.getInstance().getShopsManager().remove(this);
+        location.getLocation().getBlock().breakNaturally();
     }
 
     /**
