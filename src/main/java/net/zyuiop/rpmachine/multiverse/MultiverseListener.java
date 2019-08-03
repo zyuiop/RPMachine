@@ -4,6 +4,8 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.common.Area;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftWolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,6 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.omg.CORBA.Environment;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -70,6 +73,55 @@ public class MultiverseListener implements Listener {
         }
     }
 
+    private MultiversePortal changeDimensionTeleport(PlayerPortalEvent event, World.Environment source, World.Environment target) {
+        Location from = event.getFrom().clone();
+        Location to = event.getTo().clone();
+
+        if (source == World.Environment.NETHER) {
+            // Locations already divided by Minecraft, and Y doesn't seem to change
+            String actualWorldName = from.getWorld().getName().replaceAll("_nether", "");
+            World actualWorld = Bukkit.getWorld(actualWorldName);
+
+            to.setWorld(actualWorld);
+            event.setTo(to);
+
+            RPMachine.getInstance().getLogger().info("Hijack dimension change going from " + from.getWorld().getName() + " to " + actualWorldName);
+            // Done here :)
+            return null;
+        } else if (target == World.Environment.NETHER) {
+            MultiverseWorld world = manager.getWorld(from.getWorld().getName());
+            if (world == null) {
+                RPMachine.getInstance().getLogger().warning("No MultiverseWorld found for " + from.getWorld().getName() + ". Target is nether, letting it pass.");
+                return null;
+            }
+
+            MultiversePortal portal = world.getPortal(event.getFrom());
+            if (portal == null) {
+                RPMachine.getInstance().getLogger().info(".. No portal found at " + event.getFrom());
+
+                if (world.isAllowNether()) {
+                    RPMachine.getInstance().getLogger().info(".. Rerouting nether teleport");
+
+                    String actualWorldName = from.getWorld().getName() + "_nether";
+                    World actualWorld = Bukkit.getWorld(actualWorldName);
+
+                    to.setWorld(actualWorld);
+                    event.setTo(to);
+                    RPMachine.getInstance().getLogger().info(".. Changed target world to " + actualWorldName);
+                    // Done here :)
+                } else {
+                    RPMachine.getInstance().getLogger().info(".. Nether is not allowed, cancelling");
+                    event.setCancelled(true);
+                }
+                return null;
+            }
+
+            return portal;
+        }
+
+        return null; // Handle the end in the future
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onChangeWorld(PlayerPortalEvent event) {
         Logger l = RPMachine.getInstance().getLogger();
@@ -80,25 +132,14 @@ public class MultiverseListener implements Listener {
             // Where are we
             World current = event.getFrom().getWorld();
 
-            if (current == null || current.getEnvironment() != World.Environment.NORMAL) {
-                l.info(".. Abort hijack: current world is " + (current == null ? "null" : current.getEnvironment()));
+            if (current == null) {
+                l.info(".. Abort hijack: current world is null");
                 return; // don't care
             }
 
-            // Overworld?
-            MultiverseWorld world = manager.getWorld(current.getName());
-            if (world == null) {
-                RPMachine.getInstance().getLogger().warning("No MultiverseWorld found for " + current.getName());
-                event.setCancelled(true);
-                return;
-            }
-
-            MultiversePortal portal = world.getPortal(event.getFrom());
-            if (portal == null) {
-                l.info(".. No portal found at " + event.getFrom());
-                event.setCancelled(!world.isAllowNether());
-                return;
-            }
+            MultiversePortal portal = changeDimensionTeleport(event, current.getEnvironment(), event.getTo().getWorld().getEnvironment());
+            if (portal == null)
+                return; // Already handled, this is no portal, let it go
 
             MultiverseWorld target = manager.getWorld(portal.getTargetWorld());
             if (target == null || target.getWorld() == null) {
@@ -189,7 +230,7 @@ public class MultiverseListener implements Listener {
                         }
 
                         // Take random blocks from around the portal
-                        Location from = event.getFrom();
+                        Location from = event.getFrom().clone();
                         Area overworldArea = new Area(from.getWorld().getName(),
                                 from.getBlockX() - 5, from.getBlockY() - 1, from.getBlockZ() - 5,
                                 from.getBlockX() + 5, from.getBlockY() + 10, from.getBlockZ() + 5);
