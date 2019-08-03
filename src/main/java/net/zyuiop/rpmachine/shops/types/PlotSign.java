@@ -201,7 +201,7 @@ public class PlotSign extends AbstractShopSign {
                                 throw new SignParseError("Le panneau ne se trouve pas dans une parcelle");
                             }
 
-                            if (!plot.getOwner().equals(tt.getTag())) {
+                            if (plot.getOwner() != null && !plot.getOwner().equals(tt.getTag())) {
                                 throw new SignParseError("Vous n'êtes pas propriétaire de cette parcelle");
                             } else if (!tt.hasDelegatedPermission(PlotPermissions.SELL_PLOT)) {
                                 throw new SignPermissionError("Vous ne pouvez pas vendre cette parcelle");
