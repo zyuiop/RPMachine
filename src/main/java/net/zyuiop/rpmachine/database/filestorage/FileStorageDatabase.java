@@ -2,6 +2,8 @@ package net.zyuiop.rpmachine.database.filestorage;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.DatabaseManager;
@@ -17,6 +19,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class FileStorageDatabase implements DatabaseManager, LegalEntityRepository<PlayerData> {
 	private File playersDirectory;
 	private FileUUIDTranslator translator;
+	private Map<UUID, PlayerFile> playerFileMap = new HashMap<>();
 
 	public FileStorageDatabase() throws IOException {
 	}
@@ -37,17 +40,21 @@ public class FileStorageDatabase implements DatabaseManager, LegalEntityReposito
 
 	@Override
 	public PlayerData getPlayerData(UUID uuid) {
-		File data = new File(playersDirectory, uuid.toString() + ".yml");
-		if (!data.exists()) {
-			try {
-				data.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
+		if (!playerFileMap.containsKey(uuid)) {
+			File data = new File(playersDirectory, uuid.toString() + ".yml");
+			if (!data.exists()) {
+				try {
+					data.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
+
+			YamlConfiguration configuration = YamlConfiguration.loadConfiguration(data);
+			playerFileMap.put(uuid, new PlayerFile(uuid, configuration, data));
 		}
 
-		YamlConfiguration configuration = YamlConfiguration.loadConfiguration(data);
-		return new PlayerFile(uuid, configuration, data);
+		return playerFileMap.get(uuid);
 	}
 
 	@Override
