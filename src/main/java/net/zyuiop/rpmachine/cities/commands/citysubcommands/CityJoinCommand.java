@@ -57,7 +57,7 @@ public class CityJoinCommand implements SubCommand, ConfirmationCommand {
             String cost = city.getJoinTax() > 0 ? "Cela coûte " + ChatColor.GOLD + city.getJoinTax() + " " + RPMachine.getCurrencyName() : ChatColor.YELLOW + "L'opération est gratuite.";
             String confirmMessage = ChatColor.YELLOW + "Voulez vous devenir citoyen de la ville ? " + cost + ChatColor.YELLOW + ".";
 
-            if (requestConfirm(player, confirmMessage, command + " " + subCommand, args))
+            if (requestConfirm(player, confirmMessage, command + " " + subCommand, args)) {
                 if (city.getJoinTax() > 0) {
                     if (!RPMachine.database().getPlayerData(player).transfer(city.getJoinTax(), city)) {
                         Messages.notEnoughMoney(player, city.getJoinTax());
@@ -66,9 +66,10 @@ public class CityJoinCommand implements SubCommand, ConfirmationCommand {
                     }
                 }
 
-            city.addInhabitant(player.getUniqueId());
-            citiesManager.saveCity(city);
-            player.sendMessage(ChatColor.GREEN + "Bravo ! Vous êtes désormais citoyen de la ville " + ChatColor.DARK_GREEN + "" + city.getCityName() + "" + ChatColor.GREEN + " !");
+                city.addInhabitant(player.getUniqueId());
+                citiesManager.saveCity(city);
+                player.sendMessage(ChatColor.GREEN + "Bravo ! Vous êtes désormais citoyen de la ville " + ChatColor.DARK_GREEN + "" + city.getCityName() + "" + ChatColor.GREEN + " !");
+            }
         }
         return true;
     }

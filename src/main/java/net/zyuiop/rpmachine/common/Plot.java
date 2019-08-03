@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.common;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -69,7 +70,7 @@ public class Plot implements Ownable {
 
 	public boolean canBuild(Player player, Location location) {
 		return plotMembers.contains(player.getUniqueId()) || // membre du plot
-				owner != null && owner() != null && owner().hasDelegatedPermission(player, PlotPermissions.BUILD_ON_PLOTS); // owner du plot
+				(owner != null && owner() != null && owner().hasDelegatedPermission(player, PlotPermissions.BUILD_ON_PLOTS)); // owner du plot
 	}
 
 	@Nullable

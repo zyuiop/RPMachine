@@ -4,8 +4,6 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.common.Area;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftWolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,8 +11,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.omg.CORBA.Environment;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -111,6 +109,7 @@ public class MultiverseListener implements Listener {
                     // Done here :)
                 } else {
                     RPMachine.getInstance().getLogger().info(".. Nether is not allowed, cancelling");
+                    event.getPlayer().sendMessage(ChatColor.RED + "Le nether n'est pas autorisé depuis ce monde.");
                     event.setCancelled(true);
                 }
                 return null;
@@ -122,7 +121,27 @@ public class MultiverseListener implements Listener {
         return null; // Handle the end in the future
     }
 
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        World fromWorld = event.getPlayer().getWorld();
+        /*if (fromWorld.getEnvironment() == World.Environment.THE_END) {
+            // Respawning from end: change target
+            String actualWorldName = fromWorld.getName().replaceAll("_the_end", "");
+            World actualWorld = Bukkit.getWorld(actualWorldName);
+
+            // check if bedspawn and handle accordingly
+            // it's kind of a nightmare
+
+            assert actualWorld != null;
+            event.setRespawnLocation(actualWorld.getSpawnLocation());
+            event.setTo(to);
+
+            RPMachine.getInstance().getLogger().info("Hijack dimension change going from " + from.getWorld().getName() + " to " + actualWorldName);
+        }*/
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    // TOOD split method
     public void onChangeWorld(PlayerPortalEvent event) {
         Logger l = RPMachine.getInstance().getLogger();
         l.info(event.getPlayer() + " changes world " + event.getCause());
@@ -277,6 +296,28 @@ public class MultiverseListener implements Listener {
                 event.getPlayer().teleport(opposite);
             }
 
+        } else if (event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL) {
+            if (event.getTo().getWorld().getEnvironment() == World.Environment.THE_END) {
+                // TODO: test this piece
+                l.info(".. target is end, rerouting accordingly");
+
+                MultiverseWorld world = manager.getWorld(event.getFrom().getWorld().getName());
+                if (world == null) {
+                    l.info(".. world is not registerd, ignoring");
+                    return; // No multiverse world
+                }
+
+                if (world.isAllowEnd()) {
+                    String actualWorldName = event.getFrom().getWorld().getName() + "_the_end";
+                    World actualWorld = Bukkit.getWorld(actualWorldName);
+                    event.setTo(actualWorld.getSpawnLocation());
+                    RPMachine.getInstance().getLogger().info(".. Changed target world to " + actualWorldName);
+                } else {
+                    RPMachine.getInstance().getLogger().info(".. End is not allowed, cancelling");
+                    event.getPlayer().sendMessage(ChatColor.RED + "L'end n'est pas autorisé depuis ce monde.");
+                    event.setCancelled(true);
+                }
+            }
         }
     }
 }

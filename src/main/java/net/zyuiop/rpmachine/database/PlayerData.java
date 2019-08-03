@@ -39,6 +39,6 @@ public interface PlayerData extends LegalEntity {
 
 	@Override
 	default boolean hasDelegatedPermission(Player player, DelegatedPermission permission) {
-		return true; // Player has all permissions on properties he manages!
+		return player.getUniqueId().equals(getUuid()); // Player has all permissions on properties he manages!
 	}
 }
