@@ -18,7 +18,6 @@ public class CommandHelp implements CommandExecutor {
 		s.sendMessage(ChatColor.GREEN + "-> /city : commande de gestion de villes");
 		s.sendMessage(ChatColor.GREEN + "-> /plot : commande de gestion de parcelles");
 		s.sendMessage(ChatColor.GREEN + "-> /floors : liste les paliers de villes disponibles");
-		s.sendMessage(ChatColor.GREEN + "-> /createcity : permet de créer une ville");
 		s.sendMessage(ChatColor.GREEN + "-> /actas : permet d'agir en tant qu'une autre entité");
 
 		return true;
