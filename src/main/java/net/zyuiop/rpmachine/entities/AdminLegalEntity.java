@@ -66,7 +66,7 @@ public class AdminLegalEntity implements LegalEntity, LegalEntityRepository<Admi
 
 	@Override
 	public boolean hasDelegatedPermission(Player player, DelegatedPermission permission) {
-		return true; // All admins have permissions over all admin properties
+		return player.isOp(); // All admins have permissions over all admin properties
 	}
 
 	@Override

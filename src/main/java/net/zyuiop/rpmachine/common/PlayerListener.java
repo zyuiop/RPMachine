@@ -43,6 +43,7 @@ public class PlayerListener implements Listener {
         if (d.isNew()) {
             d.setBalance(RPMachine.getCreationBalance());
             event.setJoinMessage(ChatColor.YELLOW + "" + ChatColor.ITALIC + "Bienvenue à " + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "" + ChatColor.ITALIC + " !");
+            event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation()); // tp au spawn
         }
 
         String date = DateFormat.getDateInstance().format(new Date());
