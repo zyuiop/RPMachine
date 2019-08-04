@@ -6,188 +6,187 @@ import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
-import net.zyuiop.rpmachine.json.Json;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import com.google.gson.Gson;
 import org.bukkit.entity.Player;
 
-import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CitiesManager extends FileEntityStore<City> implements LegalEntityRepository<City> {
 
-	private final RPMachine rpMachine;
-	private ConcurrentHashMap<String, City> cities = new ConcurrentHashMap<>();
-	private TreeSet<CityFloor> floors = new TreeSet<>((floor1, floor2) -> Integer.compare(floor2.getInhabitants(), floor1.getInhabitants()));
-	private HashSet<UUID> bypass = new HashSet<>();
-	private int creationPrice;
-	private int increaseFactor;
+    private final RPMachine rpMachine;
+    private ConcurrentHashMap<String, City> cities = new ConcurrentHashMap<>();
+    private TreeSet<CityFloor> floors = new TreeSet<>((floor1, floor2) -> Integer.compare(floor2.getInhabitants(), floor1.getInhabitants()));
+    private HashSet<UUID> bypass = new HashSet<>();
+    private int creationPrice;
+    private int increaseFactor;
 
-	public void addBypass(UUID id) {
-		bypass.add(id);
-	}
+    public void addBypass(UUID id) {
+        bypass.add(id);
+    }
 
-	public void removeBypass(UUID id) {
-		bypass.remove(id);
-	}
+    public void removeBypass(UUID id) {
+        bypass.remove(id);
+    }
 
-	public boolean isBypassing(UUID id) {
-		return bypass.contains(id);
-	}
+    public boolean isBypassing(UUID id) {
+        return bypass.contains(id);
+    }
 
-	public CitiesManager(RPMachine plugin) {
-		super(City.class, "cities");
+    public CitiesManager(RPMachine plugin) {
+        super(City.class, "cities");
 
-		this.rpMachine = plugin;
-		super.load(); // Load all the cities
+        this.rpMachine = plugin;
+        super.load(); // Load all the cities
 
-		// Load floors
-		RPMachine.getInstance().getLogger().info("Loading floors...");
-		for (Map<?, ?> floor : rpMachine.getConfig().getMapList("floors")) {
-			String name = (String) floor.get("name");
-			int inhabitants = (Integer) floor.get("inhabitants");
-			int maxsurface = (Integer) floor.get("max-chunks");
-			int maxtaxes = (Integer) floor.get("max-taxes");
-			int chunkPrice = (Integer) floor.get("chunk-price");
-			int tpTax = (Integer) ((Optional) Optional.ofNullable(floor.get("max-tp-tax"))).orElse(1);
-			int maxJoinTax = (Integer) ((Optional) Optional.ofNullable(floor.get("max-join-tax"))).orElse(0);
-			double plotTax = (Double) ((Optional) Optional.ofNullable(floor.get("max-plot-sell-tax"))).orElse(0.2D);
+        // Load floors
+        RPMachine.getInstance().getLogger().info("Loading floors...");
+        for (Map<?, ?> floor : rpMachine.getConfig().getMapList("floors")) {
+            String name = (String) floor.get("name");
+            int inhabitants = (Integer) floor.get("inhabitants");
+            int maxsurface = (Integer) floor.get("max-chunks");
+            int maxtaxes = (Integer) floor.get("max-taxes");
+            int chunkPrice = (Integer) floor.get("chunk-price");
+            int tpTax = (Integer) ((Optional) Optional.ofNullable(floor.get("max-tp-tax"))).orElse(1);
 
-			floors.add(new CityFloor(name, inhabitants, maxsurface, maxtaxes, tpTax, maxJoinTax, plotTax, chunkPrice));
-			plugin.getLogger().info("Loaded CityFloor " + name);
-		}
+            floors.add(new CityFloor(name, inhabitants, maxsurface, maxtaxes, tpTax, chunkPrice));
+            plugin.getLogger().info("Loaded CityFloor " + name);
+        }
 
-		creationPrice = rpMachine.getConfig().getInt("createcity.price", 500);
-		increaseFactor = rpMachine.getConfig().getInt("createcity.incrfactor", 5);
-	}
+        creationPrice = rpMachine.getConfig().getInt("createcity.price", 500);
+        increaseFactor = rpMachine.getConfig().getInt("createcity.incrfactor", 5);
+    }
 
-	public void payTaxes(boolean force) {
-		for (City city : cities.values()) {
-			city.payTaxes(force);
-		}
-	}
+    public void payTaxes(boolean force) {
+        for (City city : cities.values()) {
+            city.payTaxes(force);
+        }
+    }
 
- 	public City getCity(String name) {
-		return cities.get(name);
-	}
+    public City getCity(String name) {
+        return cities.get(name);
+    }
 
-	public ConcurrentHashMap<String, City> getCities() {
-		return cities;
-	}
+    public ConcurrentHashMap<String, City> getCities() {
+        return cities;
+    }
 
 
-	public CityFloor getFloor(City city) {
-		for (CityFloor floor : floors) {
-			if (floor.getInhabitants() <= city.countInhabitants())
-				return floor;
-		}
-		return null;
-	}
+    public CityFloor getFloor(City city) {
+        for (CityFloor floor : floors) {
+            if (floor.getInhabitants() <= city.countInhabitants())
+                return floor;
+        }
+        return null;
+    }
 
-	public TreeSet<CityFloor> getFloors() {
-		return floors;
-	}
+    public TreeSet<CityFloor> getFloors() {
+        return floors;
+    }
 
-	public City getPlayerCity(UUID player) {
-		for (City city : cities.values()) {
-			if (city.getInhabitants().contains(player))
-				return city;
-		}
-		return null;
-	}
+    public City getPlayerCity(UUID player) {
+        for (City city : cities.values()) {
+            if (city.getInhabitants().contains(player))
+                return city;
+        }
+        return null;
+    }
 
-	public City getPlayerCity(Player player) {
-		return getPlayerCity(player.getUniqueId());
-	}
+    public City getPlayerCity(Player player) {
+        return getPlayerCity(player.getUniqueId());
+    }
 
-	public City getCityHere(Chunk chunk) {
-		if (!chunk.getWorld().getName().equals("world"))
-			return null;
+    public City getCityHere(Chunk chunk) {
+        if (!chunk.getWorld().getName().equals("world"))
+            return null;
 
-		VirtualChunk vchunk = new VirtualChunk(chunk);
-		for (City city : cities.values()) {
-			if (city.getChunks().contains(vchunk))
-				return city;
-		}
-		return null;
-	}
+        VirtualChunk vchunk = new VirtualChunk(chunk);
+        for (City city : cities.values()) {
+            if (city.getChunks().contains(vchunk))
+                return city;
+        }
+        return null;
+    }
 
-	public boolean canBuild(Player player, Location location) {
-		if (bypass.contains(player.getUniqueId()))
-			return true;
+    public boolean canBuild(Player player, Location location) {
+        if (bypass.contains(player.getUniqueId()))
+            return true;
 
-		if (location.getWorld().getName().equals("world")) {
-			City city = getCityHere(location.getChunk());
-			return city == null || city.canBuild(player, location);
-		} else {
-			return RPMachine.getInstance().getProjectsManager().canBuild(player, location);
-		}
-	}
+        if (location.getWorld().getName().equals("world")) {
+            City city = getCityHere(location.getChunk());
 
-	public boolean canInteractWithBlock(Player player, Location location) {
-		if (bypass.contains(player.getUniqueId()))
-			return true;
+            if (city == null) {
+                return RPMachine.getInstance().getProjectsManager().canBuild(player, location);
+            }
+            return city.canBuild(player, location);
+        } else {
+            return RPMachine.getInstance().getProjectsManager().canBuild(player, location);
+        }
+    }
 
-		if (location.getWorld().getName().equals("world")) {
-			City city = getCityHere(location.getChunk());
-			return city == null || city.canInteractWithBlock(player, location);
-		} else {
-			return RPMachine.getInstance().getProjectsManager().canInteractWithBlock(player, location);
-		}
-	}
+    public boolean canInteractWithBlock(Player player, Location location) {
+        if (bypass.contains(player.getUniqueId()))
+            return true;
 
-	public double getCreationPrice() {
-		return creationPrice + (increaseFactor * cities.size());
-	}
+        if (location.getWorld().getName().equals("world")) {
+            City city = getCityHere(location.getChunk());
+            return city == null || city.canInteractWithBlock(player, location);
+        } else {
+            return RPMachine.getInstance().getProjectsManager().canInteractWithBlock(player, location);
+        }
+    }
 
-	public void removeCity(City city) {
-		super.removeEntity(city);
-		cities.remove(city.getCityName());
-	}
+    public double getCreationPrice() {
+        return creationPrice + (increaseFactor * cities.size());
+    }
 
-	public boolean checkCityTeleport(Player player) {
-		City current = getCityHere(player.getLocation().getChunk());
-		if (current == null) {
-			player.sendMessage(ChatColor.RED + "Vous devez vous trouver dans une ville pour vous téléporter !");
-			return false;
-		}
-		return true;
-	}
+    public void removeCity(City city) {
+        super.removeEntity(city);
+        cities.remove(city.getCityName());
+    }
 
-	@Override
-	public City findEntity(String tag) {
-		return getCity(tag);
-	}
+    public boolean checkCityTeleport(Player player) {
+        City current = getCityHere(player.getLocation().getChunk());
+        if (current == null) {
+            player.sendMessage(ChatColor.RED + "Vous devez vous trouver dans une ville pour vous téléporter !");
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public String getTag(City entity) {
-		return entity.getCityName();
-	}
+    @Override
+    public City findEntity(String tag) {
+        return getCity(tag);
+    }
 
-	@Override
-	protected void loadedEntity(City entity) {
-		cities.put(entity.getCityName(), entity);
-	}
+    @Override
+    public String getTag(City entity) {
+        return entity.getCityName();
+    }
 
-	/**
-	 * Create a city and its associated file
-	 * @param city the city to create
-	 * @return true if the city could be created, false if not
-	 */
-	public boolean createCity(City city) {
-		if (cities.containsKey(city.getCityName()))
-			return false;
+    @Override
+    protected void loadedEntity(City entity) {
+        cities.put(entity.getCityName(), entity);
+    }
 
-		String fileName = city.getCityName().replace("/", "_");
-		fileName = fileName.replace("\\", "_");
-		return super.createEntity(fileName, city);
-	}
+    /**
+     * Create a city and its associated file
+     *
+     * @param city the city to create
+     * @return true if the city could be created, false if not
+     */
+    public boolean createCity(City city) {
+        if (cities.containsKey(city.getCityName()))
+            return false;
 
-	public void saveCity(City city) {
-		super.saveEntity(city);
-	}
+        String fileName = city.getCityName().replace("/", "_");
+        fileName = fileName.replace("\\", "_");
+        return super.createEntity(fileName, city);
+    }
+
+    public void saveCity(City city) {
+        super.saveEntity(city);
+    }
 }

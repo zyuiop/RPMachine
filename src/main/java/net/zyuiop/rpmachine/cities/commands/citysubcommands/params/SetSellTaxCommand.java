@@ -41,8 +41,8 @@ public class SetSellTaxCommand implements CityMemberSubCommand {
         } else {
             try {
                 double value = Integer.parseInt(args[0]) / 100D;
-                if (value > citiesManager.getFloor(city).getMaxPlotSellTax()) {
-                    player.sendMessage(ChatColor.RED + "Votre taux est supérieur au taux maximal pour votre palier.");
+                if (value > 1.0D) {
+                    player.sendMessage(ChatColor.RED + "Votre taux est supérieur à 100% !");
                     return true;
                 }
                 city.setPlotSellTaxRate(value);

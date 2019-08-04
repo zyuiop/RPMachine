@@ -386,22 +386,22 @@ floors:
       inhabitants: 0
       max-chunks: 15
       max-taxes: 0
-      chunk-price: 150
+      chunk-price: 125
     - name: Bourg
       inhabitants: 4
       max-chunks: 25
       max-taxes: 1
-      chunk-price: 140
+      chunk-price: 115
     - name: Village
       inhabitants: 8
       max-chunks: 75
       max-taxes: 3
-      chunk-price: 125
+      chunk-price: 105
     - name: Ville
       inhabitants: 15
       max-chunks: 200
       max-taxes: 5
-      chunk-price: 110
+      chunk-price: 100
     - name: Métropole
       inhabitants: 25
       max-chunks: 400

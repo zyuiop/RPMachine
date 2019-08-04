@@ -14,6 +14,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -43,7 +44,11 @@ public class PlayerListener implements Listener {
         if (d.isNew()) {
             d.setBalance(RPMachine.getCreationBalance());
             event.setJoinMessage(ChatColor.YELLOW + "" + ChatColor.ITALIC + "Bienvenue à " + event.getPlayer().getDisplayName() + ChatColor.YELLOW + "" + ChatColor.ITALIC + " !");
+            Messages.credit(event.getPlayer(), RPMachine.getCreationBalance(), "cadeau de bienvenue");
             event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation()); // tp au spawn
+            event.getPlayer().getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 16));
+        } else {
+            event.setJoinMessage(ChatColor.YELLOW + event.getPlayer().getDisplayName() + ChatColor.GRAY + "" + ChatColor.ITALIC + " vient de se connecter.");
         }
 
         String date = DateFormat.getDateInstance().format(new Date());
@@ -60,6 +65,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onLeave(PlayerQuitEvent event) {
         plugin.getScoreboardManager().removePlayer(event.getPlayer());
+        event.setQuitMessage(ChatColor.YELLOW + event.getPlayer().getDisplayName() + ChatColor.GRAY + "" + ChatColor.ITALIC + " vient de se déconnecter.");
     }
 
     @EventHandler

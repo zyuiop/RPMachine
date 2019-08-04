@@ -6,22 +6,18 @@ public class CityFloor {
 	private int maxsurface;
 	private int maxtaxes;
 	private int maxTpTax = 1;
-	private int maxJoinTax = 0;
-	private double maxPlotSellTax = 0.2;
 	private int chunkPrice;
 
 	public CityFloor() {
 
 	}
 
-	public CityFloor(String name, int inhabitants, int maxsurface, int maxtaxes, int maxTpTax, int maxJoinTax, double maxPlotSellTax, int chunkPrice) {
+	public CityFloor(String name, int inhabitants, int maxsurface, int maxtaxes, int maxTpTax, int chunkPrice) {
 		this.name = name;
 		this.inhabitants = inhabitants;
 		this.maxsurface = maxsurface;
 		this.maxtaxes = maxtaxes;
 		this.maxTpTax = maxTpTax;
-		this.maxJoinTax = maxJoinTax;
-		this.maxPlotSellTax = maxPlotSellTax;
 		this.chunkPrice = chunkPrice;
 	}
 
@@ -67,13 +63,5 @@ public class CityFloor {
 
 	public int getMaxTpTax() {
 		return maxTpTax;
-	}
-
-	public int getMaxJoinTax() {
-		return maxJoinTax;
-	}
-
-	public double getMaxPlotSellTax() {
-		return maxPlotSellTax;
 	}
 }

@@ -42,8 +42,8 @@ public class SetJoinTaxCommand implements CityMemberSubCommand {
         } else {
             try {
                 int value = Integer.parseInt(args[0]);
-                if (value > citiesManager.getFloor(city).getMaxJoinTax()) {
-                    player.sendMessage(ChatColor.RED + "Votre montant est supérieur au montant maximal pour votre palier.");
+                if (value > 1_000_000_000) {
+                    player.sendMessage(ChatColor.RED + "Le montant maximal de cette taxe est de 1 milliard.");
                     return true;
                 }
                 city.setJoinTax(value);

@@ -26,6 +26,7 @@ public class ItemShopSign extends AbstractShopSign {
     private int amountPerPackage;
     private ShopAction action;
     private int available;
+
     public ItemShopSign(Location location) {
         super(location);
     }
@@ -93,8 +94,11 @@ public class ItemShopSign extends AbstractShopSign {
 
     @Override
     public void breakSign() {
-        for (; available > 0; available--) {
-            Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), getNewStack());
+
+        if (!(owner() instanceof AdminLegalEntity)) {
+            for (; available > 0; available--) {
+                Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), getNewStack());
+            }
         }
 
         super.breakSign();

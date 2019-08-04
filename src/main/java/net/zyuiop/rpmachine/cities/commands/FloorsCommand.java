@@ -39,8 +39,6 @@ public class FloorsCommand extends AbstractCommand implements SubCommand {
             commandSender.sendMessage(ChatColor.DARK_AQUA + "Taille max : " + ChatColor.AQUA + floor.getMaxsurface() + " " + RPMachine.getCurrencyName());
             if (RPMachine.isTpEnabled())
                 commandSender.sendMessage(ChatColor.DARK_AQUA + "Taxe TP max : " + ChatColor.AQUA + floor.getMaxTpTax() + " " + RPMachine.getCurrencyName());
-            commandSender.sendMessage(ChatColor.DARK_AQUA + "Taxe vente max : " + ChatColor.AQUA + ((int) (100 * floor.getMaxPlotSellTax())) + " %");
-            commandSender.sendMessage(ChatColor.DARK_AQUA + "Taxe citoyenneté max : " + ChatColor.AQUA + floor.getMaxJoinTax() + " " + RPMachine.getCurrencyName());
         }
         return true;
     }
