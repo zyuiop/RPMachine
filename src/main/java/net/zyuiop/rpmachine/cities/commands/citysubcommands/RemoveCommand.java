@@ -9,6 +9,7 @@ import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
@@ -27,7 +28,7 @@ public class RemoveCommand implements CityMemberSubCommand, ConfirmationCommand 
 
     @Override
     public String getDescription() {
-        return "supprime et réinitialise les chunks de votre ville";
+        return "supprime votre ville";
     }
 
     @Override
@@ -43,14 +44,10 @@ public class RemoveCommand implements CityMemberSubCommand, ConfirmationCommand 
         }
 
         if (requestConfirm(player,
-                ChatColor.RED + "ATTENTION ! Vous vous apprêtez à supprimer votre ville ! Tous les chunks de la ville seront réinitialisés.",
+                ChatColor.RED + "ATTENTION ! Vous vous apprêtez à supprimer votre ville ! Elle ne sera plus protégée contre le grief ou le vol !",
                 command + " " + subcommand,
                 args)) {
-            player.sendMessage(ChatColor.RED + "Suppression de la ville : suppression des chunks (1/2)");
-            for (VirtualChunk chunk : city.getChunks()) {
-                Bukkit.getWorld("world").regenerateChunk(chunk.getX(), chunk.getZ());
-            }
-            player.sendMessage(ChatColor.RED + "Suppression de la configuration");
+
             citiesManager.removeCity(city);
 
             RPMachine.getInstance().getShopsManager().getShops(city).forEach(AbstractShopSign::breakSign);

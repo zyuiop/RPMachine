@@ -70,6 +70,10 @@ public class CreateCityCommand implements SubCommand, ConfirmationCommand {
                         boolean result = citiesManager.createCity(city);
                         if (result) {
                             player.sendMessage(ChatColor.GOLD + "Vous créez une ville sur ce chunk.");
+
+                            if (!city.isRequireInvite()) {
+                                player.sendMessage(ChatColor.GRAY + "L'Histoire de la ville de " + city.shortDisplayable() + ChatColor.GRAY + " commence ce jour... Que le sort soit avec elle !");
+                            }
                             Messages.debit(player, amt, "création de ville");
                         } else {
                             data.creditMoney(amt);
