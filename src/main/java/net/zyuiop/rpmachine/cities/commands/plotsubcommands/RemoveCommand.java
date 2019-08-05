@@ -38,7 +38,7 @@ public class RemoveCommand implements CityMemberSubCommand {
             player.sendMessage(ChatColor.RED + "Argument manquant.");
             return false;
         } else {
-            Plot plot = city.getPlots().get(args[0]);
+            Plot plot = city.getPlot(args[0]);
             if (plot == null)
                 player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
             else {
@@ -56,7 +56,7 @@ public class RemoveCommand implements CityMemberSubCommand {
                     return true;
                 }
 
-                city.getPlots().remove(plot.getPlotName());
+                city.removePlot(plot.getPlotName());
                 citiesManager.saveCity(city);
                 player.sendMessage(ChatColor.GREEN + "La parcelle a bien été supprimée.");
             }

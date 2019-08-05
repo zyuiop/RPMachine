@@ -98,7 +98,7 @@ public class PlotSign extends AbstractShopSign {
             return;
         }
 
-        Plot plot = city.getPlots().get(plotName);
+        Plot plot = city.getPlot(plotName);
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la parcelle n'existe pas.");
             return;
@@ -154,8 +154,8 @@ public class PlotSign extends AbstractShopSign {
 
             plot.setOwner(data);
             plot.setPlotMembers(new CopyOnWriteArrayList<>());
+            city.save();
 
-            city.getPlots().put(plotName, plot);
             RPMachine.getInstance().getCitiesManager().saveCity(city);
             Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
                 breakSign();

@@ -78,11 +78,11 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
     }
 
     public City getCity(String name) {
-        return cities.get(name);
+        return cities.get(name.toLowerCase());
     }
 
-    public ConcurrentHashMap<String, City> getCities() {
-        return cities;
+    public Collection<City> getCities() {
+        return cities.values();
     }
 
 
@@ -169,7 +169,7 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 
     public void removeCity(City city) {
         super.removeEntity(city);
-        cities.remove(city.getCityName());
+        cities.remove(city.getCityName().toLowerCase());
     }
 
     public boolean checkCityTeleport(Player player) {
@@ -193,7 +193,7 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 
     @Override
     protected void loadedEntity(City entity) {
-        cities.put(entity.getCityName(), entity);
+        cities.put(entity.getCityName().toLowerCase(), entity);
     }
 
     /**
@@ -203,7 +203,7 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
      * @return true if the city could be created, false if not
      */
     public boolean createCity(City city) {
-        if (cities.containsKey(city.getCityName()))
+        if (cities.containsKey(city.getCityName().toLowerCase()))
             return false;
 
         String fileName = city.getCityName().replace("/", "_");

@@ -44,7 +44,7 @@ public class LeaveCommand implements SubCommand {
             return true;
         }
 
-        Plot plot = city.getPlots().get(args[1]);
+        Plot plot = city.getPlot(args[1]);
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
             return true;

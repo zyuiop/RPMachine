@@ -1,9 +1,8 @@
 # Montant nécessaire pour créeer une ville :
-createcity:
-   p0: 500
-   coeff: 1050
-   function: LINEAR
-
+# createcity:
+#    p0: 500
+#    coeff: 1050
+#    function: LINEAR
 # createcity:
 #   p0: 500
 #   power: 1.35
@@ -19,11 +18,11 @@ createcity:
 #   basis: 1.394955
 #   function: EXPONENTIAL
 #
-# createcity:
-#   max: 100000
-#   delta: 15.3876
-#   coeff: 0.34398
-#   function: SIGMOID
+createcity:
+   max: 100000
+   delta: 15.3876
+   coeff: 0.34398
+   function: SIGMOID
 
 jobs:
   - name: Décorateur

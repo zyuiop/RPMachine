@@ -59,7 +59,7 @@ public class CreateCommand implements CityMemberSubCommand {
 						return false;
 					}
 
-					if (city.getPlots().containsKey(name)) {
+					if (city.getPlot(name) != null) {
 						player.sendMessage(ChatColor.RED + "Ce nom de parcelle est déjà utilisé.");
 						return true;
 					}
@@ -96,9 +96,7 @@ public class CreateCommand implements CityMemberSubCommand {
 					plot.setPlotName(name);
 					plot.setArea(area);
 
-					city.getPlots().put(name, plot);
-					citiesManager.saveCity(city);
-
+					city.addPlot(name, plot);
 					player.sendMessage(ChatColor.GREEN + "La parcelle a bien été créée.");
 				}
 			}

@@ -98,6 +98,20 @@ public class City implements LegalEntity, StoredEntity {
         return plots;
     }
 
+    public void addPlot(String name, Plot plot) {
+        plots.put(name.toLowerCase(), plot);
+        save();
+    }
+
+    public void removePlot(String name) {
+        plots.remove(name.toLowerCase());
+        save();
+    }
+
+    public Plot getPlot(String name) {
+        return plots.get(name.toLowerCase());
+    }
+
     public String getFileName() {
         return fileName;
     }

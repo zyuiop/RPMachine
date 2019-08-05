@@ -53,7 +53,7 @@ public class RedefineCommand implements CityMemberSubCommand {
 					player.sendMessage(ChatColor.RED + "Syntaxe invalide : /plot redefine " + getUsage());
 				} else {
 					String name = args[0];
-					Plot plot = city.getPlots().get(name);
+					Plot plot = city.getPlot(name);
 					if (plot == null) {
 						player.sendMessage(ChatColor.RED + "Il n'existe aucune parcelle de ce nom. Merci d'en créer une.");
 						return true;
@@ -97,9 +97,8 @@ public class RedefineCommand implements CityMemberSubCommand {
 					}
 
 					plot.setArea(area);
+					city.save();
 
-					city.getPlots().put(name, plot);
-					citiesManager.saveCity(city);
 
 					player.sendMessage(ChatColor.GREEN + "La parcelle a bien été redéfinie.");
 				}
