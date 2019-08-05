@@ -31,6 +31,7 @@ public class City implements LegalEntity, StoredEntity {
     private VirtualLocation spawn;
     private String fileName;
     private CityTaxPayer taxPayer = new CityTaxPayer(); // loaded by Gson
+    private String proposedFusion = null;
 
     private double taxes = 0;
     private double money = 0;
@@ -96,6 +97,15 @@ public class City implements LegalEntity, StoredEntity {
 
     public Map<String, Plot> getPlots() {
         return plots;
+    }
+
+    public String getProposedFusion() {
+        return proposedFusion;
+    }
+
+    public void setProposedFusion(String proposedFusion) {
+        this.proposedFusion = proposedFusion;
+        save();
     }
 
     public String getFileName() {
@@ -429,6 +439,10 @@ public class City implements LegalEntity, StoredEntity {
             councils.get(target).remove(permission);
             save();
         }
+    }
+
+    public Map<UUID, Set<Permission>> getFullCouncils() {
+        return councils;
     }
 
     public static class CityTaxPayer {

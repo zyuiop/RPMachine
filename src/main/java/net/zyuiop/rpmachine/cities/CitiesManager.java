@@ -110,6 +110,10 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
         return getPlayerCity(player.getUniqueId());
     }
 
+    public City getCityHere(Location loc) {
+        return getCityHere(loc.getChunk());
+    }
+
     public City getCityHere(Chunk chunk) {
         if (!chunk.getWorld().getName().equals("world"))
             return null;
@@ -213,6 +217,12 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 
     public void saveCity(City city) {
         super.saveEntity(city);
+    }
+
+    public void move(City city, String cityName) {
+        removeCity(city);
+        city.setCityName(cityName);
+        createCity(city);
     }
 
     enum CreationPriceFunctions {
