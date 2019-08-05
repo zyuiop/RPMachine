@@ -157,7 +157,11 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 
         if (location.getWorld().getName().equals("world")) {
             City city = getCityHere(location.getChunk());
-            return city == null || city.canInteractWithBlock(player, location);
+
+            if (city == null) {
+                return RPMachine.getInstance().getProjectsManager().canInteractWithBlock(player, location);
+            }
+            return city.canInteractWithBlock(player, location);
         } else {
             return RPMachine.getInstance().getProjectsManager().canInteractWithBlock(player, location);
         }

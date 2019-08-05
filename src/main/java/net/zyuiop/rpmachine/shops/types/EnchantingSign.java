@@ -183,8 +183,9 @@ public class EnchantingSign extends AbstractShopSign {
             return;
         }
 
-        if (token.getLegalEntity().transfer(price, owner())) {
+        if (token.getLegalEntity().withdrawMoney(price)) {
             available--;
+            creditToOwner();
             ItemStack stack = item.get();
             stack.addEnchantment(bukkitEnchantment, level);
             Messages.debitEntity(player, token.getLegalEntity(), price, "enchantement");

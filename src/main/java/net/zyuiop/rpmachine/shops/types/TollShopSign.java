@@ -221,7 +221,8 @@ public class TollShopSign extends AbstractShopSign {
             if (!token.checkDelegatedPermission(ShopPermissions.USE_TOLL))
                 return;
 
-            if (token.getLegalEntity().transfer(price, owner())) {
+            if (token.getLegalEntity().withdrawMoney(price)) {
+                creditToOwner();
                 Messages.debitEntity(player, token.getLegalEntity(), price, "péage");
 
                 player.playSound(getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);

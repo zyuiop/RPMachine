@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.entities.Ownable;
@@ -81,6 +82,33 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
 
         return false;
     }
+
+    protected City getCity() {
+        return RPMachine.getInstance().getCitiesManager().getCityHere(location.getLocation().getChunk());
+    }
+
+    protected void creditToOwner() {
+        double toThePlayer = takeVat();
+        owner().creditMoney(toThePlayer);
+    }
+
+    protected double takeVat() {
+        City city = getCity();
+        if (city == null)
+            return price;
+
+        double vat = city.getVat();
+        if (vat == 0)
+            return price;
+
+        double forTheCity = price * vat;
+        double forThePlayer = price - forTheCity;
+
+        city.creditMoney(forTheCity);
+
+        return forThePlayer;
+    }
+
 
     /**
      * Renders the sign

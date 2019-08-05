@@ -13,6 +13,7 @@ public class CityParamsSubCommand extends CompoundSubCommand {
 
         registerSubCommand("type", new SetTypeCommand(citiesManager), "settype");
         registerSubCommand("taxes", new SetTaxesCommand(citiesManager), "settaxes");
+        registerSubCommand("vat", new SetTaxesCommand(citiesManager), "tva");
         registerSubCommand("selltaxes", new SetSellTaxCommand(citiesManager), "selltax");
         if (RPMachine.isTpEnabled()) {
             registerSubCommand("tptax", new SetTpTaxCommand(citiesManager), "tptaxes");

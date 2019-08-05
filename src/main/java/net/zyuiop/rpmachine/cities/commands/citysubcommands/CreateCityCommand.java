@@ -44,6 +44,9 @@ public class CreateCityCommand implements SubCommand, ConfirmationCommand {
                 player.sendMessage(ChatColor.RED + "Le type de ville ne peut être que PRIVATE ou PUBLIC.");
             } else if (citiesManager.getCityHere(player.getLocation().getChunk()) != null) {
                 player.sendMessage(ChatColor.RED + "Il y a déjà une ville sur ce chunk.");
+            } else if (RPMachine.getInstance().getProjectsManager().getZonesHere(player.getLocation().getChunk()).size() > 0) {
+                player.sendMessage(ChatColor.RED + "Il y a des projets de la Confédération dans ce chunk.");
+                return false;
             } else if (citiesManager.getCity(cityName) != null) {
                 player.sendMessage(ChatColor.RED + "Une ville de ce nom existe déjà.");
             } else {

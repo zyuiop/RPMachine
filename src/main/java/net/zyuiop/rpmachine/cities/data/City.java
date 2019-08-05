@@ -38,6 +38,7 @@ public class City implements LegalEntity, StoredEntity {
     private int joinTax = 0;
     private int tpTax = 0;
     private double plotSellTaxRate = 0;
+    private double vat = 0;
     private UUID mayor;
 
     private boolean requireInvite;
@@ -160,7 +161,15 @@ public class City implements LegalEntity, StoredEntity {
 		this.tpTax = tpTax;
 	}
 
-	public double getPlotSellTaxRate() {
+    public double getVat() {
+        return vat;
+    }
+
+    public void setVat(double vat) {
+        this.vat = vat;
+    }
+
+    public double getPlotSellTaxRate() {
 		return plotSellTaxRate;
 	}
 

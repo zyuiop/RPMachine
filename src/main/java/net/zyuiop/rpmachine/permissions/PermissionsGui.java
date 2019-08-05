@@ -53,7 +53,7 @@ public abstract class PermissionsGui extends Window  {
         private final PermissionTypes types;
 
         protected PermissionTypeMenu(PermissionTypes types, Player player) {
-            super((int) (Math.ceil(Math.log((types.members().length + 3)) / Math.log(9)) * 9), "Permissions de " + targetName + " > " + types.name(), player);
+            super((int) (Math.ceil((types.members().length + 3) / 9D) * 9D), "Permissions de " + targetName + " > " + types.name(), player);
 
             this.types = types;
         }

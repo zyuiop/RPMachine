@@ -130,7 +130,7 @@ public class Area implements Iterable<Block> {
 	public boolean hasCommonPositionsWith(Chunk chunk) {
 		Area chunkArea = new Area(chunk.getBlock(0, 0, 0).getLocation(), chunk.getBlock(15, 0, 15).getLocation());
 
-		if (chunkArea.getMaxX() < getMinX() || chunkArea.getMaxZ() < getMaxZ() || chunkArea.getMinX() > getMaxZ() || chunkArea.getMinZ() > getMaxZ()) {
+		if (chunkArea.getMaxX() < getMinX() || chunkArea.getMaxZ() < getMaxZ() || chunkArea.getMinX() > getMaxX() || chunkArea.getMinZ() > getMaxZ()) {
 			return false;
 		}
 

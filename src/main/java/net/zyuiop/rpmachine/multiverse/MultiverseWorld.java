@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,9 +77,10 @@ public class MultiverseWorld {
         portals.remove(nPortal);
     }
 
-    void generateWorld() {
+    void generateWorld(boolean forceLoad) {
         if (!worldName.equalsIgnoreCase("world")) {
             Bukkit.getLogger().info("Loading multiverse " + worldName);
+            generateChunks(getWorld(), 4000);
             Bukkit.createWorld(new WorldCreator(worldName));
 
             if (isAllowNether()) {
@@ -88,6 +91,48 @@ public class MultiverseWorld {
                 Bukkit.createWorld(new WorldCreator(worldName + "_the_end").environment(World.Environment.THE_END));
             }
         }
+
+
+        if (forceLoad) {
+            generateChunks(getWorld(), 4000);
+        }
+    }
+
+    void generateChunks(World world, int genbounds) {
+        new BukkitRunnable() {
+            private int todo = (genbounds * genbounds)/(16*16);
+            private int x = -(genbounds/2);
+            private int z = -(genbounds/2);
+            public  int lastShow = -1;
+            public  int numberChunk = 0;
+
+            @Override
+            public void run() {
+                int i = 0;
+                while (i < 250) {
+                    world.getChunkAt(world.getBlockAt(x, 64, z)).load(true);
+                    int percentage = (numberChunk * 100 / todo);
+                    if (percentage > lastShow) {
+                        lastShow = percentage;
+                        Bukkit.getLogger().info("Generated map " + world.getName() + ": " + percentage + " % (last coords: " + x + " " + z + ")" );
+                    }
+
+                    z+=16;
+                    if (z >= (genbounds / 2)) {
+                        z = - (genbounds / 2);
+                        x += 16;
+                    }
+
+                    if (x >= (genbounds / 2))  {
+                        this.cancel();
+                        return;
+                    }
+
+                    numberChunk++;
+                    i++;
+                }
+            }
+        }.runTaskTimer(RPMachine.getInstance(), 1L, 1L);
     }
 
     public World getWorld() {

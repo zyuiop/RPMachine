@@ -44,8 +44,8 @@ public class MultiverseManager {
         new ForceRegenCommand(this); // Init portal list
     }
 
-    public void generateWorlds() {
-        worlds.values().forEach(MultiverseWorld::generateWorld);
+    public void generateWorlds(boolean forceLoad) {
+        worlds.values().forEach(w -> w.generateWorld(forceLoad));
     }
 
     public void onShutdown(boolean automatic) {

@@ -17,6 +17,7 @@ public class FarmingRestriction extends JobRestriction {
     private static final Set<Material> seeds = ImmutableSet.of(
             Material.BEETROOT_SEEDS, Material.MELON_SEEDS, Material.PUMPKIN_SEEDS, Material.WHEAT_SEEDS,
             Material.COCOA, Material.COCOA_BEANS, Material.SUGAR_CANE,
+            Material.CARROT, Material.MELON_SEEDS,
 
             Material.MELON_STEM, Material.WHEAT, Material.MUSHROOM_STEM, Material.PUMPKIN_STEM
     );

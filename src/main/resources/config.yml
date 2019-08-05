@@ -204,16 +204,16 @@ jobs:
       - STONECUTTER
   - name: Enchanteur
     description: "L'enchanteur peut vendre des enchantements pour les items"
-    restrictedBlocks:
+    restrictUse:
       - ENCHANTING_TABLE
       # - ANVIL # a discuter
-    restrictedItems:
+    restrictSale:
       - BOOK
     restrictions:
       - ENCHANTING
   - name: Alchimiste
     description: "L'alchimiste confectionne et vend les potions et feux d'artifice"
-    restrictedBlocks:
+    restrictUse:
       - BREWING_STAND
     restrictCraft:
       - LINGERING_POTION
