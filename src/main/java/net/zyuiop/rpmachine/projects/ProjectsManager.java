@@ -65,6 +65,10 @@ public class ProjectsManager extends FileEntityStore<Project> implements LegalEn
 		return project == null || project.canBuild(player, location);
 	}
 
+	public boolean isProtected(Location location) {
+		return getZoneHere(location) != null;
+	}
+
 	public boolean canInteractWithBlock(Player player, Location location) {
 		return canBuild(player, location);
 	}

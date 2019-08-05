@@ -5,7 +5,6 @@ import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.PlayerData;
-import net.zyuiop.rpmachine.entities.RoleToken;
 import org.bukkit.*;
 import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.Monster;
@@ -13,20 +12,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Map;
 import java.util.UUID;
 
 public class CitiesListener implements Listener {
 
+    private static final String FIRE_STARTER_KEY = "fireStarter";
     private final CitiesManager manager;
 
     //private final HashSet<Material> checkInteract;
@@ -144,7 +142,6 @@ public class CitiesListener implements Listener {
             event.setCancelled(!manager.canBuild((Player) event.getRemover(), event.getEntity().getLocation()));
     }
 
-
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player && !(event.getEntity() instanceof Monster))
@@ -249,6 +246,35 @@ public class CitiesListener implements Listener {
         City city = manager.getPlayerCity(event.getPlayer().getUniqueId());
         if (city != null) {
             event.setFormat(ChatColor.DARK_AQUA + "[" + city.getCityName() + "]" + ChatColor.RESET + event.getFormat());
+        }
+    }
+
+    @EventHandler
+    public void onFireSpread(BlockSpreadEvent ev) {
+        if (ev.getSource().getType() == Material.FIRE) {
+            if (ev.getBlock().hasMetadata(FIRE_STARTER_KEY)) {
+                Player p = ev.getBlock().getMetadata(FIRE_STARTER_KEY).stream()
+                        .filter(r -> r.getOwningPlugin().equals(RPMachine.getInstance()))
+                        .map(r -> (Player) r.value())
+                        .findFirst()
+                        .orElse(null);
+
+                if (p == null) {
+                    ev.setCancelled(manager.isProtected(ev.getBlock().getLocation()));
+                } else {
+                    ev.setCancelled(manager.canBuild(p, ev.getBlock().getLocation()));
+                    ev.getBlock().setMetadata(FIRE_STARTER_KEY, new FixedMetadataValue(RPMachine.getInstance(), p));
+                }
+            } else {
+                ev.setCancelled(manager.isProtected(ev.getBlock().getLocation()));
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onFireStart(BlockPlaceEvent ev) {
+        if (ev.getBlock().getType() == Material.FIRE) {
+            ev.getBlock().setMetadata(FIRE_STARTER_KEY, new FixedMetadataValue(RPMachine.getInstance(), ev.getPlayer()));
         }
     }
 
