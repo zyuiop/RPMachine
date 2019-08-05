@@ -80,8 +80,14 @@ public class MultiverseWorld {
     void generateWorld(boolean forceLoad) {
         if (!worldName.equalsIgnoreCase("world")) {
             Bukkit.getLogger().info("Loading multiverse " + worldName);
-            generateChunks(getWorld(), 4000);
+
+            File f = new File(Bukkit.getWorldContainer(), worldName);
+            boolean exists = f.exists();
+
             Bukkit.createWorld(new WorldCreator(worldName));
+
+            if (!exists)
+                generateChunks(getWorld(), 4000);
 
             if (isAllowNether()) {
                 Bukkit.createWorld(new WorldCreator(worldName + "_nether").environment(World.Environment.NETHER));

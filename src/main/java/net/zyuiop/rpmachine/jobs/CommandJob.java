@@ -7,6 +7,7 @@ import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import net.zyuiop.rpmachine.shops.types.EnchantingSign;
 import net.zyuiop.rpmachine.shops.types.ItemShopSign;
+import net.zyuiop.rpmachine.shops.types.ShopAction;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -127,7 +128,7 @@ public class CommandJob extends AbstractCommand implements ConfirmationCommand {
                 // Get shops
                 List<AbstractShopSign> signs = rpMachine.getShopsManager().getPlayerShops(commandSender).stream().filter(shop -> {
                     if (shop instanceof ItemShopSign)
-                        return ((ItemShopSign) shop).getAction() == ItemShopSign.ShopAction.SELL &&
+                        return ((ItemShopSign) shop).getAction() == ShopAction.SELL &&
                                 (!rpMachine.getJobsManager().isFreeToSell(((ItemShopSign) shop).getItemType()));
                     else if (shop instanceof EnchantingSign)
                         return RPMachine.getInstance().getJobsManager().isRestrictionEnabled(JobRestrictions.ENCHANTING);

@@ -97,7 +97,8 @@ public class ItemShopSign extends AbstractShopSign {
 
         if (!(owner() instanceof AdminLegalEntity)) {
             for (; available > 0; available--) {
-                Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), getNewStack());
+                ItemStack stack = itemType.createItemStack(1);
+                Bukkit.getWorld("world").dropItemNaturally(location.getLocation(), stack);
             }
         }
 
@@ -250,17 +251,12 @@ public class ItemShopSign extends AbstractShopSign {
 
     @Override
     public String describe() {
-        String typeLine = getAction() == ItemShopSign.ShopAction.BUY ? net.md_5.bungee.api.ChatColor.RED + "Achat" : net.md_5.bungee.api.ChatColor.GREEN + "Vente";
+        String typeLine = getAction() == ShopAction.BUY ? net.md_5.bungee.api.ChatColor.RED + "Achat" : net.md_5.bungee.api.ChatColor.GREEN + "Vente";
         String size = (getAvailable() > getAmountPerPackage() ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
 
         return super.describe() + typeLine + ChatColor.YELLOW + " de lots de " + amountPerPackage + " " + itemType +
                 " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName() + ChatColor.YELLOW +
                 " (" + size + ChatColor.YELLOW + ")";
-    }
-
-    public enum ShopAction {
-        SELL,
-        BUY
     }
 
     public static class Builder extends ShopBuilder<ItemShopSign> {
