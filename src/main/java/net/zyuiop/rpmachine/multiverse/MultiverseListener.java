@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
@@ -146,6 +147,25 @@ public class MultiverseListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPigmanSpawn(CreatureSpawnEvent event) {
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NETHER_PORTAL) {
+            Location from = event.getLocation();
+
+            MultiverseWorld world = manager.getWorld(from.getWorld().getName());
+            if (world == null) {
+                return;
+            }
+
+            MultiversePortal portal = world.getPortal(from);
+            if (portal != null) {
+                RPMachine.getInstance().getLogger().info("Cancelling creature spawn due to Nether Portal");
+                event.setCancelled(true);
+            }
+        }
+
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onChangeWorld(PlayerPortalEvent event) {
         Logger l = RPMachine.getInstance().getLogger();
         l.info(event.getPlayer() + " changes world " + event.getCause());
@@ -237,12 +257,6 @@ public class MultiverseListener implements Listener {
         }
     }
 
-    private static class MultiverseException extends Exception {
-        public MultiverseException(String message) {
-            super(message);
-        }
-    }
-
     private Location rerouteMultiverse(MultiversePortal portal, Location from, Location to, @Nullable PlayerPortalEvent event) throws MultiverseException {
         MultiverseWorld target = manager.getWorld(portal.getTargetWorld());
         if (target == null || target.getWorld() == null) {
@@ -288,7 +302,6 @@ public class MultiverseListener implements Listener {
         }
 
     }
-
 
     private void generatePortal(PlayerPortalEvent event, Location opposite, MultiversePortal portal, World current, MultiverseWorld target, int playerYDiff) {
         Logger l = RPMachine.getInstance().getLogger();
@@ -379,6 +392,12 @@ public class MultiverseListener implements Listener {
 
             event.getPlayer().teleport(opposite);
         }, 5L);
+    }
+
+    private static class MultiverseException extends Exception {
+        public MultiverseException(String message) {
+            super(message);
+        }
     }
 
 

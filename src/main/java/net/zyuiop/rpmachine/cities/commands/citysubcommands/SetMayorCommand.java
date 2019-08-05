@@ -47,7 +47,6 @@ public class SetMayorCommand implements CityMemberSubCommand {
                     player.sendMessage(ChatColor.RED + "Ce joueur n'est pas citoyen de votre ville.");
                 } else {
                     city.setMayor(id);
-                    city.getCouncils().add(id);
                     player.sendMessage(ChatColor.GREEN + "Le maire a été modifié.");
                     citiesManager.saveCity(city);
                 }
