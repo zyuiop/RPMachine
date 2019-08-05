@@ -9,10 +9,13 @@ import net.zyuiop.rpmachine.entities.LegalEntityRepository;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class CitiesManager extends FileEntityStore<City> implements LegalEntityRepository<City> {
 
@@ -20,20 +23,7 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
     private ConcurrentHashMap<String, City> cities = new ConcurrentHashMap<>();
     private TreeSet<CityFloor> floors = new TreeSet<>((floor1, floor2) -> Integer.compare(floor2.getInhabitants(), floor1.getInhabitants()));
     private HashSet<UUID> bypass = new HashSet<>();
-    private int creationPrice;
-    private int increaseFactor;
-
-    public void addBypass(UUID id) {
-        bypass.add(id);
-    }
-
-    public void removeBypass(UUID id) {
-        bypass.remove(id);
-    }
-
-    public boolean isBypassing(UUID id) {
-        return bypass.contains(id);
-    }
+    private CreationPriceFunction f;
 
     public CitiesManager(RPMachine plugin) {
         super(City.class, "cities");
@@ -41,9 +31,11 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
         this.rpMachine = plugin;
         super.load(); // Load all the cities
 
+        Configuration conf = rpMachine.getConfig();
+
         // Load floors
         RPMachine.getInstance().getLogger().info("Loading floors...");
-        for (Map<?, ?> floor : rpMachine.getConfig().getMapList("floors")) {
+        for (Map<?, ?> floor : conf.getMapList("floors")) {
             String name = (String) floor.get("name");
             int inhabitants = (Integer) floor.get("inhabitants");
             int maxsurface = (Integer) floor.get("max-chunks");
@@ -55,8 +47,28 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
             plugin.getLogger().info("Loaded CityFloor " + name);
         }
 
-        creationPrice = rpMachine.getConfig().getInt("createcity.price", 500);
-        increaseFactor = rpMachine.getConfig().getInt("createcity.incrfactor", 5);
+
+        ConfigurationSection section = conf.getConfigurationSection("createcity");
+        f = CreationPriceFunctions.valueOf(
+                section.getString("function", "LINEAR")
+        ).function(section);
+
+        rpMachine.getLogger().info("City creation parameters test:");
+        for (int i = 0; i < 20; ++i) {
+            rpMachine.getLogger().info((i + 1) + "th city will cost " + f.roundedPrice(i));
+        }
+    }
+
+    public void addBypass(UUID id) {
+        bypass.add(id);
+    }
+
+    public void removeBypass(UUID id) {
+        bypass.remove(id);
+    }
+
+    public boolean isBypassing(UUID id) {
+        return bypass.contains(id);
     }
 
     public void payTaxes(boolean force) {
@@ -152,7 +164,7 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
     }
 
     public double getCreationPrice() {
-        return creationPrice + (increaseFactor * cities.size());
+        return f.roundedPrice(cities.size());
     }
 
     public void removeCity(City city) {
@@ -202,4 +214,55 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
     public void saveCity(City city) {
         super.saveEntity(city);
     }
+
+    enum CreationPriceFunctions {
+        LINEAR(c -> {
+            double p0 = c.getDouble("p0");
+            double coeff = c.getDouble("coeff");
+            return cities -> ((int) (p0 + coeff * cities));
+        }),
+        EXPONENTIAL(c -> {
+            double p0 = c.getDouble("p0");
+            double basis = c.getDouble("basis");
+            return cities -> ((int) (p0 * Math.pow(basis, cities)));
+        }),
+        SLOW_EXPONENTIAL(c -> {
+            double p0 = c.getDouble("p0");
+            double basis = c.getDouble("basis");
+            return cities -> ((int) (p0 * Math.pow(basis, Math.sqrt(cities))));
+        }),
+        QUADRATIC(c -> {
+            double p0 = c.getDouble("p0");
+            double power = c.getDouble("power");
+            return cities -> ((int) (p0 * Math.pow(cities + 1, power)));
+        }),
+        SIGMOID(c -> {
+            double ampl = c.getDouble("max");
+            double delta = c.getDouble("delta");
+            double coeff = c.getDouble("coeff");
+            return cities -> ((int) (ampl / (1 + Math.exp(-coeff * (cities - delta)))));
+        });
+
+        private final Function<ConfigurationSection, CreationPriceFunction> creator;
+
+        CreationPriceFunctions(Function<ConfigurationSection, CreationPriceFunction> creator) {
+            this.creator = creator;
+        }
+
+        public CreationPriceFunction function(ConfigurationSection s) {
+            return creator.apply(s);
+        }
+    }
+
+    public interface CreationPriceFunction {
+        final double ROUND_NEAREST = 100D;
+
+        double computePrice(int cities);
+
+        default int roundedPrice(int cities) {
+            double p = computePrice(cities) / ROUND_NEAREST;
+            return (int) (Math.round(p) * ROUND_NEAREST);
+        }
+    }
+
 }
