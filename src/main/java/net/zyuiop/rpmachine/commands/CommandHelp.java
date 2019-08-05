@@ -8,17 +8,9 @@ import org.bukkit.command.CommandSender;
 public class CommandHelp implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender s, Command command, String c, String[] strings) {
-		s.sendMessage(ChatColor.GOLD + "Bienvenue sur ce serveur RP !");
-		s.sendMessage(ChatColor.GOLD + "Toutes les informations concernant le fonctionnement du jeu se trouvent sur le forum.");
-		s.sendMessage(ChatColor.RESET + " ");
-		s.sendMessage(ChatColor.GOLD + "" + ChatColor.DARK_AQUA + "Ajouts prévus :");
-		s.sendMessage(ChatColor.AQUA + " -> Régions : unions entre villes");
-		s.sendMessage(ChatColor.RESET + " ");
-		s.sendMessage(ChatColor.GOLD + "" + ChatColor.DARK_GREEN + "Commandes :");
-		s.sendMessage(ChatColor.GREEN + "-> /city : commande de gestion de villes");
-		s.sendMessage(ChatColor.GREEN + "-> /plot : commande de gestion de parcelles");
-		s.sendMessage(ChatColor.GREEN + "-> /floors : liste les paliers de villes disponibles");
-		s.sendMessage(ChatColor.GREEN + "-> /actas : permet d'agir en tant qu'une autre entité");
+		s.sendMessage(ChatColor.GOLD + "Bienvenue sur Hystoria RP !");
+		s.sendMessage(ChatColor.GOLD + "Toutes les informations concernant le fonctionnement du jeu se trouvent sur le document suivant : " + ChatColor.DARK_AQUA + "https://docs.google.com/document/d/1xk8BwfH9Xu5cZuPDc4SZrtHEeGq8oIHw0xfiKzPqBVg/edit#heading=h.cuzj0fv05nc1");
+		s.sendMessage(ChatColor.GOLD + "Passez un agréable moment sur Hystoria !");
 
 		return true;
 	}
