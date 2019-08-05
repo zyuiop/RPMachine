@@ -1,13 +1,11 @@
-package net.zyuiop.rpmachine.shops.types;
+package net.zyuiop.rpmachine.shops.types.meta;
 
 import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
-import org.bukkit.potion.PotionEffect;
-
-import java.util.List;
 
 /**
  * @author Louis Vialar
@@ -61,7 +59,10 @@ public class PotionDataStorage implements ItemStackDataStorage {
     }
 
     @Override
-    public boolean isSameItem(ItemStack stack) {
+    public boolean isSameItem(ItemStack stack, Material shopMaterial) {
+        if (stack.getType() != shopMaterial)
+            return false; // only same type of potion
+
         ItemMeta meta = stack.getItemMeta();
 
         if (meta instanceof PotionMeta) {

@@ -443,7 +443,7 @@ database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
 multiverses:
   - name: resources
     generatePlatform: true
-    allowNether: false
+    allowNether: true
     allowEnd: false
     regenFrequency: MONTHLY
 

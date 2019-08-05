@@ -1,6 +1,10 @@
 package net.zyuiop.rpmachine.shops.types;
 
 import com.google.common.collect.ImmutableMap;
+import net.zyuiop.rpmachine.shops.types.meta.BookDataStorage;
+import net.zyuiop.rpmachine.shops.types.meta.FireworkDataStorage;
+import net.zyuiop.rpmachine.shops.types.meta.ItemStackDataStorage;
+import net.zyuiop.rpmachine.shops.types.meta.PotionDataStorage;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -14,7 +18,8 @@ public class ItemStackStorage {
             Material.POTION, PotionDataStorage.class,
             Material.LINGERING_POTION, PotionDataStorage.class,
             Material.SPLASH_POTION, PotionDataStorage.class,
-            Material.FIREWORK_ROCKET, FireworkDataStorage.class
+            Material.FIREWORK_ROCKET, FireworkDataStorage.class,
+            Material.WRITTEN_BOOK, BookDataStorage.class
     );
 
     private Material itemType;
@@ -79,11 +84,10 @@ public class ItemStackStorage {
     public boolean isItemValid(ItemStack stack) {
         if (stack == null) return false;
 
-        if (stack.getType() != itemType) return false;
+        if (dataStorage != null) return dataStorage.isSameItem(stack, itemType);
 
-        if (dataStorage != null) return dataStorage.isSameItem(stack);
-
-        return true;
+        // if we don't have datastorage we just check that we have the same item type
+        return stack.getType() == itemType;
     }
 
     public int maxAmount() {

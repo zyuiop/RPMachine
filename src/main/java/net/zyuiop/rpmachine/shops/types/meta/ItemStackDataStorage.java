@@ -1,5 +1,6 @@
-package net.zyuiop.rpmachine.shops.types;
+package net.zyuiop.rpmachine.shops.types.meta;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -25,5 +26,10 @@ public interface ItemStackDataStorage {
 
     boolean loadFromItemStack(ItemStack stack);
 
-    boolean isSameItem(ItemStack stack);
+    /**
+     * Check if the provided item is the same, making it suitable to refill the shop
+     * @param stack
+     * @return
+     */
+    boolean isSameItem(ItemStack stack, Material shopMaterial);
 }

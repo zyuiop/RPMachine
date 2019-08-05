@@ -1,15 +1,12 @@
-package net.zyuiop.rpmachine.shops.types;
+package net.zyuiop.rpmachine.shops.types.meta;
 
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
-import org.bukkit.potion.PotionEffectTypeWrapper;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,7 +59,7 @@ public class FireworkDataStorage implements ItemStackDataStorage {
     }
 
     @Override
-    public boolean isSameItem(ItemStack stack) {
+    public boolean isSameItem(ItemStack stack, Material shopMaterial) {
         ItemMeta meta = stack.getItemMeta();
 
         if (meta instanceof FireworkMeta) {

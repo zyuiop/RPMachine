@@ -1,8 +1,7 @@
 package net.zyuiop.rpmachine.json;
 
 import com.google.gson.*;
-import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
-import net.zyuiop.rpmachine.shops.types.ItemStackDataStorage;
+import net.zyuiop.rpmachine.shops.types.meta.ItemStackDataStorage;
 
 import java.lang.reflect.Type;
 
