@@ -84,5 +84,4 @@ public class PlayerListener implements Listener {
                                     stack.getType() == Material.GOLD_NUGGET);
         }
     }
-
 }

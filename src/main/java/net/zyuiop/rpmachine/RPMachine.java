@@ -8,6 +8,7 @@ import net.zyuiop.rpmachine.cities.commands.CommandRuntaxes;
 import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
+import net.zyuiop.rpmachine.common.PlayerHeadCraft;
 import net.zyuiop.rpmachine.common.PlayerListener;
 import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.entities.LegalEntity;
@@ -160,6 +161,7 @@ public class RPMachine extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SignsListener(), this);
         Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerHeadCraft(), this);
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             Bukkit.getLogger().info("Saving world...");
