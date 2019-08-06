@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.cities.data;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.cities.Line;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.StoredEntity;
@@ -63,6 +64,17 @@ public class City implements LegalEntity, StoredEntity {
 
     public Map<String, Double> getTaxesToPay() {
         return taxesToPay;
+    }
+
+    public List<Line> getBorders() {
+        List<Line> line = new ArrayList<>();
+        for (VirtualChunk vc : chunks) {
+            if (!chunks.contains(vc.add(-1, 0))) line.add(vc.line(0, 0, 0, 15));
+            if (!chunks.contains(vc.add(0, -1))) line.add(vc.line(0, 0, 15, 0));
+            if (!chunks.contains(vc.add(1, 0))) line.add(vc.line(15, 0, 15, 15));
+            if (!chunks.contains(vc.add(0, 1))) line.add(vc.line(0, 15, 15, 15));
+        }
+        return line;
     }
 
     public VirtualLocation getSpawn() {

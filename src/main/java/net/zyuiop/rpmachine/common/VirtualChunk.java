@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.common;
 
+import net.zyuiop.rpmachine.cities.Line;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 
@@ -39,6 +40,15 @@ public class VirtualChunk {
 
 	public int getZ() {
 		return z;
+	}
+
+	public VirtualChunk add(int x, int z) {
+		return new VirtualChunk(this.x + x, this.z + z);
+	}
+
+	public Line line(int startX, int startZ, int endX, int endZ) {
+		return new Line(getLocation().getBlock(startX, 64, startZ).getLocation(),
+				getLocation().getBlock(endX, 64, endZ).getLocation());
 	}
 
 	public VirtualChunk(String string) {
