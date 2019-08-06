@@ -1,12 +1,17 @@
 package net.zyuiop.rpmachine.jobs.restrictions;
 
 import net.zyuiop.rpmachine.jobs.JobRestriction;
+import org.bukkit.Bukkit;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Louis Vialar
@@ -25,22 +30,25 @@ public class EnchantingRestriction extends JobRestriction {
             return;
 
         // Is it an enchantment
-        int endSize = event.getResult().getEnchantments().size();
-        int startSize = event.getInventory().getItem(0).getEnchantments().size();
+        Map<Enchantment, Integer> e = event.getInventory().getItem(0).getEnchantments();
 
-        if (endSize > startSize) {
-            boolean hasEnchanter = false;
-            for (HumanEntity v : event.getInventory().getViewers()) {
-                if (v instanceof Player) {
-                    if (isAllowed((Player) v)) {
-                        hasEnchanter = true;
-                        break;
+        for (Map.Entry<Enchantment, Integer> entry : event.getResult().getEnchantments().entrySet()) {
+            if (!e.containsKey(entry.getKey()) || !e.get(entry.getKey()).equals(entry.getValue())) {
+                boolean hasEnchanter = false;
+                for (HumanEntity v : event.getInventory().getViewers()) {
+                    if (v instanceof Player) {
+                        if (isAllowed((Player) v)) {
+                            hasEnchanter = true;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (!hasEnchanter)
-                event.setResult(null);
+                if (!hasEnchanter)
+                    event.setResult(null);
+
+                return;
+            }
         }
     }
 }
