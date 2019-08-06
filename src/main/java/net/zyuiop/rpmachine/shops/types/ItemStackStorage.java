@@ -7,6 +7,8 @@ import net.zyuiop.rpmachine.shops.types.meta.ItemStackDataStorage;
 import net.zyuiop.rpmachine.shops.types.meta.PotionDataStorage;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Map;
 
@@ -87,6 +89,11 @@ public class ItemStackStorage {
         if (dataStorage != null) return dataStorage.isSameItem(stack, itemType);
 
         // if we don't have datastorage we just check that we have the same item type
+        ItemMeta meta = stack.getItemMeta();
+        if (meta instanceof Damageable)
+            if (((Damageable) meta).hasDamage())
+                return false;
+
         return stack.getType() == itemType;
     }
 

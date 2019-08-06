@@ -254,7 +254,7 @@ public class ItemShopSign extends AbstractShopSign {
         String typeLine = getAction() == ShopAction.BUY ? net.md_5.bungee.api.ChatColor.RED + "Achat" : net.md_5.bungee.api.ChatColor.GREEN + "Vente";
         String size = (getAvailable() > getAmountPerPackage() ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
 
-        return super.describe() + typeLine + ChatColor.YELLOW + " de lots de " + amountPerPackage + " " + itemType +
+        return super.describe() + typeLine + ChatColor.YELLOW + " de lots de " + amountPerPackage + " " + itemType.longItemName() +
                 " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName() + ChatColor.YELLOW +
                 " (" + size + ChatColor.YELLOW + ")";
     }
