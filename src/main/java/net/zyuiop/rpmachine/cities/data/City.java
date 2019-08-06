@@ -74,6 +74,7 @@ public class City implements LegalEntity, StoredEntity {
             if (!chunks.contains(vc.add(1, 0))) line.add(vc.line(15, 0, 15, 15));
             if (!chunks.contains(vc.add(0, 1))) line.add(vc.line(0, 15, 15, 15));
         }
+        Bukkit.getLogger().info(line.toString());
         return line;
     }
 
