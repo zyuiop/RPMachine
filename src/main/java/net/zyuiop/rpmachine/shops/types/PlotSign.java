@@ -222,7 +222,7 @@ public class PlotSign extends AbstractShopSign {
                         return sign;
                     }))
                     .map(sign -> {
-                        sign.citizensOnly = lines[2] != null && lines[2].equalsIgnoreCase("citziens");
+                        sign.citizensOnly = lines[2] != null && lines[2].equalsIgnoreCase("citizens");
                         sign.setOwner(tt.getTag());
 
                         return sign;
