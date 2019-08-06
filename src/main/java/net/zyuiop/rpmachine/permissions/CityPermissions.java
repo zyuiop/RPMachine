@@ -17,6 +17,7 @@ public enum CityPermissions implements DirectPermission {
     BUILD_IN_PLOTS("construire dans les parcelles des habitants"),
     BUILD_IN_EMPTY_PLOTS("construire dans les parcelles non habitées"),
     INTERACT_IN_PLOTS("interragir dans les parcelles des habitants"),
+    INTERACT_IN_EMPTY_PLOTS("interragir dans les parcelles non habitées"),
 
     // Territory
     EXPAND_CITY("agrandir la ville"),

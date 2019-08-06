@@ -278,18 +278,6 @@ public class City implements LegalEntity, StoredEntity {
         return null;
     }
 
-    public boolean canBuild(Player player, Location location) {
-        Plot plot = getPlotHere(location);
-
-        if (plot == null) {
-            return hasPermission(player, CityPermissions.BUILD_IN_CITY);
-        } else {
-            if (plot.getOwner() == null || plot.getOwner().equalsIgnoreCase(tag()))
-                return hasPermission(player, CityPermissions.BUILD_IN_EMPTY_PLOTS);
-            return hasPermission(player, CityPermissions.BUILD_IN_PLOTS) || plot.canBuild(player, location);
-        }
-    }
-
     public void pay(LegalEntity payer, double amt) {
         Double total = taxesToPay.get(payer.tag());
         if (total != null) {
@@ -368,7 +356,21 @@ public class City implements LegalEntity, StoredEntity {
             // A voir, tous les habitants de la ville peuvent-t-ils vraiment intéragir dans toutes les parcelles ?
             return inhabitants.contains(player.getUniqueId());
         } else {
+            if (plot.getOwner() == null || plot.getOwner().equalsIgnoreCase(tag()))
+                return hasPermission(player, CityPermissions.INTERACT_IN_EMPTY_PLOTS);
             return hasPermission(player, CityPermissions.INTERACT_IN_PLOTS) || plot.canBuild(player, location);
+        }
+    }
+
+    public boolean canBuild(Player player, Location location) {
+        Plot plot = getPlotHere(location);
+
+        if (plot == null) {
+            return hasPermission(player, CityPermissions.BUILD_IN_CITY);
+        } else {
+            if (plot.getOwner() == null || plot.getOwner().equalsIgnoreCase(tag()))
+                return hasPermission(player, CityPermissions.BUILD_IN_EMPTY_PLOTS);
+            return hasPermission(player, CityPermissions.BUILD_IN_PLOTS) || plot.canBuild(player, location);
         }
     }
 

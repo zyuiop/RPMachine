@@ -47,6 +47,9 @@ public class InfoCommand implements SubCommand {
                 player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs");
                 player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " " + RPMachine.getCurrencyName());
 
+                if (plot.isDueForDeletion())
+                    player.sendMessage(ChatColor.YELLOW + "Suppression prévue le : " + ChatColor.RED + plot.getDeletionDateString());
+
                 LegalEntity proprio = plot.owner();
                 if (proprio == null) {
                     player.sendMessage(ChatColor.YELLOW + "Propriétaire : " + ChatColor.RED + "Aucun");

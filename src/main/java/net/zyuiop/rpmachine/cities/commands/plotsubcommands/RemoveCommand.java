@@ -63,8 +63,10 @@ public class RemoveCommand implements CityMemberSubCommand {
                 }
 
                 if (plot.getOwner() != null && ! city.getPoliticalSystem().allowInstantPlotDelete()) {
-                    plot.setForDeletion();
-                    plot.sendDeletionWarning(city.getCityName());
+                    if (!plot.isDueForDeletion()) {
+                        plot.setForDeletion();
+                        plot.sendDeletionWarning(city.getCityName());
+                    }
                     player.sendMessage(ChatColor.GREEN + "La parcelle sera supprimée le " + plot.getDeletionDate());
                 } else {
                     city.removePlot(plot.getPlotName());

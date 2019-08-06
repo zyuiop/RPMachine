@@ -56,7 +56,7 @@ public class MembersCommand implements SubCommand {
         RoleToken tt = RPMachine.getPlayerRoleToken(player);
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
-        } else if (!city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) && !plot.getOwner().equals(tt)) {
+        } else if (!city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) && !plot.ownerTag().equals(tt.getTag())) {
             player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
         } else {
             UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[3]);
