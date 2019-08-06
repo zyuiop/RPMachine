@@ -48,11 +48,16 @@ public class LeaveCommand implements SubCommand {
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
             return true;
-        } else if (!plot.getOwner().equals(RPMachine.getPlayerRoleToken(player))) {
+        } else if (!plot.ownerTag().equals(RPMachine.getPlayerRoleToken(player).getTag())) {
             player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
             return true;
         } else {
-            plot.setOwner((String) null);
+            if (plot.isDueForDeletion()) {
+                city.removePlot(plot.getPlotName());
+            } else {
+                plot.setOwner((String) null);
+            }
+
             citiesManager.saveCity(city);
             player.sendMessage(ChatColor.GREEN + "Vous n'êtes plus propriétaire de cette parcelle.");
             return true;

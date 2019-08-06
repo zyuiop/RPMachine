@@ -35,8 +35,7 @@ public class PermissionsCommand implements CityMemberSubCommand {
 
         player.sendMessage(ChatColor.GREEN + "Modification des permissions de " + ChatColor.YELLOW + name);
         new CitiesPermGui(player, id, name, city).open();
-            return true;
-
+        return true;
     }
 
     @Override

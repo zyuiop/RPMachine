@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.shops;
 
+import com.sun.scenario.effect.Crop;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import org.bukkit.block.Block;
@@ -57,13 +58,23 @@ public class SignsListener implements Listener {
         if (isSign(event.getBlock())) {
             tryBreakSign(event, event.getBlock());
         } else {
+            // Above
+            Block top = event.getBlock().getRelative(BlockFace.UP);
+            if (top.getBlockData() instanceof Sign) {
+                tryBreakSign(event, top);
+            }
+
             for (BlockFace face : BlockFace.values()) {
                 Block block = event.getBlock().getRelative(face);
                 if (block.isEmpty())
                     continue;
 
-                if (isSign(block)) {
-                    tryBreakSign(event, block);
+                BlockData data = block.getBlockData();
+                if (data instanceof WallSign) {
+                    BlockFace signFacing = ((WallSign) data).getFacing();
+                    if (signFacing == face) {
+                        tryBreakSign(event, block);
+                    }
                 }
             }
         }

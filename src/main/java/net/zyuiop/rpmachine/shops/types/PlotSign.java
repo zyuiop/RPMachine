@@ -199,6 +199,8 @@ public class PlotSign extends AbstractShopSign {
                             Plot plot = city.getPlotHere(sign.getLocation());
                             if (plot == null) {
                                 throw new SignParseError("Le panneau ne se trouve pas dans une parcelle");
+                            } else if (plot.isDueForDeletion()) {
+                                throw new SignPermissionError("Vous ne pouvez pas vendre une parcelle qui est en cours de suppression");
                             }
 
                             if (plot.getOwner() != null && !plot.getOwner().equals(tt.getTag())) {

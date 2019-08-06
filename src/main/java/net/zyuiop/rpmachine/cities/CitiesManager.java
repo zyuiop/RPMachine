@@ -7,6 +7,7 @@ import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -62,6 +63,9 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
         for (int i = 0; i < 20; ++i) {
             rpMachine.getLogger().info((i + 1) + "th city will cost " + f.roundedPrice(i));
         }
+
+        Bukkit.getScheduler().runTaskTimer(RPMachine.getInstance(), () -> cities.values().forEach(City::cleanPlots), 60 * 20, 60 * 20);
+        Bukkit.getScheduler().runTaskTimer(RPMachine.getInstance(), () -> cities.values().forEach(City::sendWarnings), 60 * 20 * 5, 60 * 20 * 10);
     }
 
     public void addBypass(UUID id) {

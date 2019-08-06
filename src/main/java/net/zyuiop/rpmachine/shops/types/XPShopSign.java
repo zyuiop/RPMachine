@@ -62,6 +62,15 @@ public class XPShopSign extends AbstractShopSign {
         super.breakSign();
     }
 
+    @Override
+    public boolean breakSign(Player player) {
+        boolean succ = super.breakSign(player);
+
+        if (succ)
+            player.giveExp(points * available);
+        return succ;
+    }
+
     void removeXP(Player player) {
         player.giveExp(-points);
     }
@@ -72,7 +81,7 @@ public class XPShopSign extends AbstractShopSign {
             return;
         }
 
-        if (action == ShopAction.SELL && event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().getTotalExperience() > this.points) {
+        if (action == ShopAction.SELL && event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getPlayer().getTotalExperience() > this.points) {
             available += 1;
             removeXP(event.getPlayer());
 

@@ -3,11 +3,14 @@ package net.zyuiop.rpmachine.cities.data;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.Line;
+import net.zyuiop.rpmachine.cities.politics.PoliticalSystem;
+import net.zyuiop.rpmachine.cities.politics.StateOfRights;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.Ownable;
+import net.zyuiop.rpmachine.json.JsonExclude;
 import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import net.zyuiop.rpmachine.permissions.Permission;
@@ -32,6 +35,9 @@ public class City implements LegalEntity, StoredEntity {
     private VirtualLocation spawn;
     private String fileName;
     private CityTaxPayer taxPayer = new CityTaxPayer(); // loaded by Gson
+
+    @JsonExclude
+    private PoliticalSystem politicalSystem = StateOfRights.INSTANCE; // todo: make possible to change
 
     private double taxes = 0;
     private double money = 0;
@@ -278,6 +284,8 @@ public class City implements LegalEntity, StoredEntity {
         if (plot == null) {
             return hasPermission(player, CityPermissions.BUILD_IN_CITY);
         } else {
+            if (plot.getOwner() == null || plot.getOwner().equalsIgnoreCase(tag()))
+                return hasPermission(player, CityPermissions.BUILD_IN_EMPTY_PLOTS);
             return hasPermission(player, CityPermissions.BUILD_IN_PLOTS) || plot.canBuild(player, location);
         }
     }
@@ -321,6 +329,23 @@ public class City implements LegalEntity, StoredEntity {
                     ownerData.setLastTaxes(getCityName(), new Date());
                 }
             }
+        }
+    }
+
+    public void cleanPlots() {
+        Date now = new Date();
+        Set<String> toDelete = plots.entrySet().stream().filter(p -> p.getValue().isDueForDeletion() && p.getValue().getDeletionDate().before(now)).map(Map.Entry::getKey).collect(Collectors.toSet());
+        if (!toDelete.isEmpty()) {
+            RPMachine.getInstance().getLogger().info("City " + cityName + " : cleaning empty plots " + toDelete.toString());
+            toDelete.forEach(plots::remove);
+            save();
+        }
+    }
+
+    public void sendWarnings() {
+        Set<Plot> toDelete = plots.values().stream().filter(Plot::isDueForDeletion).collect(Collectors.toSet());
+        if (!toDelete.isEmpty()) {
+            toDelete.forEach(p -> p.sendDeletionWarning(cityName));
         }
     }
 
@@ -383,6 +408,9 @@ public class City implements LegalEntity, StoredEntity {
     }
 
     public boolean hasPermission(UUID player, @Nonnull Permission permission) {
+        if (politicalSystem.isRestricted(permission))
+            return false;
+
         if (mayor.equals(player)) {
             return true; // Mayor has all permissions on all city properties
         } else {
@@ -391,6 +419,10 @@ public class City implements LegalEntity, StoredEntity {
             }
             return false;
         }
+    }
+
+    public PoliticalSystem getPoliticalSystem() {
+        return politicalSystem;
     }
 
     @Override
