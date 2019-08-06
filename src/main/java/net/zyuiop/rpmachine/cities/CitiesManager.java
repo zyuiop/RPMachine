@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.cities;
 
+import com.google.common.collect.ImmutableSet;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.data.CityFloor;
@@ -18,6 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public class CitiesManager extends FileEntityStore<City> implements LegalEntityRepository<City> {
+    public static final Set<ChatColor> ALLOWED_COLORS = ImmutableSet.of(
+            ChatColor.YELLOW, ChatColor.DARK_AQUA, ChatColor.AQUA, ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE, ChatColor.DARK_GRAY, ChatColor.GRAY,
+            ChatColor.BLUE, ChatColor.GOLD
+    );
 
     private final RPMachine rpMachine;
     private ConcurrentHashMap<String, City> cities = new ConcurrentHashMap<>();
@@ -197,6 +202,16 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 
     @Override
     protected void loadedEntity(City entity) {
+        if (entity.getChatColor() == null) {
+            // Pick random
+            Random random = new Random();
+            int index = random.nextInt(ALLOWED_COLORS.size());
+            ChatColor color = ALLOWED_COLORS.toArray(new ChatColor[ALLOWED_COLORS.size()])[index];
+
+            entity.setChatColor(color);
+            saveCity(entity);
+        }
+
         cities.put(entity.getCityName().toLowerCase(), entity);
     }
 

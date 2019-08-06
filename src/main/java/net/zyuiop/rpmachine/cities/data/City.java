@@ -41,6 +41,7 @@ public class City implements LegalEntity, StoredEntity {
     private double plotSellTaxRate = 0;
     private double vat = 0;
     private UUID mayor;
+    private ChatColor chatColor;
 
     private boolean requireInvite;
 
@@ -465,6 +466,14 @@ public class City implements LegalEntity, StoredEntity {
             councils.get(target).remove(permission);
             save();
         }
+    }
+
+    public ChatColor getChatColor() {
+        return chatColor;
+    }
+
+    public void setChatColor(ChatColor chatColor) {
+        this.chatColor = chatColor;
     }
 
     public static class CityTaxPayer {

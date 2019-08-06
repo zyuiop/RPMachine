@@ -245,7 +245,7 @@ public class CitiesListener implements Listener {
     public void onChat(AsyncPlayerChatEvent event) {
         City city = manager.getPlayerCity(event.getPlayer().getUniqueId());
         if (city != null) {
-            event.setFormat(ChatColor.DARK_AQUA + "[" + city.getCityName() + "]" + ChatColor.RESET + event.getFormat());
+            event.setFormat(city.getChatColor() + "[" + city.getCityName() + "]" + ChatColor.RESET + event.getFormat());
         }
     }
 
