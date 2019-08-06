@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class SetChatColorCommand implements CityMemberSubCommand {
@@ -55,5 +56,10 @@ public class SetChatColorCommand implements CityMemberSubCommand {
             }
             return true;
         }
+    }
+
+    @Override
+    public List<String> tabComplete(Player player, String[] args) {
+        return args.length > 0 ? tabCompleteHelper(args[0], CitiesManager.ALLOWED_COLORS.stream().map(ChatColor::name).collect(Collectors.toList())) : null;
     }
 }
