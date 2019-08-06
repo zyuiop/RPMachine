@@ -27,7 +27,17 @@ public class MultiverseManager {
                 boolean allowEnd = (Boolean) map.get("allowEnd");
                 RegenFrequency regenFrequency = RegenFrequency.valueOf((String) map.get("regenFrequency"));
 
-                worlds.put(name, new MultiverseWorld(name, genPlatform, allowNether, allowEnd, regenFrequency));
+                MultiverseWorld w = new MultiverseWorld(name, genPlatform, allowNether, allowEnd, regenFrequency);
+                if (map.containsKey("forceLoad"))
+                    w.setForceLoad((Boolean) map.get("forceLoad"));
+
+                if (map.containsKey("forceLoadArea"))
+                    w.setLoadSize((Integer) map.get("forceLoadArea"));
+
+                if (map.containsKey("loadSpeed"))
+                    w.setLoadSpeed((Integer) map.get("loadSpeed"));
+
+                worlds.put(name, w);
                 RPMachine.getInstance().getLogger().info("Loaded multiverse config " + name + " " + regenFrequency);
             }
         }
@@ -44,8 +54,8 @@ public class MultiverseManager {
         new ForceRegenCommand(this); // Init portal list
     }
 
-    public void generateWorlds(boolean forceLoad) {
-        worlds.values().forEach(w -> w.generateWorld(forceLoad));
+    public void generateWorlds() {
+        worlds.values().forEach(MultiverseWorld::generateWorld);
     }
 
     public void onShutdown(boolean automatic) {

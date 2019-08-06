@@ -33,6 +33,9 @@ public class MultiverseWorld {
     private final List<MultiversePortal> portals = new ArrayList<>();
     private boolean regenStarted = false;
     private boolean forcedRegen = false;
+    private boolean forceLoad = false;
+    private int loadSize = 2000;
+    private int loadSpeed = 150;
 
     public MultiverseWorld(String worldName, boolean allowGeneration, boolean allowNether, boolean allowEnd, MultiverseManager.RegenFrequency frequency) {
         this.worldName = worldName;
@@ -40,6 +43,18 @@ public class MultiverseWorld {
         this.allowNether = allowNether;
         this.allowEnd = allowEnd;
         this.frequency = frequency;
+    }
+
+    public void setForceLoad(boolean forceLoad) {
+        this.forceLoad = forceLoad;
+    }
+
+    public void setLoadSize(int loadSize) {
+        this.loadSize = loadSize;
+    }
+
+    public void setLoadSpeed(int loadSpeed) {
+        this.loadSpeed = loadSpeed;
     }
 
     public String getWorldName() {
@@ -77,7 +92,7 @@ public class MultiverseWorld {
         portals.remove(nPortal);
     }
 
-    void generateWorld(boolean forceLoad) {
+    void generateWorld() {
         if (!worldName.equalsIgnoreCase("world")) {
             Bukkit.getLogger().info("Loading multiverse " + worldName);
 
@@ -86,8 +101,8 @@ public class MultiverseWorld {
 
             Bukkit.createWorld(new WorldCreator(worldName));
 
-            if (!exists)
-                generateChunks(getWorld(), 4000);
+            if (!exists || forceLoad)
+                generateChunks(getWorld(), loadSize);
 
             if (isAllowNether()) {
                 Bukkit.createWorld(new WorldCreator(worldName + "_nether").environment(World.Environment.NETHER));
@@ -97,30 +112,28 @@ public class MultiverseWorld {
                 Bukkit.createWorld(new WorldCreator(worldName + "_the_end").environment(World.Environment.THE_END));
             }
         }
-
-
-        if (forceLoad) {
-            generateChunks(getWorld(), 4000);
-        }
     }
 
     void generateChunks(World world, int genbounds) {
+        RPMachine.getInstance().getLogger().info("Generating " + world + " " + genbounds + "x" + genbounds + " at " + loadSpeed + " per second");
+
         new BukkitRunnable() {
             private int todo = (genbounds * genbounds)/(16*16);
             private int x = -(genbounds/2);
             private int z = -(genbounds/2);
             public  int lastShow = -1;
             public  int numberChunk = 0;
+            public int perTick = loadSpeed;
 
             @Override
             public void run() {
                 int i = 0;
-                while (i < 250) {
+                while (i < perTick) {
                     world.getChunkAt(world.getBlockAt(x, 64, z)).load(true);
                     int percentage = (numberChunk * 100 / todo);
                     if (percentage > lastShow) {
                         lastShow = percentage;
-                        Bukkit.getLogger().info("Generated map " + world.getName() + ": " + percentage + " % (last coords: " + x + " " + z + ")" );
+                        Bukkit.getLogger().info("Generated map " + world.getName() + ": " + percentage + " % (last coords: " + x + " " + z + " -- chunk " + numberChunk + " out of " + todo + ") " );
                     }
 
                     z+=16;

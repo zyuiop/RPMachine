@@ -170,8 +170,7 @@ public class RPMachine extends JavaPlugin {
         }, 20 * 60, 20 * 20 * 60);
 
         // Create resources world
-        boolean forceGen = getConfig().getBoolean("forceGen", false);
-        this.multiverseManager.generateWorlds(forceGen);
+        this.multiverseManager.generateWorlds();
 
         scheduleReboot();
 
