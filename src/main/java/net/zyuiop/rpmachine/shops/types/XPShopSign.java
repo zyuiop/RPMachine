@@ -24,6 +24,7 @@ public class XPShopSign extends AbstractShopSign {
     private ShopAction action;
     private int points;
     private int available;
+    private int maxCapacity = -1;
 
     public XPShopSign(Location location) {
         super(location);
@@ -107,10 +108,15 @@ public class XPShopSign extends AbstractShopSign {
         RoleToken token = RPMachine.getPlayerRoleToken(player);
 
         if (action == ShopAction.BUY) {
-            ItemStack click = event.getItem();
             if (player.getTotalExperience() >= points) {
+                if (available > maxCapacity) {
+                    player.sendMessage(ChatColor.RED + "La capacité maximale du shop est atteinte.");
+                    return;
+                }
+
                 if (owner().transfer(price, token.getLegalEntity())) {
                     Messages.creditEntity(player, token.getLegalEntity(), price, "vente de " + points + " XP");
+                    Messages.debit(owner(), price, "achat automatique de " + points + " XP");
                     removeXP(event.getPlayer());
                     available += 1;
                 } else {
@@ -131,6 +137,8 @@ public class XPShopSign extends AbstractShopSign {
             if (token.getLegalEntity().withdrawMoney(price)) {
                 creditToOwner();
                 Messages.debitEntity(player, token.getLegalEntity(), price, "achat de " + points + " XP");
+                Messages.credit(owner(), price, "vente automatique de " + points + " XP");
+
                 available -= 1;
                 player.giveExp(points);
             } else {
@@ -152,7 +160,7 @@ public class XPShopSign extends AbstractShopSign {
     @Override
     public String describe() {
         String typeLine = action == ShopAction.BUY ? net.md_5.bungee.api.ChatColor.RED + "Achat" : net.md_5.bungee.api.ChatColor.GREEN + "Vente";
-        String size = (getAvailable() > 0 ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
+        String size = (((getAvailable() > 0 && action == ShopAction.SELL) || (getAvailable() > maxCapacity && action == ShopAction.BUY)) ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
 
         return super.describe() + typeLine + ChatColor.YELLOW + " de lots de " + this.points + " XP" +
                 " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName() + ChatColor.YELLOW +
@@ -166,6 +174,7 @@ public class XPShopSign extends AbstractShopSign {
             player.sendMessage(ChatColor.AQUA + " - Prix par lot");
             player.sendMessage(ChatColor.AQUA + " - Pts d'XP par lot");
             player.sendMessage(ChatColor.AQUA + " - Achat ou Vente");
+            player.sendMessage(ChatColor.GRAY + "(protip: pour limiter la capacité maximale, indiquez \"achat,<nb max>\"");
         }
 
         @Override
@@ -193,11 +202,20 @@ public class XPShopSign extends AbstractShopSign {
                         return sign;
                     }))
                     .flatMap(sign -> Optional.ofNullable(lines[3]).map(action -> {
-                        if (action.equalsIgnoreCase("achat") || action.equalsIgnoreCase("buy")) {
+                        if (action.toLowerCase().startsWith("achat")) {
                             if (!tt.hasDelegatedPermission(ShopPermissions.CREATE_BUY_SHOPS))
                                 throw new SignPermissionError("Impossible de créer un shop de vente.");
 
+                            String[] parts = action.split(",");
                             sign.action = ShopAction.BUY;
+
+                            if (parts.length > 0) {
+                                try {
+                                    sign.maxCapacity = Integer.parseInt(parts[1].trim()) / sign.points;
+                                } catch (NumberFormatException ignored) {
+                                    throw new SignParseError("Quantité max invalide");
+                                }
+                            }
                         } else if (action.equalsIgnoreCase("vente") || action.equalsIgnoreCase("sell")) {
                             if (!tt.hasDelegatedPermission(ShopPermissions.CREATE_SELL_SHOPS))
                                 throw new SignPermissionError("Impossible de créer un shop de vente.");
