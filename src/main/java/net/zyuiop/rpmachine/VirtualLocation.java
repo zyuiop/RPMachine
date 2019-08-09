@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class VirtualLocation {
+	private String world = "world";
 	private int x;
 	private int y;
 	private int z;
@@ -13,13 +14,14 @@ public class VirtualLocation {
 	}
 
 	public VirtualLocation(Location loc) {
+		world = loc.getWorld().getName();
 		setX(loc.getBlockX());
 		setY(loc.getBlockY());
 		setZ(loc.getBlockZ());
 	}
 
 	public Location getLocation() {
-		return new Location(Bukkit.getWorld("world"), x, y, z);
+		return new Location(Bukkit.getWorld(world), x, y, z);
 	}
 
 	public void setX(int x) {

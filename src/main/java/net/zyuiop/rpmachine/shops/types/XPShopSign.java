@@ -209,7 +209,7 @@ public class XPShopSign extends AbstractShopSign {
                             String[] parts = action.split(",");
                             sign.action = ShopAction.BUY;
 
-                            if (parts.length > 0) {
+                            if (parts.length > 1) {
                                 try {
                                     sign.maxCapacity = Integer.parseInt(parts[1].trim()) / sign.points;
                                 } catch (NumberFormatException ignored) {

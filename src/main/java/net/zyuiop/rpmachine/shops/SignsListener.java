@@ -18,9 +18,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class SignsListener implements Listener {
     @EventHandler
     public void onSignPlace(SignChangeEvent event) {
-        if (!event.getPlayer().getWorld().getName().equals("world"))
-            return;
-
         RPMachine.getInstance().getShopsManager().buildShop(event);
     }
 

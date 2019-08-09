@@ -69,6 +69,7 @@ public class CreateCityCommand implements SubCommand, ConfirmationCommand {
                         city.setTpTax(1);
                         city.setPlotSellTaxRate(0.2);
                         city.setJoinTax(0);
+                        city.creditMoney(amt * 0.9); // Creation amount minus 10% TAX
                         city.setSpawn(null);
                         boolean result = citiesManager.createCity(city);
                         if (result) {

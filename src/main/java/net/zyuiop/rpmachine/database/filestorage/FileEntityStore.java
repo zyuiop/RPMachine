@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.database.filestorage;
 
+import com.google.gson.JsonSyntaxException;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.json.Json;
@@ -8,6 +9,7 @@ import org.bukkit.Bukkit;
 
 import java.io.*;
 import java.nio.file.NoSuchFileException;
+import java.util.logging.Level;
 
 /**
  * @author Louis Vialar
@@ -52,6 +54,8 @@ public abstract class FileEntityStore<T extends StoredEntity> {
                 RPMachine.getInstance().getLogger().info("Loaded " + prefix + " " + file.getName());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
+            } catch (JsonSyntaxException e) {
+                RPMachine.getInstance().getLogger().log(Level.SEVERE, "Cannot load " + file.getName(), e);
             }
         }
     }

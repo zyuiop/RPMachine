@@ -206,7 +206,7 @@ public class ItemShopSign extends AbstractShopSign {
 
             ItemStack click = event.getItem();
             if (isItemValid(click) && click.getAmount() >= amountPerPackage) {
-                if (available + amountPerPackage > maxCapacity) {
+                if (available + amountPerPackage > maxCapacity && maxCapacity > 0) {
                     player.sendMessage(ChatColor.RED + "La capacité maximale du shop est atteinte.");
                     return;
                 }
@@ -260,7 +260,7 @@ public class ItemShopSign extends AbstractShopSign {
     @Override
     public String describe() {
         String typeLine = getAction() == ShopAction.BUY ? net.md_5.bungee.api.ChatColor.RED + "Achat" : net.md_5.bungee.api.ChatColor.GREEN + "Vente";
-        String size = (((getAvailable() > getAmountPerPackage() && getAction() == ShopAction.SELL) || (getAvailable() + getAmountPerPackage() > maxCapacity && getAction() == ShopAction.BUY)) ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
+        String size = (((getAvailable() > getAmountPerPackage() && getAction() == ShopAction.SELL) || (getAvailable() + getAmountPerPackage() > maxCapacity && maxCapacity > 0 && getAction() == ShopAction.BUY)) ? net.md_5.bungee.api.ChatColor.GREEN : net.md_5.bungee.api.ChatColor.RED) + "" + getAvailable() + " en stock";
 
         return super.describe() + typeLine + ChatColor.YELLOW + " de lots de " + amountPerPackage + " " + itemType.longItemName() +
                 " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName() + ChatColor.YELLOW +
@@ -310,7 +310,7 @@ public class ItemShopSign extends AbstractShopSign {
                             String[] parts = action.split(",");
                             sign.action = ShopAction.BUY;
 
-                            if (parts.length > 0) {
+                            if (parts.length > 1) {
                                 try {
                                     sign.maxCapacity = Integer.parseInt(parts[1].trim());
                                 } catch (NumberFormatException ignored) {
