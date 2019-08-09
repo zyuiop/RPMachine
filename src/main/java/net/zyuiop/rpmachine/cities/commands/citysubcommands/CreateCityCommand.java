@@ -69,7 +69,6 @@ public class CreateCityCommand implements SubCommand, ConfirmationCommand {
                         city.setTpTax(1);
                         city.setPlotSellTaxRate(0.2);
                         city.setJoinTax(0);
-                        city.creditMoney(amt * 0.9); // Creation amount minus 10% TAX
                         city.setSpawn(null);
                         boolean result = citiesManager.createCity(city);
                         if (result) {
@@ -79,6 +78,7 @@ public class CreateCityCommand implements SubCommand, ConfirmationCommand {
                                 player.sendMessage(ChatColor.GRAY + "L'Histoire de la ville de " + city.shortDisplayable() + ChatColor.GRAY + " commence ce jour... Que le sort soit avec elle !");
                             }
                             Messages.debit(player, amt, "création de ville");
+                            city.creditMoney(amt * 0.9); // Creation amount minus 10% TAX
                         } else {
                             data.creditMoney(amt);
                             player.sendMessage(ChatColor.RED + "Une erreur s'est produite.");
