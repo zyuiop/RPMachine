@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.shops.types.meta;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +20,7 @@ public class PotionDataStorage implements ItemStackDataStorage {
         String longPrefix = potionType.isExtended() ? "L " : "";
         String upSuffix = potionType.isUpgraded() ? " II" : "";
 
-        return longPrefix + potionType.getType().name() + upSuffix;
+        return StringUtils.abbreviateMiddle(longPrefix + potionType.getType().name() + upSuffix, "...", 17);
     }
 
     @Override

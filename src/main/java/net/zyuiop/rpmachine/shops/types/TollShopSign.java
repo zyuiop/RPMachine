@@ -222,9 +222,9 @@ public class TollShopSign extends AbstractShopSign {
                 return;
 
             if (token.getLegalEntity().withdrawMoney(price)) {
-                creditToOwner();
+                double toOwner = creditToOwner();
                 Messages.debitEntity(player, token.getLegalEntity(), price, "péage");
-
+                Messages.credit(owner(), toOwner, "péage automatique");
                 player.playSound(getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
                 door.open();
 

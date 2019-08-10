@@ -135,9 +135,9 @@ public class XPShopSign extends AbstractShopSign {
             }
 
             if (token.getLegalEntity().withdrawMoney(price)) {
-                creditToOwner();
+                double toOwner = creditToOwner();
                 Messages.debitEntity(player, token.getLegalEntity(), price, "achat de " + points + " XP");
-                Messages.credit(owner(), price, "vente automatique de " + points + " XP");
+                Messages.credit(owner(), toOwner, "vente automatique de " + points + " XP");
 
                 available -= 1;
                 player.giveExp(points);

@@ -7,6 +7,7 @@ import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -87,9 +88,10 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
         return RPMachine.getInstance().getCitiesManager().getCityHere(location.getLocation().getChunk());
     }
 
-    protected void creditToOwner() {
+    protected double creditToOwner() {
         double toThePlayer = takeVat();
         owner().creditMoney(toThePlayer);
+        return toThePlayer;
     }
 
     protected double takeVat() {
@@ -105,6 +107,7 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
         double forThePlayer = price - forTheCity;
 
         city.creditMoney(forTheCity);
+        Messages.credit(city, forTheCity, "TVA automatique");
 
         return forThePlayer;
     }
