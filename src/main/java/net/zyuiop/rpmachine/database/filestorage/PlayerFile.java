@@ -11,6 +11,7 @@ import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 /**
  * @author zyuiop
@@ -60,6 +61,11 @@ public class PlayerFile implements PlayerData {
 	public void setHome(VirtualLocation home) {
 		data.set("rp.home", home.toString());
 		save();
+	}
+
+	@Override
+	public boolean canActAs(Player p) {
+		return p.getUniqueId().equals(getUuid());
 	}
 
 	@Override

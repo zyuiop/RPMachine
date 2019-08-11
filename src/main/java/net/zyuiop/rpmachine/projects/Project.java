@@ -143,6 +143,11 @@ public class Project extends Plot implements LegalEntity, StoredEntity {
         return unpaidTaxes;
     }
 
+    @Override
+    public boolean canActAs(Player p) {
+        return canActAsProject(p);
+    }
+
     public void setUnpaidTaxes(Map<String, Double> unpaidTaxes) {
         this.unpaidTaxes = unpaidTaxes;
     }

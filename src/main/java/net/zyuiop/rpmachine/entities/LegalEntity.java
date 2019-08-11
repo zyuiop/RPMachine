@@ -13,63 +13,67 @@ import java.util.stream.Collectors;
 
 /**
  * A legal entity is an abstraction for anything that can own goods, lands, shops, pay taxes, ...
+ *
  * @author zyuiop
  */
 public interface LegalEntity extends AccountHolder {
-	void setUnpaidTaxes(String city, double amount);
+    void setUnpaidTaxes(String city, double amount);
 
-	double getUnpaidTaxes(String city);
+    double getUnpaidTaxes(String city);
 
-	void setLastTaxes(String city, Date date);
+    void setLastTaxes(String city, Date date);
 
-	Date getLastTaxes(String city);
+    Date getLastTaxes(String city);
 
-	Map<String, Double> getUnpaidTaxes();
+    Map<String, Double> getUnpaidTaxes();
 
-	/**
-	 * Check if the given player has the right to execute the given command as the current taxpayer
-	 * @param player the player to check
-	 * @param permission the permission to check
-	 * @return true if the command is allowed, false if not
-	 */
-	boolean hasDelegatedPermission(@Nonnull Player player, @Nonnull DelegatedPermission permission);
+    boolean canActAs(Player p);
 
-	default String tag() {
-		LegalEntityType type = LegalEntityType.get(this);
-		String tagEnd = type.holder().repository.get().getTag(this);
+    /**
+     * Check if the given player has the right to execute the given command as the current taxpayer
+     *
+     * @param player     the player to check
+     * @param permission the permission to check
+     * @return true if the command is allowed, false if not
+     */
+    boolean hasDelegatedPermission(@Nonnull Player player, @Nonnull DelegatedPermission permission);
 
-		return type.name() + "::" + tagEnd;
-	}
+    default String tag() {
+        LegalEntityType type = LegalEntityType.get(this);
+        String tagEnd = type.holder().repository.get().getTag(this);
 
-	static LegalEntity getEntity(@Nullable String tag) {
-		if (tag == null)
-			return null;
+        return type.name() + "::" + tagEnd;
+    }
 
-		String[] parts = tag.split("::");
-		LegalEntityType type = LegalEntityType.valueOf(parts[0]);
-		return type.holder().repository.get().findEntity(StringUtils.join(parts, "::", 1, parts.length));
-	}
+    static LegalEntity getEntity(@Nullable String tag) {
+        if (tag == null)
+            return null;
 
-	/**
-	 * Returns a description of this entity
-	 */
-	String displayable();
+        String[] parts = tag.split("::");
+        LegalEntityType type = LegalEntityType.valueOf(parts[0]);
+        return type.holder().repository.get().findEntity(StringUtils.join(parts, "::", 1, parts.length));
+    }
 
-	/**
-	 * Returns a very short (<= 16 c) or this entity
-	 */
-	String shortDisplayable();
+    /**
+     * Returns a description of this entity
+     */
+    String displayable();
 
-	/**
-	 * Returns a list of players that can administrate this entity
-	 */
-	Set<UUID> getAdministrators();
+    /**
+     * Returns a very short (<= 16 c) or this entity
+     */
+    String shortDisplayable();
 
-	default Set<Player> getOnlineAdministrators() {
-		return getAdministrators().stream()
-				.map(Bukkit::getPlayer)
-				.filter(Objects::nonNull)
-				.filter(OfflinePlayer::isOnline)
-				.collect(Collectors.toSet());
-	}
+    /**
+     * Returns a list of players that can administrate this entity
+     */
+    Set<UUID> getAdministrators();
+
+    default Set<Player> getOnlineAdministrators() {
+        return getAdministrators().stream()
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .filter(OfflinePlayer::isOnline)
+                .collect(Collectors.toSet());
+    }
 }

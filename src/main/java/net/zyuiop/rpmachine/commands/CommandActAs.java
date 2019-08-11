@@ -1,93 +1,50 @@
 package net.zyuiop.rpmachine.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.entities.AdminLegalEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.LegalEntityType;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author zyuiop
  */
-public class CommandActAs extends CompoundCommand {
-	public CommandActAs() {
-		super("actas", null);
-
-		registerSubCommand(LegalEntityType.PLAYER, (player, src) -> Optional.of(RPMachine.database().getPlayerData(player.getUniqueId())), "me");
-
-		registerSubCommand(LegalEntityType.CITY, "",
-				p -> RPMachine.getInstance().getCitiesManager().getPlayerCity(p) != null,
-				(p, opt) -> Optional.ofNullable(RPMachine.getInstance().getCitiesManager().getPlayerCity(p)),
-				(p, city) -> city.canActAs(p),
-				"city");
-
-		registerSubCommand(LegalEntityType.PROJECT, "<project>",
-				p -> true,
-				(p, opt) -> opt.flatMap((String name) -> Optional.ofNullable(RPMachine.getInstance().getProjectsManager().getZone(name))),
-				(p, project) -> project.canActAsProject(p),
-				"project");
-
-		registerSubCommand(LegalEntityType.ADMIN, "",
-				p -> p.hasPermission("actas.actAsAdmin"),
-				(p, opt) -> Optional.of(AdminLegalEntity.INSTANCE),
-				(p, project) -> true,
-				"admin");
-	}
-
-    private <T extends LegalEntity> void registerSubCommand(LegalEntityType type,
-                                                            BiFunction<Player, Optional<String>, Optional<T>> entityFetcher,
-                                                            String... aliases) {
-        registerSubCommand(type, "", u -> true, entityFetcher, (u, v) -> true, aliases);
+public class CommandActAs extends AbstractCommand {
+    public CommandActAs() {
+        super("actas", null);
     }
 
-    private <T extends LegalEntity> void registerSubCommand(LegalEntityType type,
-                                                            String usage,
-                                                            Predicate<Player> canExecute,
-                                                            BiFunction<Player, Optional<String>, Optional<T>> entityFetcher,
-                                                            BiPredicate<Player, T> entityChecker,
-                                                            String... aliases) {
+    @Override
+    protected boolean onPlayerCommand(Player player, String command, String[] args) {
+        try {
+            LegalEntity e = LegalEntityType.getLegalEntity(player, "me", args);
 
-        registerSubCommand(type.name, new SubCommand() {
-            @Override
-            public String getUsage() {
-                return usage;
+            if (!e.canActAs(player)) {
+                player.sendMessage(ChatColor.RED + "Vous ne pouvez pas agir en tant que " + e.displayable());
+            } else {
+                RPMachine.setPlayerRoleToken(player, e);
+                player.sendMessage(ChatColor.GREEN + "Vous agissez désormais en tant que : " + e.displayable());
             }
+        } catch (CommandException e) {
+            player.sendMessage(ChatColor.RED + e.getMessage());
+        }
 
-            @Override
-            public boolean canUse(Player player) {
-                return canExecute.test(player);
-            }
-
-            @Override
-            public String getDescription() {
-                return "permet d'agir en tant que " + type.name;
-            }
-
-            @Override
-            public boolean run(Player sender, String command, String subCommand, String[] args) {
-                Optional<String> arg = args.length > 0 ? Optional.of(args[0]) : Optional.empty();
-                Optional<T> result = entityFetcher.apply(sender, arg);
-
-                if (result.isPresent()) {
-                    T token = result.get();
-                    if (entityChecker.test(sender, token)) {
-                        RPMachine.setPlayerRoleToken(sender, token);
-                        sender.sendMessage(ChatColor.GREEN + "Vous agissez désormais en tant que : " + token.displayable());
-                    } else {
-                        sender.sendMessage(ChatColor.RED + "Vous ne pouvez pas incarner " + token.displayable());
-                    }
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Aucune entité correspondante.");
-                }
-                return true;
-            }
-        }, aliases);
+        return false;
     }
 
+    @Override
+    protected List<String> onPlayerTabComplete(Player player, String command, String... args) {
+        if (args.length > 1)
+            return null;
+        Set<String> subCommands = LegalEntityType.getAliases();
+
+        return subCommands.stream()
+                .filter(key -> args.length == 0 || key.startsWith(args[0].toLowerCase()))
+                .collect(Collectors.toList());
+    }
 }

@@ -65,6 +65,11 @@ public class AdminLegalEntity implements LegalEntity, LegalEntityRepository<Admi
 	}
 
 	@Override
+	public boolean canActAs(Player p) {
+		return p.hasPermission("admin.actas");
+	}
+
+	@Override
 	public boolean hasDelegatedPermission(Player player, DelegatedPermission permission) {
 		return player.isOp(); // All admins have permissions over all admin properties
 	}
