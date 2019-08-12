@@ -320,7 +320,23 @@ public class City implements LegalEntity, StoredEntity {
         }
     }
 
+    private void lowerCasePlots() {
+        Set<String> toDelete = plots.keySet().stream().filter(p -> !p.toLowerCase().equals(p)).collect(Collectors.toSet());
+
+        for (String del : toDelete) {
+            RPMachine.getInstance().getLogger().info("City " + cityName + " : moving plot " + del + " to lower case equivalent");
+
+            Plot p = plots.remove(del);
+            plots.put(del.toLowerCase(), p);
+        }
+
+        if (toDelete.size() > 0)
+            save();
+    }
+
     public void cleanPlots() {
+        lowerCasePlots();
+
         Date now = new Date();
         Set<String> toDelete = plots.entrySet().stream().filter(p -> p.getValue().isDueForDeletion() && p.getValue().getDeletionDate().before(now)).map(Map.Entry::getKey).collect(Collectors.toSet());
         if (!toDelete.isEmpty()) {
