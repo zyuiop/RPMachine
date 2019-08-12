@@ -205,9 +205,15 @@ public class RPMachine extends JavaPlugin {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    multiverseManager.onShutdown(true);
+                    Bukkit.getScheduler().runTask(RPMachine.this, () -> {
+                        try {
+                            multiverseManager.onShutdown(true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
-                    Bukkit.getServer().shutdown();
+                        Bukkit.getServer().shutdown();
+                    });
                 }
             }, sched);
             this.getLogger().info("Scheduled automatic reboot at : " + calendar.toString());
