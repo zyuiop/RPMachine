@@ -58,8 +58,10 @@ public class AllowSpawnCommand implements SubCommand {
                     return false;
                 }
                 target.setAllowSpawn(true);
+                target.save();
             } else if (allow.equals("no") || allow.equals("false")) {
                 target.setAllowSpawn(false);
+                target.save();
             } else {
                 player.sendMessage(ChatColor.RED + "Paramètre incorrect " + allow + ". Valeurs aceptées: yes, no");
                 return false;
