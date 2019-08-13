@@ -1,9 +1,7 @@
 package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
-import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -72,31 +70,6 @@ public class AllowSpawnCommand implements SubCommand {
             player.sendMessage(ChatColor.YELLOW + "La ville " + toDisplayable(isAllow));
         }
 
-
-        if (target != null) {
-            player.sendMessage(ChatColor.YELLOW + "-----[ Ville de " + ChatColor.GOLD + target.getCityName() + ChatColor.YELLOW + " ]-----");
-            player.sendMessage(ChatColor.YELLOW + "Maire actuel : " + RPMachine.database().getUUIDTranslator().getName(target.getMayor()));
-            player.sendMessage(ChatColor.YELLOW + "Nombre d'habitants : " + target.countInhabitants());
-            player.sendMessage(ChatColor.YELLOW + "Type de ville : " + ((target.isRequireInvite() ? ChatColor.RED + "Sur invitation" : ChatColor.GREEN + "Publique")));
-            player.sendMessage(ChatColor.YELLOW + "Impôts : " + target.getTaxes() + " " + RPMachine.getCurrencyName() + " par semaine");
-            player.sendMessage(ChatColor.YELLOW + "Taxe de vente de parcelle : " + ((int) (100 * target.getPlotSellTaxRate())) + " %");
-            player.sendMessage(ChatColor.YELLOW + "T.V.A. : " + 100 * target.getVat() + " %");
-
-            if (!target.getInhabitants().contains(player.getUniqueId())) {
-                player.sendMessage(ChatColor.YELLOW + "Taxe de citoyenneté : " + target.getJoinTax() + " " + RPMachine.getCurrencyName());
-
-                if (RPMachine.isTpEnabled())
-                    player.sendMessage(ChatColor.YELLOW + "Taxe de téléportation : " + target.getTpTax() + " " + RPMachine.getCurrencyName());
-            }
-
-            CityFloor floor = citiesManager.getFloor(target);
-            player.sendMessage(ChatColor.YELLOW + "Palier : " + floor.getName());
-
-            if (player.getUniqueId().equals(target.getMayor()) || target.getCouncils().contains(player.getUniqueId())) {
-                player.sendMessage(ChatColor.YELLOW + "Monnaie : " + target.getBalance() + " " + RPMachine.getCurrencyName());
-                player.sendMessage(ChatColor.YELLOW + "Taille : " + target.getChunks().size() + " / " + floor.getMaxsurface());
-            }
-        }
         return true;
     }
 }
