@@ -32,6 +32,14 @@ public class TeleportCommand implements SubCommand, ConfirmationCommand {
     }
 
     @Override
+    public boolean canUse(Player player) {
+        if (RPMachine.isTpEnabled())
+            return player.hasPermission("admin.teleport");
+
+        return true;
+    }
+
+    @Override
     public String getDescription() {
         return "vous téléporte dans votre ville ou la ville fournie (contre " + price + " " + RPMachine.getCurrencyName() + ")";
     }

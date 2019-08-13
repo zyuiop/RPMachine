@@ -1,11 +1,8 @@
 package net.zyuiop.rpmachine.cities.commands;
 
-import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.citysubcommands.*;
 import net.zyuiop.rpmachine.cities.commands.citysubcommands.params.CityParamsSubCommand;
-import net.zyuiop.rpmachine.cities.commands.citysubcommands.params.SetTaxesCommand;
-import net.zyuiop.rpmachine.cities.commands.citysubcommands.params.SetTypeCommand;
 import net.zyuiop.rpmachine.commands.CompoundCommand;
 
 public class CityCommand extends CompoundCommand {
@@ -33,8 +30,7 @@ public class CityCommand extends CompoundCommand {
         registerSubCommand("borders", new BordersCommand(), "limits");
         registerSubCommand("allowspawn", new AllowSpawnCommand(citiesManager), "spawn");
 
-        if (RPMachine.isTpEnabled())
-            registerSubCommand("teleport", new TeleportCommand(citiesManager), "tp");
+        registerSubCommand("teleport", new TeleportCommand(citiesManager), "tp");
 
         // Will also register a command with the same name
         FloorsCommand fc = new FloorsCommand();
