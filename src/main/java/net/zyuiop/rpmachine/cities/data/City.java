@@ -48,6 +48,7 @@ public class City implements LegalEntity, StoredEntity {
     private double vat = 0;
     private UUID mayor;
     private ChatColor chatColor;
+    private boolean allowSpawn;
 
     private boolean requireInvite;
 
@@ -524,6 +525,14 @@ public class City implements LegalEntity, StoredEntity {
 
     public void setChatColor(ChatColor chatColor) {
         this.chatColor = chatColor;
+    }
+
+    public boolean isAllowSpawn() {
+        return allowSpawn;
+    }
+
+    public void setAllowSpawn(boolean allowSpawn) {
+        this.allowSpawn = allowSpawn;
     }
 
     public static class CityTaxPayer {

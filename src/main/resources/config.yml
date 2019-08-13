@@ -18,6 +18,10 @@
 #   basis: 1.394955
 #   function: EXPONENTIAL
 #
+# createcity:
+#   price: 5000
+#   function: FIXED
+#
 
 
 createcity:

@@ -17,8 +17,8 @@ public class CityParamsSubCommand extends CompoundSubCommand {
         registerSubCommand("selltaxes", new SetSellTaxCommand(citiesManager), "selltax");
         if (RPMachine.isTpEnabled()) {
             registerSubCommand("tptax", new SetTpTaxCommand(citiesManager), "tptaxes");
-            registerSubCommand("spawn", new SetSpawnCommand(citiesManager), "setspawn");
         }
+        registerSubCommand("spawn", new SetSpawnCommand(citiesManager), "setspawn");
         registerSubCommand("jointax", new SetJoinTaxCommand(citiesManager), "jointaxes");
         registerSubCommand("color", new SetChatColorCommand(citiesManager));
     }

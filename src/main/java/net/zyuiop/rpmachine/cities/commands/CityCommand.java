@@ -31,6 +31,7 @@ public class CityCommand extends CompoundCommand {
         registerSubCommand("permissions", new PermissionsCommand());
         registerSubCommand("params", new CityParamsSubCommand(citiesManager), "p", "prefs");
         registerSubCommand("borders", new BordersCommand(), "limits");
+        registerSubCommand("allowspawn", new AllowSpawnCommand(citiesManager), "spawn");
 
         if (RPMachine.isTpEnabled())
             registerSubCommand("teleport", new TeleportCommand(citiesManager), "tp");

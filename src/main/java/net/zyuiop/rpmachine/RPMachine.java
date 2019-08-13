@@ -6,6 +6,7 @@ import net.zyuiop.rpmachine.cities.commands.CityCommand;
 import net.zyuiop.rpmachine.cities.commands.CommandBypass;
 import net.zyuiop.rpmachine.cities.commands.CommandRuntaxes;
 import net.zyuiop.rpmachine.cities.commands.PlotCommand;
+import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.common.PlayerHeadCraft;
@@ -162,6 +163,19 @@ public class RPMachine extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SignsListener(), this);
         Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerHeadCraft(), this);
+
+
+        // Change world spawn
+        List<City> spawnEligible = citiesManager.getSpawnCities();
+        if (spawnEligible.size() > 0) {
+            Random rnd = new Random();
+            City spawn = spawnEligible.get(rnd.nextInt(spawnEligible.size()));
+
+            Bukkit.getWorld("world").setSpawnLocation(spawn.getSpawn().getLocation());
+            Bukkit.getLogger().info("Today's spawn city will be " + spawn.getCityName() + " at loc " + spawn.getSpawn());
+        } else {
+            Bukkit.getLogger().info("No city is allowed to be the spawn, spawn will not be changed.");
+        }
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             Bukkit.getLogger().info("Saving world...");

@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CitiesManager extends FileEntityStore<City> implements LegalEntityRepository<City> {
     public static final Set<ChatColor> ALLOWED_COLORS = ImmutableSet.of(
@@ -66,6 +67,10 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 
         Bukkit.getScheduler().runTaskTimer(RPMachine.getInstance(), () -> cities.values().forEach(City::cleanPlots), 60 * 20, 60 * 20);
         Bukkit.getScheduler().runTaskTimer(RPMachine.getInstance(), () -> cities.values().forEach(City::sendWarnings), 60 * 20 * 5, 60 * 20 * 10);
+    }
+
+    public List<City> getSpawnCities() {
+        return cities.values().stream().filter(City::isAllowSpawn).collect(Collectors.toList());
     }
 
     public void addBypass(UUID id) {
@@ -264,6 +269,10 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
             double delta = c.getDouble("delta");
             double coeff = c.getDouble("coeff");
             return cities -> ((int) (ampl / (1 + Math.exp(-coeff * (cities - delta)))));
+        }),
+        FIXED(c -> {
+            int price = c.getInt("price");
+            return cities -> price;
         });
 
         private final Function<ConfigurationSection, CreationPriceFunction> creator;
