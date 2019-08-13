@@ -36,8 +36,9 @@ public class AllowSpawnCommand implements SubCommand {
     @Override
     public boolean run(Player player, String command, String subCommand, String[] args) {
         if (args.length < 1) {
-            player.sendMessage(ChatColor.RED + "Aucune ville indiquée.");
-            return false;
+            player.sendMessage(ChatColor.YELLOW + "Liste des villes autorisées à être spawn :");
+            citiesManager.getSpawnCities().forEach(c -> player.sendMessage(ChatColor.YELLOW + " - " + c.getChatColor() + c.getCityName()));
+            return true;
         }
 
         City target = citiesManager.getCity(args[0]);
