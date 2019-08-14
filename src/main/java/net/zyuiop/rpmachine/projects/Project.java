@@ -6,6 +6,7 @@ import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
+import net.zyuiop.rpmachine.permissions.Permission;
 import net.zyuiop.rpmachine.permissions.ProjectPermissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,32 +21,23 @@ import java.util.*;
  * A zone has no taxes as it doesn't depend of any city.
  */
 public class Project extends Plot implements LegalEntity, StoredEntity {
-    private final Map<UUID, Set<DelegatedPermission>> admins = new HashMap<>();
-    private String welcomeMessage;
-    private String goodByeMessage;
+    private final Map<UUID, Set<Permission>> admins = new HashMap<>();
     private String fileName;
     private double money = 0D;
     private Map<String, Double> unpaidTaxes = new HashMap<>();
     private Map<String, Date> lastPaidTaxes = new HashMap<>();
-
-    public String getWelcomeMessage() {
-        return welcomeMessage;
-    }
-
-    public void setWelcomeMessage(String welcomeMessage) {
-        this.welcomeMessage = welcomeMessage;
-    }
-
-    public String getGoodByeMessage() {
-        return goodByeMessage;
-    }
-
-    public void setGoodByeMessage(String goodByeMessage) {
-        this.goodByeMessage = goodByeMessage;
-    }
+    private boolean allowCityCreate = false;
 
     public String getFileName() {
         return fileName;
+    }
+
+    public boolean isAllowCityCreate() {
+        return allowCityCreate;
+    }
+
+    public void setAllowCityCreate(boolean allowCityCreate) {
+        this.allowCityCreate = allowCityCreate;
     }
 
     public void setFileName(String fileName) {
@@ -174,6 +166,25 @@ public class Project extends Plot implements LegalEntity, StoredEntity {
         else if (admins.containsKey(player.getUniqueId()))
             return admins.get(player.getUniqueId()).contains(permission);
         return false;
+    }
+
+    boolean hasDirectPermission(UUID player, Permission permission) {
+        return admins.containsKey(player) && admins.get(player).contains(permission);
+    }
+
+
+    void addPermission(UUID target, Permission permission) {
+        if (!admins.containsKey(target))
+            admins.put(target, new HashSet<>());
+        admins.get(target).add(permission);
+        save();
+    }
+
+    void removePermission(UUID target, Permission permission) {
+        if (admins.containsKey(target)) {
+            admins.get(target).remove(permission);
+            save();
+        }
     }
 
     @Override

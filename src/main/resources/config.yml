@@ -475,3 +475,8 @@ home:
 
 spawn:
   fromCityOnly: false
+
+global:
+  vat: 0.2
+  # taxes: 0 # not working yet
+  plotSellTaxRate: 0.5

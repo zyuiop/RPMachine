@@ -1,12 +1,13 @@
 package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
+import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import net.zyuiop.rpmachine.shops.ShopBuilder;
 import net.zyuiop.rpmachine.utils.Messages;
@@ -42,24 +43,12 @@ public class PlotSign extends AbstractShopSign {
         return plotName;
     }
 
-    public void setPlotName(String plotName) {
-        this.plotName = plotName;
-    }
-
     public String getCityName() {
         return cityName;
     }
 
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
-
     public boolean isCitizensOnly() {
-        return citizensOnly;
-    }
-
-    public void setCitizensOnly(boolean citizensOnly) {
-        this.citizensOnly = citizensOnly;
+        return cityName != null && citizensOnly;
     }
 
     public void display() {
@@ -83,7 +72,9 @@ public class PlotSign extends AbstractShopSign {
 
     @Override
     public String describe() {
-        return super.describe() + ChatColor.DARK_GREEN + "Parcelle" + ChatColor.YELLOW + " " + plotName + " dans " + cityName + " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName();
+        if (cityName != null)
+            return super.describe() + ChatColor.DARK_GREEN + "Parcelle" + ChatColor.YELLOW + " " + plotName + " dans " + cityName + " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName();
+        return super.describe() + ChatColor.DARK_GREEN + "Projet" + ChatColor.GOLD + " " + plotName + " pour " + ChatColor.AQUA + price + RPMachine.getCurrencyName();
     }
 
     @Override
@@ -92,13 +83,32 @@ public class PlotSign extends AbstractShopSign {
     }
 
     void clickUser(Player player, PlayerInteractEvent event) {
-        City city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
-        if (city == null) {
-            player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la ville n'existe pas.");
-            return;
+        Plot plot = null;
+        City city = null;
+        String cName = null;
+        double taxes = 0D;
+        double sellTaxes = 0D;
+
+        if (cityName == null) {
+            Project p = RPMachine.getInstance().getProjectsManager().getZone(plotName);
+            cName = "Aucune";
+            taxes = RPMachine.getInstance().getProjectsManager().getGlobalTax();
+            sellTaxes = RPMachine.getInstance().getProjectsManager().getGlobalSaleTax();
+            plot = p;
+        } else {
+            city = RPMachine.getInstance().getCitiesManager().getCity(cityName);
+            if (city == null) {
+                player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la ville n'existe pas.");
+                return;
+            }
+
+            taxes = city.getTaxes();
+            sellTaxes = city.getPlotSellTaxRate();
+            cName = city.getCityName();
+
+            plot = city.getPlot(plotName);
         }
 
-        Plot plot = city.getPlot(plotName);
         if (plot == null) {
             player.sendMessage(ChatColor.RED + "Une erreur s'est produite : la parcelle n'existe pas.");
             return;
@@ -107,14 +117,14 @@ public class PlotSign extends AbstractShopSign {
         if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
             player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
-            player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
+            player.sendMessage(ChatColor.YELLOW + "Ville : " + cName);
             player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs²");
             player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().getVolume() + " blocs³");
-            player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " $");
+            player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * taxes + " $");
             return;
         }
 
-        if (citizensOnly && !city.getInhabitants().contains(player.getUniqueId())) {
+        if (citizensOnly && city != null && !city.getInhabitants().contains(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "Vous n'êtes pas citoyen de cette ville.");
             return;
         }
@@ -137,26 +147,28 @@ public class PlotSign extends AbstractShopSign {
             Messages.debitEntity(player, data, price, "achat de parcelle");
 
             if (plot.getOwner() == null) {
-                city.creditMoney(price);
-
-                Messages.credit(city, price, "vente de parcelle");
+                if (city != null) {
+                    city.creditMoney(price);
+                    Messages.credit(city, price, "vente de parcelle");
+                }
             } else {
                 // On crédite à l'owner du panneau
-                double cityRate = city.getPlotSellTaxRate();
-                double userRate = 1 - city.getPlotSellTaxRate();
+                double userRate = 1 - sellTaxes;
 
-                Messages.credit(city, price * cityRate, "taxe sur vente de parcelle");
+                if (city != null) {
+                    Messages.credit(city, price * sellTaxes, "taxe sur vente de parcelle");
+                    city.creditMoney(price * sellTaxes);
+                }
+
                 Messages.credit(owner(), price * userRate, "vente de parcelle");
-
                 owner().creditMoney(price * userRate);
-                city.creditMoney(price * cityRate);
             }
 
             plot.setOwner(data);
             plot.setPlotMembers(new CopyOnWriteArrayList<>());
-            city.save();
+            if (city != null)
+                city.save();
 
-            RPMachine.getInstance().getCitiesManager().saveCity(city);
             Bukkit.getScheduler().runTask(RPMachine.getInstance(), () -> {
                 breakSign();
                 launchfw(location.getLocation(), FireworkEffect.builder().withColor(Color.WHITE, Color.GRAY, Color.BLACK).with(FireworkEffect.Type.STAR).build());
@@ -214,7 +226,21 @@ public class PlotSign extends AbstractShopSign {
 
                             return sign;
                         } else {
-                            throw new SignParseError("Le panneau ne se trouve pas dans une ville.");
+                            Project project = RPMachine.getInstance().getProjectsManager().getZoneHere(block.getLocation());
+                            if (project == null) {
+                                throw new SignParseError("Le panneau ne se trouve pas dans une ville ou un projet");
+                            }
+
+                            if (project.getOwner() != null && !project.getOwner().equals(tt.getTag())) {
+                                throw new SignParseError("Vous n'êtes pas propriétaire de cette parcelle");
+                            } else if (!tt.hasDelegatedPermission(PlotPermissions.SELL_PLOT)) {
+                                throw new SignPermissionError("Vous ne pouvez pas vendre cette parcelle");
+                            }
+
+                            sign.plotName = project.getPlotName();
+                            sign.cityName = null;
+
+                            return sign;
                         }
                     })
                     .flatMap(sign -> extractPrice(lines[1]).map(price -> {
@@ -222,7 +248,7 @@ public class PlotSign extends AbstractShopSign {
                         return sign;
                     }))
                     .map(sign -> {
-                        sign.citizensOnly = lines[2] != null && lines[2].equalsIgnoreCase("citizens");
+                        sign.citizensOnly = sign.cityName != null && lines[2] != null && lines[2].equalsIgnoreCase("citizens");
                         sign.setOwner(tt.getTag());
 
                         return sign;

@@ -2,7 +2,7 @@ package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.entities.RoleToken;

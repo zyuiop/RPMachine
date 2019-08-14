@@ -2,13 +2,12 @@ package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.utils.Messages;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -96,18 +95,17 @@ public abstract class AbstractShopSign implements Ownable, StoredEntity {
 
     protected double takeVat() {
         City city = getCity();
-        if (city == null)
-            return price;
-
-        double vat = city.getVat();
+        double vat = city == null ? RPMachine.getInstance().getProjectsManager().getGlobalVat() : city.getVat();
         if (vat == 0)
             return price;
 
         double forTheCity = price * vat;
         double forThePlayer = price - forTheCity;
 
-        city.creditMoney(forTheCity);
-        Messages.credit(city, forTheCity, "TVA automatique");
+        if (city != null) {
+            city.creditMoney(forTheCity);
+            Messages.credit(city, forTheCity, "TVA automatique");
+        }
 
         return forThePlayer;
     }

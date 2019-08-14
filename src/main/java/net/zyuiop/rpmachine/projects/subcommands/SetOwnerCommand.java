@@ -1,14 +1,19 @@
 package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.entities.AdminLegalEntity;
+import net.zyuiop.rpmachine.entities.LegalEntity;
+import net.zyuiop.rpmachine.entities.LegalEntityType;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 public class SetOwnerCommand implements SubCommand {
@@ -41,43 +46,22 @@ public class SetOwnerCommand implements SubCommand {
         }
 
         String projectName = args[0];
-        String ownerType = args[1];
-        String ownerData = (args.length > 2) ? args[2] : null;
-
         Project project = manager.getZone(projectName);
         if (project == null) {
             player.sendMessage(ChatColor.RED + "Ce projet n'existe pas.");
             return false;
         }
 
-        if (ownerType.equalsIgnoreCase("admin")) {
-            project.setOwner(AdminLegalEntity.INSTANCE);
-        } else if (ownerData == null) {
-            player.sendMessage(ChatColor.RED + "Vous devez fournir le nom d'une entité.");
-            return false;
-        } else if (ownerType.equalsIgnoreCase("player")) {
-            UUID playerId = RPMachine.database().getUUIDTranslator().getUUID(ownerData);
-            if (playerId == null)
-                player.sendMessage(ChatColor.RED + "Ce joueur n'existe pas !");
-            else
-                project.setOwner(RPMachine.database().getPlayerData(playerId));
-        } else if (ownerType.equalsIgnoreCase("project")) {
-            Project parentProject = manager.getZone(projectName);
-            if (parentProject == null)
-                player.sendMessage(ChatColor.RED + "Ce projet n'existe pas !");
-            else
-                project.setOwner(parentProject);
-        } else if (ownerType.equalsIgnoreCase("city")) {
-            City city = RPMachine.getInstance().getCitiesManager().getCity(ownerData);
-            if (city == null)
-                player.sendMessage(ChatColor.RED + "Cette ville n'existe pas !");
-            else
-                project.setOwner(city);
+        try {
+            LegalEntity e = LegalEntityType.getLegalEntity(player, "player", Arrays.copyOfRange(args, 1, args.length));
+            Messages.sendMessage(project.owner(), ChatColor.YELLOW + "Le projet " + project.shortDisplayable() + ChatColor.YELLOW + " est transféré à " + e.displayable());
+            Messages.sendMessage(e, ChatColor.YELLOW + "Vous êtes désormais propriétaire du projet " + project.shortDisplayable() + ChatColor.YELLOW + " !");
+            project.setOwner(e);
+            player.sendMessage(ChatColor.YELLOW + "Projet " + project.shortDisplayable() + ChatColor.YELLOW + " transféré à " + e.displayable());
+            project.save();
+        } catch (CommandException e) {
+            player.sendMessage(ChatColor.RED + e.getMessage());
         }
-
-        player.sendMessage(ChatColor.GREEN + "Projet mis à jour.");
-        project.save();
-
         return true;
     }
 }

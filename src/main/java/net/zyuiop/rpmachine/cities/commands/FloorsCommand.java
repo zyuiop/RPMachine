@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.cities.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.data.CityFloor;
+import net.zyuiop.rpmachine.cities.CityFloor;
 import net.zyuiop.rpmachine.commands.AbstractCommand;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import org.bukkit.ChatColor;

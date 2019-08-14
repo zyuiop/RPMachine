@@ -1,6 +1,5 @@
 package net.zyuiop.rpmachine.cities;
 
-import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.common.Selection;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import org.bukkit.ChatColor;

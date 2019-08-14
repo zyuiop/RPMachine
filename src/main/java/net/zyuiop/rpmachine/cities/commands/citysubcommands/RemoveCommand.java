@@ -3,13 +3,10 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.commands.ConfirmationCommand;
-import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;

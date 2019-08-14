@@ -8,6 +8,7 @@ import net.zyuiop.rpmachine.json.Json;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.io.*;
@@ -19,6 +20,10 @@ import java.util.stream.Collectors;
  * @author zyuiop
  */
 public class ProjectsManager extends FileEntityStore<Project> implements LegalEntityRepository<Project> {
+	private double globalVat;
+	private double globalTax;
+	private double globalSaleTax;
+
 	private final RPMachine rpMachine;
 	private ConcurrentHashMap<String, Project> zones = new ConcurrentHashMap<>();
 
@@ -28,6 +33,12 @@ public class ProjectsManager extends FileEntityStore<Project> implements LegalEn
 		this.rpMachine = plugin;
 
 		super.load();
+
+		// Load config
+		ConfigurationSection section = plugin.getConfig().getConfigurationSection("global");
+		globalVat = section.getDouble("vat", 0.2D);
+		globalTax = section.getDouble("tax", 0D);
+		globalSaleTax = section.getDouble("plotSellTaxRate", 0.5D);
 	}
 
 	public Project getZone(String name) {
@@ -95,5 +106,17 @@ public class ProjectsManager extends FileEntityStore<Project> implements LegalEn
 	@Override
 	protected void loadedEntity(Project project) {
 		zones.put(project.getPlotName(), project);
+	}
+
+	public double getGlobalVat() {
+		return globalVat;
+	}
+
+	public double getGlobalTax() {
+		return globalTax;
+	}
+
+	public double getGlobalSaleTax() {
+		return globalSaleTax;
 	}
 }

@@ -1,13 +1,14 @@
 package net.zyuiop.rpmachine.entities;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.projects.Project;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +68,7 @@ public enum LegalEntityType {
         return types.keySet();
     }
 
-    public static LegalEntity getLegalEntity(Player p, String defaultParam, String... args) throws CommandException {
+    public static @Nonnull LegalEntity getLegalEntity(Player p, String defaultParam, String... args) throws CommandException {
         if (args.length == 0 && defaultParam == null) {
             throw new CommandException("Format incorrect.");
         } else {

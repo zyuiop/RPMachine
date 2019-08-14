@@ -3,7 +3,7 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
 import net.zyuiop.rpmachine.cities.CitiesManager;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.commands.ConfirmationCommand;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;

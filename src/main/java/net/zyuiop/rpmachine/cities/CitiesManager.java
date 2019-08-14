@@ -2,8 +2,6 @@ package net.zyuiop.rpmachine.cities;
 
 import com.google.common.collect.ImmutableSet;
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.data.City;
-import net.zyuiop.rpmachine.cities.data.CityFloor;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
@@ -87,7 +85,7 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 
     public void payTaxes(boolean force) {
         for (City city : cities.values()) {
-            city.payTaxes(force);
+            city.requestTaxes(force);
         }
     }
 

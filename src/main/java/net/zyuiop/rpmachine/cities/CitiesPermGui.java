@@ -1,6 +1,5 @@
 package net.zyuiop.rpmachine.cities;
 
-import net.zyuiop.rpmachine.cities.data.City;
 import net.zyuiop.rpmachine.permissions.Permission;
 import net.zyuiop.rpmachine.permissions.PermissionTypes;
 import net.zyuiop.rpmachine.permissions.PermissionsGui;

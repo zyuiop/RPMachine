@@ -2,7 +2,7 @@ package net.zyuiop.rpmachine.cities.commands.citysubcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.EconomyPermissions;
@@ -56,7 +56,7 @@ public class PayTaxesCommand implements SubCommand {
                     player.sendMessage(ChatColor.GREEN + "Vous ne devez plus rien à cette ville.");
 
                     payer.setUnpaidTaxes(city.getCityName(), 0D);
-                    city.pay(payer, topay);
+                    city.payTaxes(payer, topay);
                 } else {
                     RPMachine.database().getPlayerData(player).transfer(amount, city);
                     Messages.debit(player, topay, "paiement des impôts");
@@ -64,7 +64,7 @@ public class PayTaxesCommand implements SubCommand {
 
                     topay = topay - amount;
                     payer.setUnpaidTaxes(city.getCityName(), topay);
-                    city.pay(payer, amount);
+                    city.payTaxes(payer, amount);
                 }
                 citiesManager.saveCity(city);
             }

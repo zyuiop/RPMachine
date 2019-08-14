@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.cities.data;
+package net.zyuiop.rpmachine.cities;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.VirtualLocation;
@@ -29,7 +29,6 @@ public class City implements LegalEntity, StoredEntity {
     private final Set<UUID> inhabitants = new HashSet<>();
     private final Set<UUID> invitedUsers = new HashSet<>();
     private final Map<String, Double> taxesToPay = new HashMap<>();
-    private final Map<String, Loan> loans = new HashMap<>();
 
     private String cityName;
     private VirtualLocation spawn;
@@ -108,6 +107,7 @@ public class City implements LegalEntity, StoredEntity {
         return set;
     }
 
+    @Override
     public Set<Player> getOnlineAdministrators() {
         return getAdministrators().stream()
                 .map(Bukkit::getPlayer)
@@ -279,7 +279,7 @@ public class City implements LegalEntity, StoredEntity {
         return null;
     }
 
-    public void pay(LegalEntity payer, double amt) {
+    public void payTaxes(LegalEntity payer, double amt) {
         Double total = taxesToPay.get(payer.tag());
         if (total != null) {
             total -= amt;
@@ -290,7 +290,7 @@ public class City implements LegalEntity, StoredEntity {
         }
     }
 
-    public void payTaxes(boolean force) {
+    public void requestTaxes(boolean force) {
         if (this.taxes == 0)
             return;
 
@@ -321,23 +321,7 @@ public class City implements LegalEntity, StoredEntity {
         }
     }
 
-    private void lowerCasePlots() {
-        Set<String> toDelete = plots.keySet().stream().filter(p -> !p.toLowerCase().equals(p)).collect(Collectors.toSet());
-
-        for (String del : toDelete) {
-            RPMachine.getInstance().getLogger().info("City " + cityName + " : moving plot " + del + " to lower case equivalent");
-
-            Plot p = plots.remove(del);
-            plots.put(del.toLowerCase(), p);
-        }
-
-        if (toDelete.size() > 0)
-            save();
-    }
-
     public void cleanPlots() {
-        lowerCasePlots();
-
         Date now = new Date();
         Set<String> toDelete = plots.entrySet().stream().filter(p -> p.getValue().isDueForDeletion() && p.getValue().getDeletionDate().before(now)).map(Map.Entry::getKey).collect(Collectors.toSet());
         if (!toDelete.isEmpty()) {
@@ -449,43 +433,6 @@ public class City implements LegalEntity, StoredEntity {
         return hasPermission(player, permission);
     }
 
-    public Loan getLoan(LegalEntity token) {
-        return loans.get(token.tag());
-    }
-
-    public double payLoan(LegalEntity token, double amount) {
-        Loan loan = getLoan(token);
-        if (loan == null) {
-            return -1;
-        }
-
-        if (loan.getAmountToPay() < amount) {
-            return -2;
-        }
-
-        double remaining = loan.pay(amount);
-        if (remaining < 0.01) {
-            loans.remove(token.tag());
-            remaining = 0;
-        }
-
-        save();
-        return remaining;
-    }
-
-    public Map<String, Loan> getLoans() {
-        return loans;
-    }
-
-    public Collection<Loan> getExpiredLoans() {
-        return getLoans().values().stream().filter(l -> l.getMaximumDate().before(new Date())).collect(Collectors.toList());
-    }
-
-    public void updateLoan(Loan loan) {
-        loans.put(loan.getBorrower(), loan);
-        save();
-    }
-
     public boolean canActAs(Player p) {
         if (mayor.equals(p.getUniqueId()))
             return true;
@@ -543,89 +490,8 @@ public class City implements LegalEntity, StoredEntity {
             return unpaidTaxes;
         }
 
-        public void setUnpaidTaxes(Map<String, Double> unpaidTaxes) {
-            this.unpaidTaxes = unpaidTaxes;
-        }
-
         Map<String, Date> getLastPaidTaxes() {
             return lastPaidTaxes;
-        }
-
-        public void setLastPaidTaxes(Map<String, Date> lastPaidTaxes) {
-            this.lastPaidTaxes = lastPaidTaxes;
-        }
-    }
-
-    public static class Loan implements Ownable {
-        private String borrower;
-        private double amountBorrowed;
-        private double interestRate;
-        private double amountPaid = 0;
-        private Date maximumDate;
-
-        public Loan(String borrower, double amountBorrowed, double interestRate, Date maximumDate) {
-            this.borrower = borrower;
-            this.amountBorrowed = amountBorrowed;
-            this.interestRate = interestRate;
-            this.maximumDate = maximumDate;
-        }
-
-        public Loan() {
-        }
-
-        public String getBorrower() {
-            return borrower;
-        }
-
-        public void setBorrower(String borrower) {
-            this.borrower = borrower;
-        }
-
-        public double getAmountBorrowed() {
-            return amountBorrowed;
-        }
-
-        public void setAmountBorrowed(double amountBorrowed) {
-            this.amountBorrowed = amountBorrowed;
-        }
-
-        public double getInterestRate() {
-            return interestRate;
-        }
-
-        public void setInterestRate(double interestRate) {
-            this.interestRate = interestRate;
-        }
-
-        public double getAmountPaid() {
-            return amountPaid;
-        }
-
-        public void setAmountPaid(double amountPaid) {
-            this.amountPaid = amountPaid;
-        }
-
-        public double getAmountToPay() {
-            return (amountBorrowed * (1 + interestRate)) - getAmountPaid();
-        }
-
-        public double pay(double amount) {
-            amountPaid += amount;
-            return getAmountToPay();
-        }
-
-        public Date getMaximumDate() {
-            return maximumDate;
-        }
-
-        public void setMaximumDate(Date maximumDate) {
-            this.maximumDate = maximumDate;
-        }
-
-        @Nullable
-        @Override
-        public String ownerTag() {
-            return borrower;
         }
     }
 }

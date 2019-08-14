@@ -17,5 +17,6 @@ public class ProjectCommand extends CompoundCommand {
 		registerSubCommand("redefine", new RedefineCommand(manager));
 		registerSubCommand("info", new InfoCommand(manager), "i");
 		registerSubCommand("setowner", new SetOwnerCommand(manager));
+		registerSubCommand("permissions", new PermissionsCommand(manager));
 	}
 }

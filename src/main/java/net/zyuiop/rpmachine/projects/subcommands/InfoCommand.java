@@ -33,7 +33,7 @@ public class InfoCommand implements SubCommand {
     public boolean run(Player player, String command, String subCommand, String[] args) {
         Project plot = manager.getZoneHere(player.getLocation());
         if (plot == null) {
-            player.sendMessage(ChatColor.RED + "Vous ne vous trouvez pas dans un proket.");
+            player.sendMessage(ChatColor.RED + "Vous ne vous trouvez pas dans un projet.");
         } else {
             player.sendMessage(ChatColor.GOLD + "-----[ Informations Projet ]-----");
             player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());

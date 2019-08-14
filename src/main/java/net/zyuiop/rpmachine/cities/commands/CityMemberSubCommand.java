@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.cities.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.permissions.Permission;
 import org.bukkit.entity.Player;

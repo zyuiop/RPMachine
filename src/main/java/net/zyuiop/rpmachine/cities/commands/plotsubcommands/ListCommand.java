@@ -2,7 +2,7 @@ package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
-import net.zyuiop.rpmachine.cities.data.City;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.common.Plot;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
