@@ -67,6 +67,7 @@ public class MembersCommand implements SubCommand {
                         return true;
                     }
                     plot.getPlotMembers().remove(id);
+                    plot.removeAdmin(id);
                     manager.saveZone(plot);
                     player.sendMessage(ChatColor.GREEN + "Le joueur a été supprimé du projet.");
                 } else {

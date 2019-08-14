@@ -221,4 +221,8 @@ public class Project extends Plot implements LegalEntity, StoredEntity {
         return getPlotMembers().contains(player.getUniqueId()) ||
                 (ownerTag() != null && owner() != null && owner().hasDelegatedPermission(player, ProjectPermissions.BUILD_ON_PROJECT));
     }
+
+    public void removeAdmin(UUID id) {
+        admins.remove(id);
+    }
 }

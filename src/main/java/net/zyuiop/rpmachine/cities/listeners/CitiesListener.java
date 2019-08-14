@@ -217,13 +217,16 @@ public class CitiesListener implements Listener {
         } else {
             // Same chunk, same city.
             City city = manager.getCityHere(event.getFrom().getChunk());
-            if (city == null)
-                return;
+            Plot plot, to;
+            if (city == null) {
+                plot = RPMachine.getInstance().getProjectsManager().getZoneHere(event.getFrom());
+                to = RPMachine.getInstance().getProjectsManager().getZoneHere(event.getTo());
+            } else {
+                plot = city.getPlotHere(event.getFrom());
+                to = city.getPlotHere(event.getTo());
+            }
 
-            Plot plot = city.getPlotHere(event.getFrom());
-            Plot to = city.getPlotHere(event.getTo());
-
-            boolean pOverride = (city.getCouncils().contains(id) || city.getMayor().equals(id));
+            boolean pOverride = city == null || (city.getCouncils().contains(id) || city.getMayor().equals(id));
             if (plot != null && to != null && plot.getPlotName().equals(to.getPlotName()))
                 return;
 
