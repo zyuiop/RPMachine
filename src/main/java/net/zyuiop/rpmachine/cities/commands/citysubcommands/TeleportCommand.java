@@ -33,7 +33,7 @@ public class TeleportCommand implements SubCommand, ConfirmationCommand {
 
     @Override
     public boolean canUse(Player player) {
-        if (RPMachine.isTpEnabled())
+        if (!RPMachine.isTpEnabled())
             return player.hasPermission("admin.teleport");
 
         return true;
