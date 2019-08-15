@@ -58,7 +58,7 @@ public class TeleportCommand implements SubCommand, ConfirmationCommand {
             if (target == null) {
                 player.sendMessage(ChatColor.RED + "Cette ville n'existe pas.");
                 return true;
-            } else if (target.isRequireInvite() && !target.getInvitedUsers().contains(player.getUniqueId()) && (playerCity == null || !playerCity.getCityName().equalsIgnoreCase(target.getCityName()))) {
+            } else if (target.isRequireInvite() && !target.getInvitedUsers().contains(player.getUniqueId()) && (playerCity == null || !playerCity.getCityName().equalsIgnoreCase(target.getCityName())) && !player.hasPermission("admin.teleport")) {
                 player.sendMessage(ChatColor.RED + "Cette ville est privée.");
                 return true;
             } else if (playerCity == null || !playerCity.getCityName().equalsIgnoreCase(target.getCityName())) {
@@ -82,7 +82,7 @@ public class TeleportCommand implements SubCommand, ConfirmationCommand {
         if (!spawn.getChunk().isLoaded())
             spawn.getChunk().load();
 
-        if (price > 0) {
+        if (price > 0 && !player.hasPermission("admin.teleport")) {
             if (requestConfirm(player, ChatColor.YELLOW + "La téléportation vers " + target.shortDisplayable() +
                     ChatColor.YELLOW + " coûte " + ChatColor.GOLD + price + " " + RPMachine.getCurrencyName() +
                     ChatColor.YELLOW + ".", command + " " + subCommand, args)) {
