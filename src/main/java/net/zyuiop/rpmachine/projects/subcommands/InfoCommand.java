@@ -37,7 +37,7 @@ public class InfoCommand implements SubCommand {
         } else {
             player.sendMessage(ChatColor.GOLD + "-----[ Informations Projet ]-----");
             player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
-            player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs");
+            player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().computeArea() + " blocs");
             LegalEntity proprio = plot.owner();
             if (proprio == null) {
                 player.sendMessage(ChatColor.YELLOW + "Propriétaire : " + ChatColor.RED + "Aucun");

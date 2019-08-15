@@ -76,6 +76,6 @@ public class VirtualLocation {
 	}
 
 	public String toString() {
-		return x + "/" + y + "/" + z;
+		return world + " " + x + "/" + y + "/" + z;
 	}
 }

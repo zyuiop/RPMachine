@@ -19,27 +19,18 @@ public class RectangleRegion implements Region {
 	public RectangleRegion(Location l1, Location l2) {
 		world = l1.getWorld().getName();
 		minX = Math.min(l1.getBlockX(), l2.getBlockX());
-		minY = Math.min(l1.getBlockY(), l2.getBlockY());
+		minY = Math.min(255, Math.max(0, Math.min(l1.getBlockY(), l2.getBlockY())));
 		minZ = Math.min(l1.getBlockZ(), l2.getBlockZ());
 		maxX = Math.max(l1.getBlockX(), l2.getBlockX());
-		maxY = Math.max(l1.getBlockY(), l2.getBlockY());
+		maxY = Math.min(255, Math.max(0, Math.max(l1.getBlockY(), l2.getBlockY())));
 		maxZ = Math.max(l1.getBlockZ(), l2.getBlockZ());
-	}
-
-	public RectangleRegion(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		this.minX = minX;
-		this.minY = minY;
-		this.minZ = minZ;
-		this.maxX = maxX;
-		this.maxY = maxY;
-		this.maxZ = maxZ;
 	}
 
 	public RectangleRegion(String world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		this.world = world;
 		this.minX = minX;
-		this.minY = minY;
-		this.minZ = minZ;
+		this.minY = Math.max(0, Math.min(255, minY));
+		this.minZ = Math.max(0, Math.min(255, minY));
 		this.maxX = maxX;
 		this.maxY = maxY;
 		this.maxZ = maxZ;
@@ -57,52 +48,38 @@ public class RectangleRegion implements Region {
 
 	}
 
-	public int getMinX() {
-		return minX;
+	public void expandY(int y) {
+		if (y < 0)
+			minY += y;
+		else
+			maxY += y;
+
+		minY = Math.min(255, Math.max(0, minY));
+		maxY = Math.min(255, Math.max(0, maxY));
 	}
 
-	public void setMinX(int minX) {
-		this.minX = minX;
+	public int getMinX() {
+		return minX;
 	}
 
 	public int getMinY() {
 		return minY;
 	}
 
-	public void setMinY(int minY) {
-		this.minY = minY;
-	}
-
 	public int getMinZ() {
 		return minZ;
-	}
-
-	public void setMinZ(int minZ) {
-		this.minZ = minZ;
 	}
 
 	public int getMaxX() {
 		return maxX;
 	}
 
-	public void setMaxX(int maxX) {
-		this.maxX = maxX;
-	}
-
 	public int getMaxY() {
 		return maxY;
 	}
 
-	public void setMaxY(int maxY) {
-		this.maxY = maxY;
-	}
-
 	public int getMaxZ() {
 		return maxZ;
-	}
-
-	public void setMaxZ(int maxZ) {
-		this.maxZ = maxZ;
 	}
 
 	public boolean isInside(Location loc) {
@@ -139,7 +116,7 @@ public class RectangleRegion implements Region {
 		return Bukkit.getWorld(world).getHighestBlockAt(midX, midZ);
 	}
 
-	public boolean hasCommonPositionsWith(Chunk chunk) {
+	public boolean hasBlockInChunk(Chunk chunk) {
 		RectangleRegion chunkArea = new RectangleRegion(chunk.getBlock(0, 0, 0).getLocation(), chunk.getBlock(15, 0, 15).getLocation());
 
 		if (chunkArea.getMaxX() < getMinX() || chunkArea.getMaxZ() < getMaxZ() || chunkArea.getMinX() > getMaxX() || chunkArea.getMinZ() > getMaxZ()) {
@@ -147,10 +124,6 @@ public class RectangleRegion implements Region {
 		}
 
 		return true;
-	}
-
-	public RectangleRegion getFlatArea() {
-		return new RectangleRegion(minX, 1, minZ, maxX, 1, maxZ);
 	}
 
 	@Override

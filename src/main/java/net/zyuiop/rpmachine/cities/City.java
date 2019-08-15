@@ -301,7 +301,7 @@ public class City implements LegalEntity, StoredEntity {
                 Date lastPaid = ownerData.getLastTaxes(getCityName());
 
                 if (force || lastPaid == null || !sameDay(lastPaid)) {
-                    double toPay = plot.getArea().getSquareArea() * taxes;
+                    double toPay = plot.getArea().computeArea() * taxes;
 
                     if (!ownerData.transfer(toPay, this)) {
                         double lateTaxes = ownerData.getUnpaidTaxes(getCityName());
@@ -341,7 +341,7 @@ public class City implements LegalEntity, StoredEntity {
 
         double ret = 0;
         for (Plot plot : plots.values()) {
-            ret += plot.getArea().getSquareArea() * taxes;
+            ret += plot.getArea().computeArea() * taxes;
         }
 
         return ret;

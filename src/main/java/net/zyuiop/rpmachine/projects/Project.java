@@ -1,8 +1,10 @@
 package net.zyuiop.rpmachine.projects;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.common.regions.RectangleRegion;
 import net.zyuiop.rpmachine.common.Plot;
+import net.zyuiop.rpmachine.common.regions.Region;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
@@ -14,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.stream.StreamSupport;
 
 /**
  * @author zyuiop
@@ -44,29 +47,25 @@ public class Project extends Plot implements LegalEntity, StoredEntity {
         this.fileName = fileName;
     }
 
-    public boolean checkArea(RectangleRegion area, ProjectsManager manager, Player player) {
-        int i_x = area.getMinX();
-        while (i_x < area.getMaxX()) {
-            int i_z = area.getMinZ();
-            while (i_z < area.getMaxZ()) {
-                if (RPMachine.getInstance().getCitiesManager().getCityHere(new Location(Bukkit.getWorld("world"), i_x, 64, i_z).getChunk()) != null) {
-                    player.sendMessage(ChatColor.RED + "Une partie de votre sélection est dans une ville.");
-                    return false;
-                }
+    public boolean checkArea(Region area, ProjectsManager manager, Player player) {
+        boolean cancel = StreamSupport.stream(area.spliterator(), false)
+                .anyMatch(block -> {
+                    if (RPMachine.getInstance().getCitiesManager().getCityHere(block.getChunk()) != null) {
+                        player.sendMessage(ChatColor.RED + "Une partie de votre sélection est dans une ville.");
+                        return true;
+                    }
 
-                int i_y = area.getMinY();
-                while (i_y < area.getMaxY()) {
-                    Project check = manager.getZoneHere(new Location(Bukkit.getWorld("world"), i_x, i_y, i_z));
+                    Project check = manager.getZoneHere(block.getLocation());
                     if (check != null && !check.getPlotName().equals(getPlotName())) {
                         player.sendMessage(ChatColor.RED + "Une partie de votre sélection fait partie d'un autre projet");
-                        return false;
+                        return true;
                     }
-                    i_y++;
-                }
-                i_z++;
-            }
-            i_x++;
-        }
+
+                    return false;
+                });
+
+        if (cancel)
+            return false;
 
         setArea(area);
         return true;

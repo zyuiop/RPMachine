@@ -13,4 +13,12 @@ public interface Selection<T extends Region> {
     void leftClick(Block clicked, Player clicking);
 
     void rightClick(Block clicked, Player clicking);
+
+    /**
+     * Expand the selection in height
+     * @param y the height to add, if negative height will be added at the bottom
+     */
+    void expandY(int y);
+
+    void describe(Player player);
 }

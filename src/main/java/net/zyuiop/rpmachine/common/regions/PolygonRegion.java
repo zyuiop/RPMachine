@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.common.regions;
 
 import net.zyuiop.rpmachine.common.VirtualLocation;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -10,12 +11,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Louis Vialar
  */
 public class PolygonRegion extends RectangleRegion {
-    private List<VirtualLocation> points;
+    private List<VirtualLocation> points = new ArrayList<>();
 
     public PolygonRegion() {
         super();
@@ -96,25 +98,41 @@ public class PolygonRegion extends RectangleRegion {
             throw new IllegalArgumentException("Not enough points");
         }
 
+        this.world = points.get(0).getWorld();
+
+        int minX = points.get(0).getX();
+        int maxX = points.get(0).getX();
+        int minY = points.get(0).getY();
+        int maxY = points.get(0).getY();
+        int minZ = points.get(0).getZ();
+        int maxZ = points.get(0).getZ();
+
         // Update X and Z
         for (VirtualLocation v : points) {
             int x = v.getX();
             int z = v.getZ();
+            int y = v.getY();
             if (x < minX) minX = x;
+            if (y < minY) minY = y;
             if (z < minZ) minZ = z;
             if (x > maxX) maxX = x;
+            if (y > maxY) maxY = y;
             if (z > maxZ) maxZ = z;
+
+            if (!v.getWorld().equals(this.world)) {
+                throw new IllegalArgumentException("Un point n'est pas dans le bon monde (monde: " + this.world + ", point fautif: " + v + ")");
+            }
         }
 
-        // Update Y
-        int oldMinY = minY;
-        int oldMaxY = maxY;
-        minY = Math.min(oldMinY, oldMaxY);
-        maxY = Math.max(oldMinY, oldMaxY);
+        this.minX = minX;
+        this.maxX = maxX;
+        this.minZ = minZ;
+        this.maxZ = maxZ;
 
+        // Update Y
         World world = this.world == null ? null : Bukkit.getWorld(this.world);
-        minY = Math.min(Math.max(0, minY), world == null ? 255 : world.getMaxHeight());
-        maxY = Math.min(Math.max(0, maxY), world == null ? 255 : world.getMaxHeight());
+        this.minY = Math.min(Math.max(0, minY), world == null ? 255 : world.getMaxHeight());
+        this.maxY = Math.min(Math.max(0, maxY), world == null ? 255 : world.getMaxHeight());
     }
 
     public void addPoint(VirtualLocation location) {
@@ -131,7 +149,6 @@ public class PolygonRegion extends RectangleRegion {
 
     public void addPoints(List<Location> locations) {
         points.addAll(locations.stream().map(VirtualLocation::new).collect(Collectors.toList()));
-        // Check word
         computeBoundingSquare();
     }
 
@@ -155,8 +172,45 @@ public class PolygonRegion extends RectangleRegion {
         return computeArea() * (maxY - minY + 1);
     }
 
+    public boolean hasBlockInChunk(Chunk chunk) {
+        if (!super.hasBlockInChunk(chunk))
+            return false;
+
+        RectangleRegion region = new RectangleRegion(chunk.getBlock(0, 0, 0).getLocation(), chunk.getBlock(0, 255, 0).getLocation());
+        return StreamSupport.stream(region.spliterator(), false).anyMatch(block -> isInside(block.getLocation()));
+    }
+
     @Override
     public Iterator<Block> iterator() {
-        return null;
+        Iterator<Block> src = super.iterator();
+        return new Iterator<Block>() {
+            private Block next;
+
+            private void findNext() {
+                while (src.hasNext()) {
+                    this.next = src.next();
+                    if (isInside(next.getLocation()))
+                        return;
+                }
+
+                this.next = null;
+            }
+
+            {
+                findNext();
+            }
+
+            @Override
+            public boolean hasNext() {
+                return next != null;
+            }
+
+            @Override
+            public Block next() {
+                Block next = this.next;
+                findNext();
+                return next;
+            }
+        };
     }
 }

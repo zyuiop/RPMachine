@@ -1,13 +1,12 @@
 package net.zyuiop.rpmachine.common;
 
-import net.zyuiop.rpmachine.common.regions.RectangleRegion;
+import net.zyuiop.rpmachine.common.regions.Region;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
 import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nullable;
@@ -18,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Plot implements Ownable {
     private String plotName;
-    private RectangleRegion area;
+    private Region area;
     private String owner = null;
     private PlotSettings plotSettings = new PlotSettings();
     private Date deletionDate = null;
@@ -41,11 +40,11 @@ public class Plot implements Ownable {
         this.plotName = plotName;
     }
 
-    public RectangleRegion getArea() {
+    public Region getArea() {
         return area;
     }
 
-    public void setArea(RectangleRegion area) {
+    public void setArea(Region area) {
         this.area = area;
     }
 
@@ -69,12 +68,12 @@ public class Plot implements Ownable {
         this.plotSettings = plotSettings;
     }
 
-    public Block getMiddleFloor() {
-        return area.getMiddleFloor();
-    }
-
     public Date getDeletionDate() {
         return deletionDate;
+    }
+
+    public void setDeletionDate(Date deletionDate) {
+        this.deletionDate = deletionDate;
     }
 
     public String getDeletionDateString() {
@@ -85,10 +84,6 @@ public class Plot implements Ownable {
         long time = 24L * 7L * 3600L * 1000L;
         time += System.currentTimeMillis();
         this.deletionDate = new Date(time);
-    }
-
-    public void setDeletionDate(Date deletionDate) {
-        this.deletionDate = deletionDate;
     }
 
     public boolean isDueForDeletion() {

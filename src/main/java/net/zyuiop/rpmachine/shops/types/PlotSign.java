@@ -118,9 +118,9 @@ public class PlotSign extends AbstractShopSign {
             player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
             player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
             player.sendMessage(ChatColor.YELLOW + "Ville : " + cName);
-            player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs²");
-            player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().getVolume() + " blocs³");
-            player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * taxes + " $");
+            player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().computeArea() + " blocs²");
+            player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().computeVolume() + " blocs³");
+            player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().computeArea() * taxes + " $");
             return;
         }
 

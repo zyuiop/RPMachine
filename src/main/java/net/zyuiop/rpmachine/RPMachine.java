@@ -1,12 +1,11 @@
 package net.zyuiop.rpmachine;
 
 import net.zyuiop.rpmachine.cities.CitiesManager;
-import net.zyuiop.rpmachine.cities.SelectionManager;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.cities.commands.CityCommand;
 import net.zyuiop.rpmachine.cities.commands.CommandBypass;
 import net.zyuiop.rpmachine.cities.commands.CommandRuntaxes;
 import net.zyuiop.rpmachine.cities.commands.PlotCommand;
-import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.common.PlayerHeadCraft;
@@ -17,6 +16,7 @@ import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.gui.WindowsListener;
 import net.zyuiop.rpmachine.jobs.CommandJob;
 import net.zyuiop.rpmachine.jobs.JobsManager;
+import net.zyuiop.rpmachine.listeners.SelectionListener;
 import net.zyuiop.rpmachine.multiverse.MultiverseManager;
 import net.zyuiop.rpmachine.projects.ProjectCommand;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
@@ -44,7 +44,6 @@ public class RPMachine extends JavaPlugin {
     private DatabaseManager databaseManager;
     private JobsManager jobsManager;
     private CitiesManager citiesManager;
-    private SelectionManager selectionManager;
     private ScoreboardManager scoreboardManager;
     private ProjectsManager projectsManager;
     private ShopsManager shopsManager;
@@ -122,7 +121,6 @@ public class RPMachine extends JavaPlugin {
         // Load useful and non db dependent managers
         this.jobsManager = new JobsManager(this);
         this.citiesManager = new CitiesManager(this);
-        this.selectionManager = new SelectionManager(citiesManager);
         this.scoreboardManager = new ScoreboardManager(this);
         this.projectsManager = new ProjectsManager(this);
         this.multiverseManager = new MultiverseManager();
@@ -147,6 +145,7 @@ public class RPMachine extends JavaPlugin {
         new CommandMoney();
         new CommandHome();
         new CommandJob();
+        new SelectionCommand();
 
         // Classic commands
         getCommand("fly").setExecutor(new CommandFly());
@@ -156,7 +155,7 @@ public class RPMachine extends JavaPlugin {
         getCommand("runtaxes").setExecutor(new CommandRuntaxes(citiesManager));
         getCommand("bypass").setExecutor(new CommandBypass(citiesManager));
 
-        Bukkit.getPluginManager().registerEvents(selectionManager, this);
+        Bukkit.getPluginManager().registerEvents(new SelectionListener(), this);
         Bukkit.getPluginManager().registerEvents(new WindowsListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SignsListener(), this);
@@ -248,10 +247,6 @@ public class RPMachine extends JavaPlugin {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public SelectionManager getSelectionManager() {
-        return selectionManager;
     }
 
     public CitiesManager getCitiesManager() {
