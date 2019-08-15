@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.common;
+package net.zyuiop.rpmachine.common.regions;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -7,16 +7,16 @@ import org.bukkit.block.Block;
 
 import java.util.Iterator;
 
-public class Area implements Iterable<Block> {
-	private String world = "world";
-	private int minX;
-	private int minY;
-	private int minZ;
-	private int maxX;
-	private int maxY;
-	private int maxZ;
+public class RectangleRegion implements Region {
+	protected String world = "world";
+	protected int minX;
+	protected int minY;
+	protected int minZ;
+	protected int maxX;
+	protected int maxY;
+	protected int maxZ;
 
-	public Area(Location l1, Location l2) {
+	public RectangleRegion(Location l1, Location l2) {
 		world = l1.getWorld().getName();
 		minX = Math.min(l1.getBlockX(), l2.getBlockX());
 		minY = Math.min(l1.getBlockY(), l2.getBlockY());
@@ -26,7 +26,7 @@ public class Area implements Iterable<Block> {
 		maxZ = Math.max(l1.getBlockZ(), l2.getBlockZ());
 	}
 
-	public Area(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+	public RectangleRegion(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		this.minX = minX;
 		this.minY = minY;
 		this.minZ = minZ;
@@ -35,7 +35,7 @@ public class Area implements Iterable<Block> {
 		this.maxZ = maxZ;
 	}
 
-	public Area(String world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+	public RectangleRegion(String world, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		this.world = world;
 		this.minX = minX;
 		this.minY = minY;
@@ -53,7 +53,7 @@ public class Area implements Iterable<Block> {
 		return Bukkit.getWorld(world).getBlockAt(maxX, maxY, maxZ).getLocation();
 	}
 
-	public Area() {
+	public RectangleRegion() {
 
 	}
 
@@ -109,10 +109,22 @@ public class Area implements Iterable<Block> {
 		return (loc.getWorld().getName().equalsIgnoreCase(world) &&(minX <= loc.getBlockX() && loc.getBlockX() <= maxX) && (minY <= loc.getBlockY() && loc.getBlockY() <= maxY) && (minZ <= loc.getBlockZ() && loc.getBlockZ() <= maxZ));
 	}
 
+	@Override
+	public int computeArea() {
+		return getSquareArea();
+	}
+
+	@Override
+	public int computeVolume() {
+		return getVolume();
+	}
+
+	@Deprecated
 	public int getSquareArea() {
 		return (maxX - minX) * (maxZ - minZ);
 	}
 
+	@Deprecated
 	public int getVolume() {
 		return getSquareArea() * (maxY - minY);
 	}
@@ -128,7 +140,7 @@ public class Area implements Iterable<Block> {
 	}
 
 	public boolean hasCommonPositionsWith(Chunk chunk) {
-		Area chunkArea = new Area(chunk.getBlock(0, 0, 0).getLocation(), chunk.getBlock(15, 0, 15).getLocation());
+		RectangleRegion chunkArea = new RectangleRegion(chunk.getBlock(0, 0, 0).getLocation(), chunk.getBlock(15, 0, 15).getLocation());
 
 		if (chunkArea.getMaxX() < getMinX() || chunkArea.getMaxZ() < getMaxZ() || chunkArea.getMinX() > getMaxX() || chunkArea.getMinZ() > getMaxZ()) {
 			return false;
@@ -137,8 +149,8 @@ public class Area implements Iterable<Block> {
 		return true;
 	}
 
-	public Area getFlatArea() {
-		return new Area(minX, 1, minZ, maxX, 1, maxZ);
+	public RectangleRegion getFlatArea() {
+		return new RectangleRegion(minX, 1, minZ, maxX, 1, maxZ);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.common;
 
+import net.zyuiop.rpmachine.common.regions.RectangleRegion;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
@@ -17,7 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Plot implements Ownable {
     private String plotName;
-    private Area area;
+    private RectangleRegion area;
     private String owner = null;
     private PlotSettings plotSettings = new PlotSettings();
     private Date deletionDate = null;
@@ -40,11 +41,11 @@ public class Plot implements Ownable {
         this.plotName = plotName;
     }
 
-    public Area getArea() {
+    public RectangleRegion getArea() {
         return area;
     }
 
-    public void setArea(Area area) {
+    public void setArea(RectangleRegion area) {
         this.area = area;
     }
 

@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.multiverse;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.common.Area;
+import net.zyuiop.rpmachine.common.regions.RectangleRegion;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -325,11 +325,11 @@ public class MultiverseListener implements Listener {
             second.setY(first.getY() + (portal.getPortalArea().getMaxY() - portal.getPortalArea().getMinY()));
             second.setWorld(target.getWorld());
 
-            Area npArea = new Area(first, second);
+            RectangleRegion npArea = new RectangleRegion(first, second);
             MultiversePortal nPortal = new MultiversePortal(npArea, current.getName());
 
             // Clear area around portal
-            Area clearArea = new Area(opposite.getWorld().getName(),
+            RectangleRegion clearArea = new RectangleRegion(opposite.getWorld().getName(),
                     opposite.getBlockX() - 5, opposite.getBlockY() - 1, opposite.getBlockZ() - 5,
                     opposite.getBlockX() + 5, opposite.getBlockY() + 10, opposite.getBlockZ() + 5);
 
@@ -337,7 +337,7 @@ public class MultiverseListener implements Listener {
             clearArea.iterator().forEachRemaining(b -> b.setType(Material.AIR));
 
             // Build a platform
-            Area platformArea = new Area(opposite.getWorld().getName(),
+            RectangleRegion platformArea = new RectangleRegion(opposite.getWorld().getName(),
                     opposite.getBlockX() - 5, opposite.getBlockY() - 1, opposite.getBlockZ() - 5,
                     opposite.getBlockX() + 5, opposite.getBlockY() - 1, opposite.getBlockZ() + 5);
 
@@ -360,7 +360,7 @@ public class MultiverseListener implements Listener {
 
             // Take random blocks from around the portal
             Location from = event.getFrom().clone();
-            Area overworldArea = new Area(from.getWorld().getName(),
+            RectangleRegion overworldArea = new RectangleRegion(from.getWorld().getName(),
                     from.getBlockX() - 5, from.getBlockY() - 1, from.getBlockZ() - 5,
                     from.getBlockX() + 5, from.getBlockY() + 10, from.getBlockZ() + 5);
 

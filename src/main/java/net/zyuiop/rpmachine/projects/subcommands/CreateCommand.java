@@ -2,8 +2,8 @@ package net.zyuiop.rpmachine.projects.subcommands;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.SubCommand;
-import net.zyuiop.rpmachine.common.Area;
-import net.zyuiop.rpmachine.common.Selection;
+import net.zyuiop.rpmachine.common.regions.RectangleRegion;
+import net.zyuiop.rpmachine.common.selections.RectangleSelection;
 import net.zyuiop.rpmachine.projects.Project;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import org.bukkit.ChatColor;
@@ -31,11 +31,11 @@ public class CreateCommand implements SubCommand {
 		if (RPMachine.getInstance().getSelectionManager().getSelection(player.getUniqueId()) == null) {
 			player.sendMessage(ChatColor.RED + "Vous n'avez sélectionné aucune région.");
 		} else {
-			Selection selection = RPMachine.getInstance().getSelectionManager().getSelection(player.getUniqueId());
+			RectangleSelection selection = RPMachine.getInstance().getSelectionManager().getSelection(player.getUniqueId());
 			if (selection.getLocation1() == null || selection.getLocation2() == null) {
 				player.sendMessage(ChatColor.RED + "Votre sélection n'est pas complète.");
 			} else {
-				Area area = selection.getArea();
+				RectangleRegion area = selection.getArea();
 				if (args.length < 1) {
 					player.sendMessage(ChatColor.RED + "Syntaxe invalide : /zone create " + getUsage());
 				} else {

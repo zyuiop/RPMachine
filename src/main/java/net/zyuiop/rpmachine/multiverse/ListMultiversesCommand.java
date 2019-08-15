@@ -1,12 +1,8 @@
 package net.zyuiop.rpmachine.multiverse;
 
 import net.zyuiop.rpmachine.commands.AbstractCommand;
-import net.zyuiop.rpmachine.common.Area;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 /**
  * @author Louis Vialar

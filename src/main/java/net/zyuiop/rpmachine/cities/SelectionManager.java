@@ -1,6 +1,6 @@
 package net.zyuiop.rpmachine.cities;
 
-import net.zyuiop.rpmachine.common.Selection;
+import net.zyuiop.rpmachine.common.selections.RectangleSelection;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,7 +16,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SelectionManager implements Listener {
-	private ConcurrentHashMap<UUID, Selection> selections = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<UUID, RectangleSelection> selections = new ConcurrentHashMap<>();
 	private final CitiesManager citiesManager;
 
 	public SelectionManager(CitiesManager citiesManager) {
@@ -32,9 +32,9 @@ public class SelectionManager implements Listener {
 			if (city == null || (!city.getMayor().equals(player.getUniqueId()) && !city.getCouncils().contains(player.getUniqueId())))
 				return;
 
-			Selection selection = getSelection(player.getUniqueId());
+			RectangleSelection selection = getSelection(player.getUniqueId());
 			if (selection == null)
-				selection = new Selection();
+				selection = new RectangleSelection();
 
 			Block block = event.getClickedBlock();
 			if (block == null || !block.getWorld().getName().equals("world"))
@@ -59,9 +59,9 @@ public class SelectionManager implements Listener {
 			event.setCancelled(true);
 		} else if (event.getItem() != null && event.getItem().getType() == Material.BLAZE_ROD) {
 			if (player.hasPermission("zones.select")) {
-				Selection selection = getSelection(player.getUniqueId());
+				RectangleSelection selection = getSelection(player.getUniqueId());
 				if (selection == null)
-					selection = new Selection();
+					selection = new RectangleSelection();
 
 				Block block = event.getClickedBlock();
 				if (block == null)
@@ -89,11 +89,11 @@ public class SelectionManager implements Listener {
 		}
 	}
 
-	public Selection getSelection(UUID player) {
+	public RectangleSelection getSelection(UUID player) {
 		return selections.get(player);
 	}
 
-	public void setSelection(UUID player, Selection area) {
+	public void setSelection(UUID player, RectangleSelection area) {
 		selections.put(player, area);
 	}
 

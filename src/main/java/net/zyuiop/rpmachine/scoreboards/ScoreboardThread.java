@@ -3,7 +3,7 @@ package net.zyuiop.rpmachine.scoreboards;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.entities.LegalEntity;

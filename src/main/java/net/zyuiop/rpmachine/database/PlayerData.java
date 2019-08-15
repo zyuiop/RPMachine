@@ -1,12 +1,11 @@
 package net.zyuiop.rpmachine.database;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
 import java.util.UUID;
 
 /**

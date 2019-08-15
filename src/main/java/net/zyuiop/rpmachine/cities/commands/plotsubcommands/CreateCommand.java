@@ -4,9 +4,9 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
-import net.zyuiop.rpmachine.common.Area;
+import net.zyuiop.rpmachine.common.regions.RectangleRegion;
 import net.zyuiop.rpmachine.common.Plot;
-import net.zyuiop.rpmachine.common.Selection;
+import net.zyuiop.rpmachine.common.selections.RectangleSelection;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.Permission;
@@ -45,11 +45,11 @@ public class CreateCommand implements CityMemberSubCommand {
 			player.sendMessage(ChatColor.RED + "Vous n'avez sélectionné aucune région.");
 			return false;
 		} else {
-			Selection selection = RPMachine.getInstance().getSelectionManager().getSelection(player.getUniqueId());
+			RectangleSelection selection = RPMachine.getInstance().getSelectionManager().getSelection(player.getUniqueId());
 			if (selection.getLocation1() == null || selection.getLocation2() == null) {
 				player.sendMessage(ChatColor.RED + "Votre sélection n'est pas complète.");
 			} else {
-				Area area = selection.getArea();
+				RectangleRegion area = selection.getArea();
 				if (args.length < 1) {
 					player.sendMessage(ChatColor.RED + "Syntaxe invalide : /plot create " + getUsage());
 				} else {

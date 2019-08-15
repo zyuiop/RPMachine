@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.projects;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.common.Area;
+import net.zyuiop.rpmachine.common.regions.RectangleRegion;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
@@ -44,7 +44,7 @@ public class Project extends Plot implements LegalEntity, StoredEntity {
         this.fileName = fileName;
     }
 
-    public boolean checkArea(Area area, ProjectsManager manager, Player player) {
+    public boolean checkArea(RectangleRegion area, ProjectsManager manager, Player player) {
         int i_x = area.getMinX();
         while (i_x < area.getMaxX()) {
             int i_z = area.getMinZ();

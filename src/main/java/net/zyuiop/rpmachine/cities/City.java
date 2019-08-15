@@ -1,15 +1,13 @@
 package net.zyuiop.rpmachine.cities;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.VirtualLocation;
-import net.zyuiop.rpmachine.cities.Line;
+import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.cities.politics.PoliticalSystem;
 import net.zyuiop.rpmachine.cities.politics.StateOfRights;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
-import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.json.JsonExclude;
 import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
@@ -18,7 +16,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
