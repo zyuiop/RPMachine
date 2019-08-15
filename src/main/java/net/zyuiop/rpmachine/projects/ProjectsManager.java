@@ -1,17 +1,13 @@
 package net.zyuiop.rpmachine.projects;
 
-import com.google.gson.Gson;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
-import net.zyuiop.rpmachine.json.Json;
-import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -90,7 +86,7 @@ public class ProjectsManager extends FileEntityStore<Project> implements LegalEn
 	}
 
 	public Collection<Project> getZonesHere(Chunk chunk) {
-		return zones.values().stream().filter(zone -> zone.getArea().hasCommonPositionsWith(chunk)).collect(Collectors.toList());
+		return zones.values().stream().filter(zone -> zone.getArea().hasBlockInChunk(chunk)).collect(Collectors.toList());
 	}
 
 	@Override

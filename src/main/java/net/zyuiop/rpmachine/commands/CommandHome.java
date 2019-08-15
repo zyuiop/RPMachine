@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.commands;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;

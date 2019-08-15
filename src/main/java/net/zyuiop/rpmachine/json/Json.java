@@ -4,6 +4,7 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.zyuiop.rpmachine.common.regions.Region;
 import net.zyuiop.rpmachine.permissions.Permission;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import net.zyuiop.rpmachine.shops.types.meta.ItemStackDataStorage;
@@ -15,6 +16,7 @@ public class Json {
     public static final Gson GSON =
             new GsonBuilder()
                     .registerTypeAdapter(AbstractShopSign.class, new ShopSerializer())
+                    .registerTypeAdapter(Region.class, new RegionSerializer())
                     .registerTypeAdapter(ItemStackDataStorage.class, new ItemStackStorageSerializer())
                     .registerTypeHierarchyAdapter(Permission.class, new PermissionSerializer())
                     .addSerializationExclusionStrategy(new ExclusionStrategy() {

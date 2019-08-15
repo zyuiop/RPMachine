@@ -44,8 +44,8 @@ public class InfoCommand implements SubCommand {
                 player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
                 player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
                 player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());
-                player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().getSquareArea() + " blocs");
-                player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().getSquareArea() * city.getTaxes() + " " + RPMachine.getCurrencyName());
+                player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().computeArea() + " blocs");
+                player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().computeArea() * city.getTaxes() + " " + RPMachine.getCurrencyName());
 
                 if (plot.isDueForDeletion())
                     player.sendMessage(ChatColor.YELLOW + "Suppression prévue le : " + ChatColor.RED + plot.getDeletionDateString());

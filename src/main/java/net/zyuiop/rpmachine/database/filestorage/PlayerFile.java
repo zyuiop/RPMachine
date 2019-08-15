@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;

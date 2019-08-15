@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine;
+package net.zyuiop.rpmachine.common;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -48,6 +48,14 @@ public class VirtualLocation {
 		return z;
 	}
 
+	public String getWorld() {
+		return world;
+	}
+
+	public void setWorld(String world) {
+		this.world = world;
+	}
+
 	public VirtualLocation(String string) {
 		String[] parts = string.split("/");
 		x = Integer.valueOf(parts[0]);
@@ -68,6 +76,6 @@ public class VirtualLocation {
 	}
 
 	public String toString() {
-		return x + "/" + y + "/" + z;
+		return world + " " + x + "/" + y + "/" + z;
 	}
 }

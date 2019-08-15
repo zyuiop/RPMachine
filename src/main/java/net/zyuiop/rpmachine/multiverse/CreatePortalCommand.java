@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.multiverse;
 
 import net.zyuiop.rpmachine.commands.AbstractCommand;
-import net.zyuiop.rpmachine.common.Area;
+import net.zyuiop.rpmachine.common.regions.RectangleRegion;
 import org.bukkit.Axis;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -9,7 +9,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.MultipleFacing;
 import org.bukkit.block.data.Orientable;
-import org.bukkit.block.data.type.GlassPane;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -46,7 +45,7 @@ public class CreatePortalCommand extends AbstractCommand {
             return true;
         }
 
-        Area portal = detectPortal(player.getFacing().getDirection(), block);
+        RectangleRegion portal = detectPortal(player.getFacing().getDirection(), block);
         portal.forEach(b -> {
             if (b.getType() == Material.GLASS_PANE) {
                 MultipleFacing data = (MultipleFacing) b.getBlockData();
@@ -72,7 +71,7 @@ public class CreatePortalCommand extends AbstractCommand {
         return (int) block.getLocation().toVector().dot(direction.multiply(direction)); // Keep the frame by including it in the area
     }
 
-    private Area detectPortal(Vector playerAxis, Block currentBlock) {
+    private RectangleRegion detectPortal(Vector playerAxis, Block currentBlock) {
         int minX = walkDirection(currentBlock, new Vector(-1, 0, 0), playerAxis);
         int maxX = walkDirection(currentBlock, new Vector(1, 0, 0), playerAxis);
         int minY = walkDirection(currentBlock, new Vector(0, -1, 0), playerAxis);
@@ -80,6 +79,6 @@ public class CreatePortalCommand extends AbstractCommand {
         int minZ = walkDirection(currentBlock, new Vector(0, 0, -1), playerAxis);
         int maxZ = walkDirection(currentBlock, new Vector(0, 0, 1), playerAxis);
 
-        return new Area(currentBlock.getWorld().getName(), minX, minY, minZ, maxX, maxY, maxZ);
+        return new RectangleRegion(currentBlock.getWorld().getName(), minX, minY, minZ, maxX, maxY, maxZ);
     }
 }

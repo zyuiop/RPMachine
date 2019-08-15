@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.VirtualLocation;
+import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;

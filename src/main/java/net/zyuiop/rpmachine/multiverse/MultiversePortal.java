@@ -1,25 +1,25 @@
 package net.zyuiop.rpmachine.multiverse;
 
-import net.zyuiop.rpmachine.common.Area;
+import net.zyuiop.rpmachine.common.regions.RectangleRegion;
 import net.zyuiop.rpmachine.database.StoredEntity;
 
 /**
  * @author Louis Vialar
  */
 public class MultiversePortal implements StoredEntity {
-    private Area portalArea;
+    private RectangleRegion portalArea;
     private String targetWorld;
     private String fileName;
 
     public MultiversePortal() {
     }
 
-    public MultiversePortal(Area portalArea, String targetWorld) {
+    public MultiversePortal(RectangleRegion portalArea, String targetWorld) {
         this.portalArea = portalArea;
         this.targetWorld = targetWorld;
     }
 
-    public Area getPortalArea() {
+    public RectangleRegion getPortalArea() {
         return portalArea;
     }
 

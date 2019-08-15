@@ -9,6 +9,7 @@ basePath = "/home/zyuiop/RPServer/"
 
 worlds["Overworld"] = basePath + "world"
 worlds["Nether"] = basePath + "world_nether"
+worlds["Ressources"] = basePath + "resources"
 
 outputdir = basePath + "overviewer"
 
@@ -143,9 +144,10 @@ def freePlotsFilter(poi):
                '<br>' + "<b>Surface:</b> " + poi['area'] + \
                '<br>' + "<b>Volume:</b> " + poi['volume']
 
-renders['render'] = {
+
+renders['lighting'] = {
     'world':'Overworld',
-    'title':'Map principale',
+    'title':'Lumière',
     'manualpois': readCities() + readPortals() + readPlotShops(),
     'markers': [
         dict(name="Villes", filterFunction=citySpawnFilter, checked=True, icon="marker_town.png"),
@@ -154,55 +156,40 @@ renders['render'] = {
         dict(name="Ventes de parcelles", filterFunction=plotShopFilter),
         dict(name="Portails", filterFunction=portalFilter, icon="marker_mine.png"),
     ],
-    'showspawn': False,
-    'showlocationmarker': False,
-    'defaultzoom': 4
+    'defaultzoom': 6,
+    'rendermode': 'lighting'
+}
+renders['resources'] = {
+    'world':'Ressources',
+    'title':'Map ressources',
+    'defaultzoom': 6
 }
 
-renders['nether'] = {
-    'world':'Nether',
-    'title':'Toutes couches',
-    'rendermode': 'nether',
-    'showspawn': False,
-    'showlocationmarker': False,
-    'defaultzoom': 2,
-    'forcerender': True
-}
+
 renders['nether_64'] = {
     'world':'Nether',
     'title':'Couche 64',
-    'rendermode': [Base(), EdgeLines(), Nether(), Depth(min=0, max=64)],
-    'showspawn': False,
-    'showlocationmarker': False
+    'rendermode': [Base(), EdgeLines(), Nether(), Depth(min=0, max=64)]
 }
 renders['nether_80'] = {
     'world':'Nether',
     'title':'Couche 80',
-    'rendermode': [Base(), EdgeLines(), Nether(), Depth(min=0, max=80)],
-    'showspawn': False,
-    'showlocationmarker': False
+    'rendermode': [Base(), EdgeLines(), Nether(), Depth(min=0, max=80)]
 }
 renders['nether_96'] = {
     'world':'Nether',
     'title':'Couche 96',
-    'rendermode': [Base(), EdgeLines(), Nether(), Depth(min=0, max=96)],
-    'showspawn': False,
-    'showlocationmarker': False,
-    'defaultzoom': 2
+    'rendermode': [Base(), EdgeLines(), Nether(), Depth(min=0, max=96)]
 }
 renders['nether_112'] = {
     'world':'Nether',
     'title':'Couche 112',
-    'rendermode': [Base(), EdgeLines(), Nether(), Depth(min=0, max=112)],
-    'showspawn': False,
-    'showlocationmarker': False
+    'rendermode': [Base(), EdgeLines(), Nether(), Depth(min=0, max=112)]
 }
 renders['nether_cave'] = {
     'world':'Nether',
-    'title':'Cavités',
-    'rendermode': [Base(), EdgeLines(), Cave(), Nether()],
-    'showspawn': False,
-    'showlocationmarker': False
+    'title':'Toutes couches',
+    'rendermode': [Base(), EdgeLines(), Cave(), Nether()]
 }
 
 

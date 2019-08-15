@@ -13,7 +13,6 @@ public class ProjectCommand extends CompoundCommand {
 		registerSubCommand("members", new MembersCommand(manager));
 		registerSubCommand("remove", new RemoveCommand(manager));
 		registerSubCommand("leave", new LeaveCommand(manager));
-		registerSubCommand("wand", new WandCommand(), "w");
 		registerSubCommand("redefine", new RedefineCommand(manager));
 		registerSubCommand("info", new InfoCommand(manager), "i");
 		registerSubCommand("setowner", new SetOwnerCommand(manager));
