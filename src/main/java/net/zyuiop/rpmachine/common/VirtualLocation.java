@@ -4,78 +4,81 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class VirtualLocation {
-	private String world = "world";
-	private int x;
-	private int y;
-	private int z;
+    private String world = "world";
+    private int x;
+    private int y;
+    private int z;
 
-	public VirtualLocation() {
+    public VirtualLocation() {
 
-	}
+    }
 
-	public VirtualLocation(Location loc) {
-		world = loc.getWorld().getName();
-		setX(loc.getBlockX());
-		setY(loc.getBlockY());
-		setZ(loc.getBlockZ());
-	}
+    public VirtualLocation(Location loc) {
+        world = loc.getWorld().getName();
+        setX(loc.getBlockX());
+        setY(loc.getBlockY());
+        setZ(loc.getBlockZ());
+    }
 
-	public Location getLocation() {
-		return new Location(Bukkit.getWorld(world), x, y, z);
-	}
+    public VirtualLocation(String string) {
+        String[] worldParts = string.split(" ");
+        world = worldParts.length > 1 ? worldParts[0] : "world";
+        String[] parts = (worldParts.length > 1 ? worldParts[1] : worldParts[0]).split("/");
 
-	public void setX(int x) {
-		this.x = x;
-	}
+        x = Integer.valueOf(parts[0]);
+        y = Integer.valueOf(parts[1]);
+        z = Integer.valueOf(parts[2]);
+    }
 
-	public void setY(int y) {
-		this.y = y;
-	}
+    public Location getLocation() {
+        return new Location(Bukkit.getWorld(world), x, y, z);
+    }
 
-	public void setZ(int z) {
-		this.z = z;
-	}
+    public int getX() {
+        return x;
+    }
 
-	public int getX() {
-		return x;
-	}
+    public void setX(int x) {
+        this.x = x;
+    }
 
-	public int getY() {
-		return y;
-	}
+    public int getY() {
+        return y;
+    }
 
-	public int getZ() {
-		return z;
-	}
+    public void setY(int y) {
+        this.y = y;
+    }
 
-	public String getWorld() {
-		return world;
-	}
+    public int getZ() {
+        return z;
+    }
 
-	public void setWorld(String world) {
-		this.world = world;
-	}
+    public void setZ(int z) {
+        this.z = z;
+    }
 
-	public VirtualLocation(String string) {
-		String[] parts = string.split("/");
-		x = Integer.valueOf(parts[0]);
-		y = Integer.valueOf(parts[1]);
-		z = Integer.valueOf(parts[2]);
-	}
+    public String getWorld() {
+        return world;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof VirtualLocation))
-			return false;
+    public void setWorld(String world) {
+        this.world = world;
+    }
 
-		VirtualLocation that = (VirtualLocation) o;
-		return x == that.x && y == that.y && z == that.z;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof VirtualLocation))
+            return false;
 
-	}
+        VirtualLocation that = (VirtualLocation) o;
+        return x == that.x && y == that.y && z == that.z;
 
-	public String toString() {
-		return world + " " + x + "/" + y + "/" + z;
-	}
+    }
+
+    public String toString() {
+        return world + " " + x + "/" + y + "/" + z;
+    }
 }
