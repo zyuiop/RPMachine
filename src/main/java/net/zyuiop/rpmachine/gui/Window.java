@@ -85,13 +85,25 @@ public abstract class Window {
 
     private boolean closing = false;
 
+    public void cancel() {
+
+    }
+
     public void close() {
+        close(true);
+    }
+
+    public void close(boolean isCancel) {
         if (closing) // Prevent inf loops
             return;
 
         closing = true;
-        if (player.getOpenInventory().getTopInventory() == inventory)
+        if (player.getOpenInventory().getTopInventory() == inventory) {
             player.closeInventory();
+
+            if (isCancel)
+                cancel();
+        }
         closing = false;
 
         inventory = null;

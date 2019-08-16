@@ -32,6 +32,7 @@ public class ShopsManager extends FileEntityStore<AbstractShopSign> {
         registerShopBuilder(new TollShopSign.Builder(), "TollShop", "[TollShop]", "[Toll]", "[Peage]", "[Péage]");
         registerShopBuilder(new EnchantingSign.Builder(), "EnchantShop", "ShopEnchant", "[Enchantment]", "[Enchantement]", "[Enchant]");
         registerShopBuilder(new XPShopSign.Builder(), "XPShop", "ShopXP", "[XP]", "[XPShop]", "[Experience]");
+        registerShopBuilder(new AuctionAccessSign.Builder(), "[HdV]");
     }
 
     private void registerShopBuilder(ShopBuilder<? extends AbstractShopSign> builder, String... validFirstLines) {

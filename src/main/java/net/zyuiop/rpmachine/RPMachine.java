@@ -1,5 +1,7 @@
 package net.zyuiop.rpmachine;
 
+import net.zyuiop.rpmachine.auctions.Auction;
+import net.zyuiop.rpmachine.auctions.AuctionManager;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.cities.commands.CityCommand;
@@ -119,6 +121,7 @@ public class RPMachine extends JavaPlugin {
         saveDefaultConfig();
 
         // Load useful and non db dependent managers
+        AuctionManager.INSTANCE.load();
         this.jobsManager = new JobsManager(this);
         this.citiesManager = new CitiesManager(this);
         this.scoreboardManager = new ScoreboardManager(this);
@@ -265,6 +268,8 @@ public class RPMachine extends JavaPlugin {
     public void onDisable() {
         getLogger().info("Disabling: deleting resources world");
         this.multiverseManager.onShutdown(false);
+
+        AuctionManager.INSTANCE.stop();
 
         super.onDisable();
     }
