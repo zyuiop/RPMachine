@@ -30,7 +30,7 @@ public class RectangleRegion implements Region {
 		this.world = world;
 		this.minX = minX;
 		this.minY = Math.max(0, Math.min(255, minY));
-		this.minZ = minY;
+		this.minZ = minZ;
 		this.maxX = maxX;
 		this.maxY = Math.max(0, Math.min(255, maxY));;
 		this.maxZ = maxZ;

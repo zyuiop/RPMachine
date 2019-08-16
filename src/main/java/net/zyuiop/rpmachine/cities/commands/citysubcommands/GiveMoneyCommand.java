@@ -39,7 +39,7 @@ public class GiveMoneyCommand implements SubCommand {
         if (c == null && args.length < 2) {
             player.sendMessage(ChatColor.RED + "Vous n'êtes membre d'aucune ville.");
             return false;
-        } else if (c == null) {
+        } else if (args.length > 1) {
             c = citiesManager.getCity(args[1]);
         }
 
