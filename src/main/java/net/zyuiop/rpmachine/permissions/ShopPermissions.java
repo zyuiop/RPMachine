@@ -10,15 +10,15 @@ public enum ShopPermissions implements DelegatedPermission {
     CREATE_PLOT_SHOPS("créer des shops de vente de parcelles"),
     CREATE_TOLL_SHOPS("créer des péages"),
     REFILL_SHOP("remplir un shop"),
-    GET_SHOP_STOCK("récupérer le stock d'un shop"),
+    GET_SHOP_STOCK("récupérer le stock d'un shop ou hotel des ventes"),
     DESTROY_SHOP("détruire un shop"),
 
     // ActAs shops user
-    BUY_ITEMS("acheter des items dans un shop"),
+    BUY_ITEMS("acheter des items dans un shop ou hotel des ventes"),
     BUY_EXPERIENCE("acheter de l'XP dans un shop"),
     BUY_ENCHANTS("acheter des enchantements dans un shop"),
     USE_TOLL("payer une entrée payante"),
-    SELL_ITEMS("vendre des items dans un shop"),
+    SELL_ITEMS("vendre des items dans un shop ou hotel des ventes"),
     BUY_PLOTS("acheter des parcelles dans un shop");
 
     private final String description;

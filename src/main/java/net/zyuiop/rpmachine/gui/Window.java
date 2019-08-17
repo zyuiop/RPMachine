@@ -58,6 +58,11 @@ public abstract class Window {
         inventory.setItem(position, item);
     }
 
+    protected void clear() {
+        actions.clear();
+        inventory.clear();
+    }
+
     protected void setItem(int row, int col, ItemStack item, Runnable onClick) {
         setItem(row * 9 + col, item, onClick);
     }

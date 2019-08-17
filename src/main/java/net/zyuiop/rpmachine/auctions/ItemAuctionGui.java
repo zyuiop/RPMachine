@@ -1,10 +1,15 @@
 package net.zyuiop.rpmachine.auctions;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.entities.AdminLegalEntity;
+import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.gui.ConfirmGui;
 import net.zyuiop.rpmachine.gui.PickNumberGui;
 import net.zyuiop.rpmachine.gui.Window;
+import net.zyuiop.rpmachine.permissions.ShopPermissions;
+import net.zyuiop.rpmachine.utils.InventoryUtils;
 import net.zyuiop.rpmachine.utils.MenuItem;
+import net.zyuiop.rpmachine.utils.Symbols;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -14,7 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Louis Vialar
@@ -39,14 +44,108 @@ public class ItemAuctionGui extends Window {
 
         setItem(4, new MenuItem(mat).setName(mat.name()).setDescription(desc), () -> {
         });
-        setItem(1, new MenuItem(Material.GOLD_INGOT).setName("Acheter").setDescription(desc), () -> {
-            close();
-            new BuyGui().open();
-        });
-        setItem(7, new MenuItem(Material.CHEST).setName("Vendre").setDescription(desc), () -> {
-            close();
-            new SellGui(avgPrice).open();
-        });
+
+        LegalEntity token = RPMachine.getPlayerActAs(player);
+
+        if (token.hasDelegatedPermission(player, ShopPermissions.BUY_ITEMS))
+            setItem(1, new MenuItem(Material.GOLD_INGOT).setName("Acheter").setDescription(desc), () -> {
+                close();
+                new BuyGui().open();
+            });
+
+
+        if (token.hasDelegatedPermission(player, ShopPermissions.SELL_ITEMS))
+            setItem(7, new MenuItem(Material.CHEST).setName("Vendre").setDescription(desc), () -> {
+                close();
+                new SellGui(avgPrice).open();
+            });
+
+        if (token.hasDelegatedPermission(player, ShopPermissions.GET_SHOP_STOCK)) {
+            List<Auction> my = AuctionManager.INSTANCE.getMyAuctions(mat, token);
+
+            if (!my.isEmpty()) {
+                setItem(6, new MenuItem(Material.RED_SHULKER_BOX).setName("Mes enchères").setDescription(ChatColor.YELLOW + "Pour lister et retirer certaines de vos ventes en cours"), () -> {
+                    close();
+                    new MyAuctionsGui(my).open();
+                });
+            }
+        }
+    }
+
+    @Override
+    public void open() {
+        if (RPMachine.getPlayerActAs(player) == AdminLegalEntity.INSTANCE) {
+            player.sendMessage(ChatColor.RED + "La Confédération ne peut pas utiliser l'hôtel des ventes.");
+            return;
+        }
+
+        super.open();
+    }
+
+    class MyAuctionsGui extends Window {
+        private List<Auction> myAuctions;
+
+        MyAuctionsGui(List<Auction> myAuctions) {
+            super((int) (Math.ceil((myAuctions.size() + 3) / 9D) * 9D), "Mes enchères en cours", ItemAuctionGui.this.player);
+            this.myAuctions = myAuctions;
+        }
+
+        @Override
+        public void fill() {
+            setItem(size - 1, new MenuItem(Material.ARROW).setName(ChatColor.YELLOW + "Retour"), () -> {
+                close();
+                ItemAuctionGui.this.open();
+            });
+
+            setItem(size - 2, new MenuItem(Material.WATER_BUCKET).setName(ChatColor.AQUA + "Raffraichir"), this::refresh);
+
+            load();
+        }
+
+        private void refresh() {
+            myAuctions = AuctionManager.INSTANCE.getMyAuctions(mat, RPMachine.getPlayerActAs(player));
+
+            clear();
+
+            fill();
+        }
+
+        private void load() {
+            for (int i = 0; i < (myAuctions.size()) && i < size - 3; ++i) {
+                Auction a = myAuctions.get(i);
+
+                setItem(i,
+                        new MenuItem(mat, Math.min(mat.getMaxStackSize(), a.getAvailable()))
+                                .setDescription(
+                                        ChatColor.YELLOW + "Unités restantes : " + ChatColor.GOLD + a.getAvailable(),
+                                        ChatColor.YELLOW + "Prix unitaire : " + ChatColor.GOLD + String.format("%.2f", a.getItemPrice()) + RPMachine.getCurrencyName(),
+                                        ChatColor.GOLD + "",
+
+                                        ChatColor.YELLOW + "Prix min actuel : " + ChatColor.GOLD + String.format("%.2f", AuctionManager.INSTANCE.minPrice(mat)) + RPMachine.getCurrencyName(),
+                                        ChatColor.GOLD + "",
+                                        ChatColor.YELLOW + Symbols.ARROW_RIGHT_FULL + " Clic : récupérer le lot"
+                                )
+                        , () -> {
+                            int availableSize = InventoryUtils.availablePlaceFor(player.getInventory(), mat);
+
+                            if (availableSize < a.getAvailable()) {
+                                player.sendMessage(ChatColor.RED + "Pas assez de place ! Maximum dispo : " + availableSize + " items.");
+                                refresh();
+                                return;
+                            }
+
+                            if (AuctionManager.INSTANCE.removeAuction(a)) {
+                                InventoryUtils.giveItems(mat, a.getAvailable(), player.getInventory());
+                                player.sendMessage(ChatColor.GREEN + "Offre récupérée !");
+                                refresh();
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Cette offre n'est plus disponible.");
+                                refresh();
+                            }
+
+                        });
+            }
+        }
     }
 
     class BuyGui extends PickNumberGui {
@@ -55,13 +154,7 @@ public class ItemAuctionGui extends Window {
         protected BuyGui() {
             super("Combien de " + mat + " acheter ?", ItemAuctionGui.this.player, 10, 5, 1, 1);
             this.min = 1;
-            this.max = Arrays.stream(player.getInventory().getContents()).mapToInt(s -> {
-                if (s == null || s.getType() == Material.AIR)
-                    return mat.getMaxStackSize();
-                else if (s.getType() == mat)
-                    return mat.getMaxStackSize() - s.getAmount();
-                else return 0;
-            }).sum();
+            this.max = InventoryUtils.availablePlaceFor(player.getInventory(), mat);
         }
 
 
@@ -131,14 +224,7 @@ public class ItemAuctionGui extends Window {
                 Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), () -> {
                             if (!player.isOnline()) {
                                 Bukkit.getLogger().info("Player went away, giving back items");
-                                int remain = finalCount;
-
-                                while (remain > 0) {
-                                    int size = Math.min(remain, mat.getMaxStackSize());
-                                    ItemStack stack = new ItemStack(mat, size);
-                                    player.getInventory().addItem(stack);
-                                    remain -= size;
-                                }
+                                InventoryUtils.giveItems(mat, finalCount, player.getInventory());
 
                                 player.saveData();
                                 return;
@@ -181,15 +267,7 @@ public class ItemAuctionGui extends Window {
             } else {
                 player.sendMessage(ChatColor.RED + "Mise en vente annulée.");
 
-                int remain = quantity;
-
-                while (remain > 0) {
-                    int size = Math.min(remain, mat.getMaxStackSize());
-                    ItemStack stack = new ItemStack(mat, size);
-                    player.getInventory().addItem(stack);
-                    remain -= size;
-                }
-
+                InventoryUtils.giveItems(mat, quantity, player.getInventory());
             }
         }
     }

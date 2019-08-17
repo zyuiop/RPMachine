@@ -131,9 +131,10 @@ public class AuctionManager {
         } else return Collections.emptyList();
     }
 
-    public void removeAuction(Auction auction) {
+    public boolean removeAuction(Auction auction) {
         if (auctions.containsKey(auction.getMaterial()))
-            auctions.get(auction.getMaterial()).remove(auction);
+           return auctions.get(auction.getMaterial()).remove(auction);
+        return false;
     }
 
     public void addAuction(Auction auction) {
