@@ -149,7 +149,7 @@ public class PlotSign extends AbstractShopSign {
             if (plot.getOwner() == null) {
                 if (city != null) {
                     city.creditMoney(price);
-                    Messages.credit(city, price, "vente de parcelle");
+                    Messages.credit(city, price, "vente de parcelle à " + data.displayable());
                 }
             } else {
                 // On crédite à l'owner du panneau
@@ -160,7 +160,7 @@ public class PlotSign extends AbstractShopSign {
                     city.creditMoney(price * sellTaxes);
                 }
 
-                Messages.credit(owner(), price * userRate, "vente de parcelle");
+                Messages.credit(owner(), price * userRate, "vente de parcelle à " + data.displayable());
                 owner().creditMoney(price * userRate);
             }
 

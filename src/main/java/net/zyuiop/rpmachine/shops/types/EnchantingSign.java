@@ -264,7 +264,7 @@ public class EnchantingSign extends AbstractShopSign {
             if (cost > 0)
                 player.setLevel(player.getLevel() - cost);
             Messages.debitEntity(player, token.getLegalEntity(), price, "enchantement");
-            Messages.credit(owner(), toOwner, "vente d'enchantement");
+            Messages.credit(owner(), toOwner, "vente d'enchantement à " + token.getLegalEntity().displayable());
         } else {
             Messages.notEnoughMoneyEntity(player, token.getLegalEntity(), price);
         }

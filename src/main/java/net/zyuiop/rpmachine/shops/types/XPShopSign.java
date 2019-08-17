@@ -116,7 +116,7 @@ public class XPShopSign extends AbstractShopSign {
 
                 if (owner().transfer(price, token.getLegalEntity())) {
                     Messages.creditEntity(player, token.getLegalEntity(), price, "vente de " + points + " XP");
-                    Messages.debit(owner(), price, "achat automatique de " + points + " XP");
+                    Messages.debit(owner(), price, "achat automatique de " + points + " XP à " + token.getLegalEntity().displayable());
                     removeXP(event.getPlayer());
                     available += 1;
                 } else {
@@ -137,7 +137,7 @@ public class XPShopSign extends AbstractShopSign {
             if (token.getLegalEntity().withdrawMoney(price)) {
                 double toOwner = creditToOwner();
                 Messages.debitEntity(player, token.getLegalEntity(), price, "achat de " + points + " XP");
-                Messages.credit(owner(), toOwner, "vente automatique de " + points + " XP");
+                Messages.credit(owner(), toOwner, "vente automatique de " + points + " XP à " + token.getLegalEntity().displayable());
 
                 available -= 1;
                 player.giveExp(points);

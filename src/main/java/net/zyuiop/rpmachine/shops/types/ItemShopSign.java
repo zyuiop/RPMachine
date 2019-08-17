@@ -213,7 +213,7 @@ public class ItemShopSign extends AbstractShopSign {
 
                 if (owner().transfer(price, token.getLegalEntity())) {
                     Messages.creditEntity(player, token.getLegalEntity(), price, "vente de " + amountPerPackage + " " + itemType.longItemName());
-                    Messages.debit(owner(), price, "achat automatique de " + amountPerPackage + " " + itemType.longItemName());
+                    Messages.debit(owner(), price, "achat automatique de " + amountPerPackage + " " + itemType.longItemName() + " à " + token.getLegalEntity().displayable());
                     available += amountPerPackage;
                     click.setAmount(click.getAmount() - amountPerPackage);
                 } else {
@@ -237,7 +237,7 @@ public class ItemShopSign extends AbstractShopSign {
             if (token.getLegalEntity().withdrawMoney(price)) {
                 double credited = creditToOwner();
                 Messages.debitEntity(player, token.getLegalEntity(), price, "achat de " + amountPerPackage + " " + itemType.longItemName());
-                Messages.credit(owner(), credited, "vente automatique de " + amountPerPackage + " " + itemType.longItemName());
+                Messages.credit(owner(), credited, "vente automatique de " + amountPerPackage + " " + itemType.longItemName() + " à " + token.getLegalEntity().displayable());
                 available -= amountPerPackage;
                 player.getInventory().addItem(getNewStack());
             } else {
