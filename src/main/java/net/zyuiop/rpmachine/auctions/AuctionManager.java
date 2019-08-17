@@ -119,6 +119,14 @@ public class AuctionManager {
         return total / items;
     }
 
+    public int countAvailable(Material material) {
+        if (!auctions.containsKey(material)) return 0;
+
+        if (auctions.get(material).isEmpty()) return 0;
+
+        return auctions.get(material).stream().mapToInt(Auction::getAvailable).sum();
+    }
+
     public double minPrice(Material material) {
         if (!auctions.containsKey(material) || auctions.get(material).isEmpty()) return Double.NaN;
 
@@ -133,7 +141,7 @@ public class AuctionManager {
 
     public boolean removeAuction(Auction auction) {
         if (auctions.containsKey(auction.getMaterial()))
-           return auctions.get(auction.getMaterial()).remove(auction);
+            return auctions.get(auction.getMaterial()).remove(auction);
         return false;
     }
 
@@ -142,6 +150,10 @@ public class AuctionManager {
             auctions.put(auction.getMaterial(), new TreeSet<>());
 
         auctions.get(auction.getMaterial()).add(auction);
+    }
+
+    public TreeSet<Auction> getAuctions(Material itemType) {
+        return auctions.containsKey(itemType) ? auctions.get(itemType) : new TreeSet<>();
     }
 
     public static class Transaction implements Ownable {

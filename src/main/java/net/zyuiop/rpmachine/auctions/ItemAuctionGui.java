@@ -37,25 +37,27 @@ public class ItemAuctionGui extends Window {
         double minPrice = AuctionManager.INSTANCE.minPrice(mat);
         double avgPrice = AuctionManager.INSTANCE.averagePrice(mat);
 
-        String[] desc = {
-                ChatColor.YELLOW + "Prix moyen: " + (avgPrice != avgPrice ? ChatColor.RED + "Inconnu" : ChatColor.AQUA + String.format("%.2f", avgPrice)) + RPMachine.getCurrencyName(),
-                ChatColor.YELLOW + "Prix minimum: " + (minPrice != minPrice ? ChatColor.RED + "Inconnu" : ChatColor.AQUA + String.format("%.2f", minPrice)) + RPMachine.getCurrencyName()
-        };
+        int avail = AuctionManager.INSTANCE.countAvailable(mat);
+        String desc =
+                ChatColor.YELLOW + "Prix moyen: " + (avgPrice != avgPrice ? ChatColor.RED + "Inconnu" : ChatColor.AQUA + String.format("%.2f", avgPrice)) + RPMachine.getCurrencyName() + "\n" +
+                ChatColor.YELLOW + "Prix minimum: " + (minPrice != minPrice ? ChatColor.RED + "Inconnu" : ChatColor.AQUA + String.format("%.2f", minPrice)) + RPMachine.getCurrencyName() + "\n" +
+                        ChatColor.YELLOW + "Disponible: " + avail
+        ;
 
-        setItem(4, new MenuItem(mat).setName(mat.name()).setDescription(desc), () -> {
+        setItem(4, new MenuItem(mat).setName(mat.name()).setDescriptionBlock(desc), () -> {
         });
 
         LegalEntity token = RPMachine.getPlayerActAs(player);
 
-        if (token.hasDelegatedPermission(player, ShopPermissions.BUY_ITEMS))
-            setItem(1, new MenuItem(Material.GOLD_INGOT).setName("Acheter").setDescription(desc), () -> {
+        if (token.hasDelegatedPermission(player, ShopPermissions.BUY_ITEMS) && avail > 0)
+            setItem(1, new MenuItem(Material.GOLD_INGOT).setName("Acheter").setDescriptionBlock(desc), () -> {
                 close();
                 new BuyGui().open();
             });
 
 
         if (token.hasDelegatedPermission(player, ShopPermissions.SELL_ITEMS))
-            setItem(7, new MenuItem(Material.CHEST).setName("Vendre").setDescription(desc), () -> {
+            setItem(7, new MenuItem(Material.CHEST).setName("Vendre").setDescriptionBlock(desc), () -> {
                 close();
                 new SellGui(avgPrice).open();
             });

@@ -1,6 +1,7 @@
 package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.auctions.Auction;
 import net.zyuiop.rpmachine.auctions.AuctionManager;
 import net.zyuiop.rpmachine.auctions.ItemAuctionGui;
 import net.zyuiop.rpmachine.entities.AdminLegalEntity;
@@ -82,6 +83,10 @@ public class AuctionAccessSign extends AbstractShopSign {
     public void debug(Player p) {
         p.sendMessage(ChatColor.YELLOW + "-----[ Débug Shop ] -----");
         p.sendMessage(ChatColor.YELLOW + "Not a real shop :D");
+        p.sendMessage(ChatColor.YELLOW + "Avail items: " + AuctionManager.INSTANCE.countAvailable(itemType));
+
+        for (Auction a : AuctionManager.INSTANCE.getAuctions(itemType))
+            p.sendMessage(ChatColor.YELLOW + " - " + a.getAvailable() + " items, price " + a.getItemPrice() + ", seller " + a.owner().displayable());
     }
 
     @Override
