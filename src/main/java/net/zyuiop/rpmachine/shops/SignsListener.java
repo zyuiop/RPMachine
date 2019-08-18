@@ -1,6 +1,5 @@
 package net.zyuiop.rpmachine.shops;
 
-import com.sun.scenario.effect.Crop;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import org.bukkit.block.Block;

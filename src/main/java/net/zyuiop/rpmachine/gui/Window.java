@@ -12,7 +12,6 @@ import org.bukkit.metadata.MetadataValue;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * @author Louis Vialar
@@ -36,6 +35,10 @@ public abstract class Window {
 
     public static Window createWindow(Class<? extends Window> window, Player player) throws ReflectiveOperationException {
         return window.getConstructor(Player.class).newInstance(player);
+    }
+
+    public static int computeSize(int items) {
+        return (int) ((Math.ceil(items / 9D)) * 9D);
     }
 
     void clickPosition(int pos) {

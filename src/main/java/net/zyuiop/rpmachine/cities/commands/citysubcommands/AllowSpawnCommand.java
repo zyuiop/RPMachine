@@ -70,7 +70,8 @@ public class AllowSpawnCommand implements SubCommand {
 
             player.sendMessage(ChatColor.YELLOW + "Statut modifié. La ville " + toDisplayable(target.isAllowSpawn()) + ChatColor.YELLOW + ". Statut précédent : " + toDisplayable(isAllow));
         } else {
-            player.sendMessage(ChatColor.YELLOW + "La ville " + toDisplayable(isAllow));
+            player.sendMessage(ChatColor.YELLOW + "Statut actuel de la ville : " + toDisplayable(isAllow));
+            player.sendMessage(ChatColor.GRAY + "Pour modifier, utilisez /" + command + " " + subCommand + " " + args[0] + " " + (isAllow ? "no" : "yes"));
         }
 
         return true;

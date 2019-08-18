@@ -30,24 +30,34 @@ public class AuctionManager {
     private static long TX_EXPIRATION_TIME = 20 * 1000L;
 
     private final File folder = new File(RPMachine.getInstance().getDataFolder().getPath());
+
+    private final File auctionsFile = new File(folder, "auctions.json");
+    private final File typesFile = new File(folder, "auction_types.json");
+    private final File transactionsFile = new File(folder, "transactions.json");
+
     private final Map<Material, TreeSet<Auction>> auctions = new HashMap<>();
     private final Map<Integer, Transaction> transactions = new HashMap<>();
+    private final Map<String, AuctionType> types = new HashMap<>();
 
     public void load() {
         try {
-            File auctions = new File(folder, "auctions.json");
-            File transactions = new File(folder, "transactions.json");
 
-            if (auctions.exists()) {
+            if (auctionsFile.exists()) {
                 TypeToken<Map<Material, TreeSet<Auction>>> tt = new TypeToken<Map<Material, TreeSet<Auction>>>() {
                 };
-                this.auctions.putAll(Json.GSON.fromJson(new FileReader(auctions), tt.getType()));
+                this.auctions.putAll(Json.GSON.fromJson(new FileReader(auctionsFile), tt.getType()));
             }
 
-            if (transactions.exists()) {
+            if (typesFile.exists()) {
+                TypeToken<Map<String, AuctionType>> tt = new TypeToken<Map<String, AuctionType>>() {
+                };
+                this.types.putAll(Json.GSON.fromJson(new FileReader(typesFile), tt.getType()));
+            }
+
+            if (transactionsFile.exists()) {
                 TypeToken<Map<Integer, Transaction>> tt = new TypeToken<Map<Integer, Transaction>>() {
                 };
-                this.transactions.putAll(Json.GSON.fromJson(new FileReader(transactions), tt.getType()));
+                this.transactions.putAll(Json.GSON.fromJson(new FileReader(transactionsFile), tt.getType()));
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -79,18 +89,30 @@ public class AuctionManager {
     }
 
     private void doSave() {
-        File auctions = new File(folder, "auctions.json");
-        File transactions = new File(folder, "transactions.json");
-
         try {
-            if (!auctions.exists()) auctions.createNewFile();
-            if (!transactions.exists()) transactions.createNewFile();
+            if (!auctionsFile.exists()) auctionsFile.createNewFile();
+            if (!transactionsFile.exists()) transactionsFile.createNewFile();
+            if (!typesFile.exists()) typesFile.createNewFile();
 
-            Json.GSON.toJson(this.auctions, new PrintStream(auctions));
-            Json.GSON.toJson(this.transactions, new PrintStream(transactions));
+            Json.GSON.toJson(this.auctions, new PrintStream(auctionsFile));
+            Json.GSON.toJson(this.types, new PrintStream(typesFile));
+            Json.GSON.toJson(this.transactions, new PrintStream(transactionsFile));
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Map<String, AuctionType> getTypes() {
+        return Collections.unmodifiableMap(types);
+    }
+
+    public AuctionType getType(String id) {
+        return types.get(id.toLowerCase());
+    }
+
+    public void createType(AuctionType type) {
+        types.put(type.getId(), type);
+        save();
     }
 
     public void save() {
