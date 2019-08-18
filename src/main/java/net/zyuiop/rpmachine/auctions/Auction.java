@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.Ownable;
-import net.zyuiop.rpmachine.permissions.EconomyPermissions;
 import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

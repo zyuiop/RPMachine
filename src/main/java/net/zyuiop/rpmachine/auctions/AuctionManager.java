@@ -145,6 +145,12 @@ public class AuctionManager {
         return false;
     }
 
+    public boolean hasAuction(Auction auction) {
+        if (auctions.containsKey(auction.getMaterial()))
+            return auctions.get(auction.getMaterial()).contains(auction);
+        return false;
+    }
+
     public void addAuction(Auction auction) {
         if (!auctions.containsKey(auction.getMaterial()) || auctions.get(auction.getMaterial()) == null)
             auctions.put(auction.getMaterial(), new TreeSet<>());
@@ -303,6 +309,16 @@ public class AuctionManager {
 
         Transaction tx = new Transaction(buyer, Math.min(amount, total));
         tx.content.addAll(target);
+
+        transactions.put(tx.id, tx);
+        save();
+
+        return tx;
+    }
+
+    public Transaction startTransactionWithRemovedAuction(LegalEntity buyer, Auction auction) {
+        Transaction tx = new Transaction(buyer, auction.getAvailable());
+        tx.content.add(auction);
 
         transactions.put(tx.id, tx);
         save();

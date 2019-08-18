@@ -20,6 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * @author Louis Vialar
@@ -40,11 +41,16 @@ public class ItemAuctionGui extends Window {
         int avail = AuctionManager.INSTANCE.countAvailable(mat);
         String desc =
                 ChatColor.YELLOW + "Prix moyen: " + (avgPrice != avgPrice ? ChatColor.RED + "Inconnu" : ChatColor.AQUA + String.format("%.2f", avgPrice)) + RPMachine.getCurrencyName() + "\n" +
-                ChatColor.YELLOW + "Prix minimum: " + (minPrice != minPrice ? ChatColor.RED + "Inconnu" : ChatColor.AQUA + String.format("%.2f", minPrice)) + RPMachine.getCurrencyName() + "\n" +
-                        ChatColor.YELLOW + "Disponible: " + avail
-        ;
+                        ChatColor.YELLOW + "Prix minimum: " + (minPrice != minPrice ? ChatColor.RED + "Inconnu" : ChatColor.AQUA + String.format("%.2f", minPrice)) + RPMachine.getCurrencyName() + "\n" +
+                        ChatColor.YELLOW + "Disponible: " + avail;
 
-        setItem(4, new MenuItem(mat).setName(mat.name()).setDescriptionBlock(desc), () -> {
+        setItem(4, new MenuItem(mat).setName(mat.name()).setDescriptionBlock(desc +
+                "\n" + ChatColor.GREEN +
+                "\n" + ChatColor.YELLOW + Symbols.ARROW_RIGHT_FULL + "Clic : voir le détail des offres"
+        ), () -> {
+
+            close();
+            new AuctionsListGui(AuctionManager.INSTANCE.getAuctions(mat)).open();
         });
 
         LegalEntity token = RPMachine.getPlayerActAs(player);
@@ -146,6 +152,66 @@ public class ItemAuctionGui extends Window {
                             }
 
                         });
+            }
+        }
+    }
+
+    class AuctionsListGui extends Window {
+        private TreeSet<Auction> auctions;
+
+        AuctionsListGui(TreeSet<Auction> auctions) {
+            super((int) (Math.min(6, Math.ceil((auctions.size() + 3) / 9D)) * 9D), "Enchères en cours", ItemAuctionGui.this.player);
+            this.auctions = auctions;
+        }
+
+        @Override
+        public void fill() {
+            setItem(size - 1, new MenuItem(Material.ARROW).setName(ChatColor.YELLOW + "Retour"), () -> {
+                close();
+                ItemAuctionGui.this.open();
+            });
+            setItem(size - 2, new MenuItem(Material.WATER_BUCKET).setName(ChatColor.AQUA + "Raffraichir"), this::refresh);
+
+            load();
+        }
+
+        private void refresh() {
+            auctions = AuctionManager.INSTANCE.getAuctions(mat);
+            clear();
+            fill();
+        }
+
+        private void load() {
+            int i = 0;
+
+            for (Auction a : auctions) {
+                if (i > size - 3)
+                    return;
+
+                setItem(i,
+                        new MenuItem(mat, Math.min(mat.getMaxStackSize(), a.getAvailable()))
+                                .setDescription(
+                                        ChatColor.YELLOW + "Quantité vendue : " + ChatColor.GOLD + a.getAvailable(),
+                                        ChatColor.YELLOW + "Prix unitaire : " + ChatColor.GOLD + String.format("%.2f", a.getItemPrice()) + RPMachine.getCurrencyName(),
+                                        ChatColor.YELLOW + "Vendeur : " + a.owner().shortDisplayable(),
+                                        ChatColor.GOLD + "",
+
+                                        ChatColor.YELLOW + "Prix du lot : " + ChatColor.GOLD + String.format("%.2f", (a.getAvailable() * a.getItemPrice())) + RPMachine.getCurrencyName(),
+                                        ChatColor.GOLD + "",
+                                        ChatColor.YELLOW + Symbols.ARROW_RIGHT_FULL + " Clic : acheter le lot"
+                                )
+                        , () -> {
+                            if (AuctionManager.INSTANCE.removeAuction(a)) {
+                                close();
+
+                                new TransactionConfirmGui(AuctionManager.INSTANCE.startTransactionWithRemovedAuction(RPMachine.getPlayerActAs(player), a)).open();
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Cette offre n'est plus disponible.");
+                                refresh();
+                            }
+                        });
+
+                ++i;
             }
         }
     }
