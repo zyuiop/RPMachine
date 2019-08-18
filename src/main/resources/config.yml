@@ -18,17 +18,17 @@
 #   basis: 1.394955
 #   function: EXPONENTIAL
 #
-# createcity:
-#   price: 5000
-#   function: FIXED
-#
-
 
 createcity:
-  max: 100000
-  delta: 15.3876
-  coeff: 0.34398
-  function: SIGMOID
+ value: 5000
+ function: FIXED
+
+#
+# createcity:
+#   max: 100000
+#   delta: 15.3876
+#   coeff: 0.34398
+#   function: SIGMOID
 
 jobs:
   - name: Décorateur
@@ -450,6 +450,25 @@ floors:
 money:
   symbol: "$"
   baseAmount: 1500.0
+
+dailyAmount: # as a function of the wage
+  function: BOUNDED
+  min: 5.0
+  max: 100.0
+  of:
+    function: LINEAR
+    p0: 0
+    coeff: 0.01
+
+# This method gives fixed MAX amount to all persons that have a "low" value, and MIN to the others
+#  dailyAmount:
+#   function: BOUNDED
+#   min: 5.0
+#   max: 100.0
+#   of:
+#     function: LINEAR
+#     p0: 500000
+#     coeff: -100.0
 
 database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
 

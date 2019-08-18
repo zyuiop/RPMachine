@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.common;
 import net.md_5.bungee.api.ChatColor;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
+import net.zyuiop.rpmachine.utils.ConfigFunction;
 import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
@@ -18,22 +19,19 @@ import org.bukkit.inventory.ItemStack;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.function.DoubleFunction;
 
 public class PlayerListener implements Listener {
     private static final String ATTRIBUTE_LAST_DAILY_WAGE = "lastDailyWage";
     private final RPMachine plugin;
 
-    private final int dailyWageMin;
-    private final int dailyWageMax;
-    private final double dailyWageRate;
+    private final DoubleFunction<Double> dailyWageFunc;
 
     public PlayerListener(RPMachine plugin) {
         this.plugin = plugin;
 
         Configuration c = plugin.getConfig();
-        dailyWageMin = c.getInt("dailyWage.min", 5);
-        dailyWageMax = c.getInt("dailyWage.max", 100);
-        dailyWageRate = c.getDouble("dailyWage.rate", 0.01D);
+        dailyWageFunc = ConfigFunction.getFunction(c.getConfigurationSection("dailyWage"), x -> Math.min(100, Math.max(5, x * 0.01D)));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -54,7 +52,7 @@ public class PlayerListener implements Listener {
         String date = DateFormat.getDateInstance().format(new Date());
         if (!d.hasAttribute(ATTRIBUTE_LAST_DAILY_WAGE) || !d.getAttribute(ATTRIBUTE_LAST_DAILY_WAGE).equals(date)) {
             d.setAttribute(ATTRIBUTE_LAST_DAILY_WAGE, date);
-            double amt = Math.min(dailyWageMax, Math.max(dailyWageMin, d.getBalance() * dailyWageRate));
+            double amt = dailyWageFunc.apply(d.getBalance());
             d.creditMoney(amt);
             Messages.credit(event.getPlayer(), amt, "première connexion du jour");
         }

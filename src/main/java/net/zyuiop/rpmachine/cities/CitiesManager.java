@@ -5,6 +5,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
+import net.zyuiop.rpmachine.utils.ConfigFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -15,7 +16,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
+import java.util.function.DoubleFunction;
 import java.util.stream.Collectors;
 
 public class CitiesManager extends FileEntityStore<City> implements LegalEntityRepository<City> {
@@ -54,9 +55,7 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 
 
         ConfigurationSection section = conf.getConfigurationSection("createcity");
-        f = CreationPriceFunctions.valueOf(
-                section.getString("function", "LINEAR")
-        ).function(section);
+        f = new CreationPriceFunction(ConfigFunction.getFunction(section, x -> 500 + 1050 * x));
 
         rpMachine.getLogger().info("City creation parameters test:");
         for (int i = 0; i < 20; ++i) {
@@ -241,56 +240,16 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
         super.saveEntity(city);
     }
 
-    enum CreationPriceFunctions {
-        LINEAR(c -> {
-            double p0 = c.getDouble("p0");
-            double coeff = c.getDouble("coeff");
-            return cities -> ((int) (p0 + coeff * cities));
-        }),
-        EXPONENTIAL(c -> {
-            double p0 = c.getDouble("p0");
-            double basis = c.getDouble("basis");
-            return cities -> ((int) (p0 * Math.pow(basis, cities)));
-        }),
-        SLOW_EXPONENTIAL(c -> {
-            double p0 = c.getDouble("p0");
-            double basis = c.getDouble("basis");
-            return cities -> ((int) (p0 * Math.pow(basis, Math.sqrt(cities))));
-        }),
-        QUADRATIC(c -> {
-            double p0 = c.getDouble("p0");
-            double power = c.getDouble("power");
-            return cities -> ((int) (p0 * Math.pow(cities + 1, power)));
-        }),
-        SIGMOID(c -> {
-            double ampl = c.getDouble("max");
-            double delta = c.getDouble("delta");
-            double coeff = c.getDouble("coeff");
-            return cities -> ((int) (ampl / (1 + Math.exp(-coeff * (cities - delta)))));
-        }),
-        FIXED(c -> {
-            int price = c.getInt("price");
-            return cities -> price;
-        });
-
-        private final Function<ConfigurationSection, CreationPriceFunction> creator;
-
-        CreationPriceFunctions(Function<ConfigurationSection, CreationPriceFunction> creator) {
-            this.creator = creator;
-        }
-
-        public CreationPriceFunction function(ConfigurationSection s) {
-            return creator.apply(s);
-        }
-    }
-
-    public interface CreationPriceFunction {
+    public class CreationPriceFunction {
+        final DoubleFunction<Double> baseFunc;
         final double ROUND_NEAREST = 100D;
 
-        double computePrice(int cities);
+        public CreationPriceFunction(DoubleFunction<Double> baseFunc) {
+            this.baseFunc = baseFunc;
+        }
 
-        default int roundedPrice(int cities) {
-            double p = computePrice(cities) / ROUND_NEAREST;
+        int roundedPrice(int cities) {
+            double p = baseFunc.apply(cities) / ROUND_NEAREST;
             return (int) (Math.round(p) * ROUND_NEAREST);
         }
     }

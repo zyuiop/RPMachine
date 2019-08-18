@@ -56,9 +56,18 @@ public class JobsManager {
 		for (Map<?, ?> map : rpMachine.getConfig().getMapList("jobs")) {
 			String name = (String) map.get("name");
 			String description = (String) map.get("description");
+			Job.Builder builder = Job.Builder.aJob()
+					.withJobName(name)
+					.withJobDescription(description);
+
 			Set<Material> restrictSale = parseMaterialSet((List<?>) map.get("restrictSale"));
 			Set<Material> restrictCraft = parseMaterialSet((List<?>) map.get("restrictCraft"));
 			Set<Material> restrictUse = parseMaterialSet((List<?>) map.get("restrictUse"));
+
+			builder = builder
+					.withRestrictSale(restrictSale)
+					.withRestrictCraft(restrictCraft)
+					.withRestrictUse(restrictUse);
 
 
 			HashSet<JobRestrictions> restrictions = new HashSet<>();
@@ -67,12 +76,14 @@ public class JobsManager {
 					restrictions.add(JobRestrictions.valueOf((String) rest));
 			}
 
+			builder = builder.withRestrictions(restrictions);
+
 			enabledRestrictions.addAll(restrictions);
 			this.restrictCraft.addAll(restrictCraft);
 			this.restrictUse.addAll(restrictUse);
 			this.restrictSale.addAll(restrictSale);
 
-			jobs.put(name.toLowerCase(), new Job(name, description, restrictSale, restrictCraft, restrictUse, restrictions));
+			jobs.put(name.toLowerCase(), builder.build());
 		}
 
 		// Enable enabled restrictions
