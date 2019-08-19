@@ -20,6 +20,7 @@ public class JobsManager {
 	private Set<Material> restrictSale = new HashSet<>();
 	private Set<Material> restrictCraft = new HashSet<>();
 	private Set<Material> restrictUse = new HashSet<>();
+	private Map<Material, Integer> restrictCollect = new HashMap<>();
 
 	private int quitPrice;
 	private int quitFrequency;
@@ -63,6 +64,8 @@ public class JobsManager {
 			Set<Material> restrictSale = parseMaterialSet((List<?>) map.get("restrictSale"));
 			Set<Material> restrictCraft = parseMaterialSet((List<?>) map.get("restrictCraft"));
 			Set<Material> restrictUse = parseMaterialSet((List<?>) map.get("restrictUse"));
+
+			// TODO: parse restrict collect
 
 			builder = builder
 					.withRestrictSale(restrictSale)
@@ -120,6 +123,10 @@ public class JobsManager {
 		return !restrictCraft.contains(m) && isFreeToUse(m);
 	}
 
+	public int getCollectLimit(Material m) {
+		return restrictCollect.getOrDefault(m, -1);
+	}
+
 	public boolean isFreeToUse(Material m) {
 		return !restrictUse.contains(m);
 	}
@@ -130,6 +137,10 @@ public class JobsManager {
 
 	public boolean canCraft(Player p, Material m) {
 		return isFreeToCraft(m) || (getJob(p) != null && getJob(p).canCraft(m));
+	}
+
+	public boolean canCollect(Player p, Material m) {
+		return getCollectLimit(m) < 0 || (getJob(p) != null && getJob(p).canCollect(m));
 	}
 
 	public boolean canUse(Player p, Material m) {
@@ -167,6 +178,9 @@ public class JobsManager {
 	public void printAvailableJobsToUse(Material block, Player player) {
 		printAvailableJobs(j -> j.canUse(block), "Ce block ne peut être crafté, vendu, placé et utilisé que par certains métiers.", player);
 	}
+	public void printAvailableJobsToCollect(Material m, Player p, int limit) {
+		printAvailableJobs(j -> j.canCollect(m), "Vous avez dépassé la limite quotidienne de collecte (max " + limit + "/j) pour l'item " + m + ".", p);
+	}
 
 	public HashMap<String, Job> getJobs() {
 		return jobs;
@@ -183,4 +197,5 @@ public class JobsManager {
 	public int getQuitFrequency() {
 		return quitFrequency;
 	}
+
 }

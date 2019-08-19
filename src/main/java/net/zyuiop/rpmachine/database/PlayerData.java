@@ -8,10 +8,11 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Sets;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.common.VirtualLocation;
-import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -187,5 +188,35 @@ public class PlayerData implements LegalEntity {
 
 	public <T> T getAttribute(String key) {
 		return (T) data.get("attr." + key);
+	}
+
+	public Map<Material, Integer> getCollectedItems() {
+		ConfigurationSection section = data.getConfigurationSection("collected_items");
+
+		if (section == null || section.getKeys(false).isEmpty())
+			return Collections.emptyMap();
+
+		Map<Material, Integer> map = new HashMap<>();
+		section.getKeys(false).forEach(k -> {
+			try {
+				map.put(Material.valueOf(k), section.getInt(k));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+		return map;
+	}
+
+	public int getCollectedItems(Material material) {
+		return data.getInt("collected_items." + material.name(), 0);
+	}
+
+	public void addCollectedItems(Material material, int amt) {
+		data.set("collected_items." + material.name(), getCollectedItems(material) + amt);
+		save();
+	}
+
+	public void resetCollectedItems() {
+		data.set("collected_items", null);
 	}
 }
