@@ -1,7 +1,6 @@
 package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.entities.AdminLegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
@@ -113,27 +112,10 @@ public class ItemShopSign extends AbstractShopSign {
 
             Material type = event.getItem().getType();
 
-            if (action == ShopAction.SELL) {
-                if (!tt.checkDelegatedPermission(ShopPermissions.CREATE_SELL_SHOPS))
-                    return;
-
-                if (!RPMachine.getInstance().getJobsManager().isFreeToSell(type)) {
-                    if (!(tt.getLegalEntity() instanceof AdminLegalEntity)) {
-                        if (tt.getLegalEntity() instanceof PlayerData) {
-                            if (!RPMachine.getInstance().getJobsManager().canSell(player, type)) {
-                                RPMachine.getInstance().getJobsManager().printAvailableJobsToSell(type, player);
-                                return;
-                            }
-
-                            // Else we continue
-                        } else {
-                            player.sendMessage(ChatColor.RED + "Cet objet est restreint et ne peut être vendu que par des joueurs.");
-                            return;
-                        }
-                    }
-                }
-            } else if (!tt.checkDelegatedPermission(ShopPermissions.CREATE_BUY_SHOPS))
+            if ((action == ShopAction.SELL && !tt.checkDelegatedPermission(ShopPermissions.CREATE_SELL_SHOPS)) ||
+                    (action == ShopAction.BUY && !tt.checkDelegatedPermission(ShopPermissions.CREATE_BUY_SHOPS))) {
                 return;
+            }
 
             itemType = ItemStackStorage.init(event.getItem());
             if (itemType == null) {
