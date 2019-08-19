@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.common;
 
+import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
 import net.md_5.bungee.api.ChatColor;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.database.PlayerData;
@@ -55,9 +56,15 @@ public class PlayerListener implements Listener {
             double amt = dailyWageFunc.apply(d.getBalance());
             d.creditMoney(amt);
             Messages.credit(event.getPlayer(), amt, "première connexion du jour");
+            d.resetCollectedItems();
         }
 
         RPMachine.database().getUUIDTranslator().cachePair(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+    }
+
+    @EventHandler
+    public void phantomSpawn(PhantomPreSpawnEvent e) {
+        e.setCancelled(true); // end this please !
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
