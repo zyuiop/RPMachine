@@ -1,26 +1,25 @@
 package net.zyuiop.rpmachine.jobs;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Iterator;
+import java.util.function.Function;
 
 /**
  * @author Louis Vialar
@@ -84,26 +83,42 @@ public class JobsListener implements Listener {
     }
 
     @EventHandler
-    public void onBreak(BlockBreakEvent event) {
+    public void onBreak(BlockDropItemEvent event) {
         if (RPMachine.getInstance().getCitiesManager().getCityHere(event.getBlock().getChunk()) != null)
             return;
         if (RPMachine.getInstance().getProjectsManager().getZoneHere(event.getBlock().getLocation()) != null)
             return;
 
+
         Player p = event.getPlayer();
-        Material m = event.getBlock().getType();
-        int limit = manager.getCollectLimit(m);
-        if (limit >= 0) {
-            if (!manager.canCollect(p, m)) {
-                PlayerData data = RPMachine.getInstance().getDatabaseManager().getPlayerData(p);
+        checkItems(p, event.getItems(), Item::getItemStack);
+    }
 
-                if (data.getCollectedItems(m) >= limit) {
-                    manager.printAvailableJobsToCollect(m, p, limit);
+    private <T> void checkItems(Player p, Iterable<T> drops, Function<T, ItemStack> converter) {
+        Iterator<T> stacks = drops.iterator();
+        PlayerData data = RPMachine.getInstance().getDatabaseManager().getPlayerData(p);
+        while (stacks.hasNext()) {
+            ItemStack stack = converter.apply(stacks.next());
+            Material m = stack.getType();
 
-                    event.setDropItems(false);
-                    event.setExpToDrop(0);
-                } else {
-                    data.addCollectedItems(m, 1);
+            int limit = manager.getCollectLimit(m);
+            if (limit >= 0) {
+                if (!manager.canCollect(p, m)) {
+
+                    if (data.getCollectedItems(m) + stack.getAmount() > limit) {
+                        int newAmt = limit - data.getCollectedItems(m);
+
+                        if (newAmt <= 0)
+                            stacks.remove();
+                        else {
+                            stack.setAmount(newAmt);
+                            data.addCollectedItems(m, newAmt);
+                        }
+
+                        manager.printAvailableJobsToCollect(m, p, limit);
+                    } else {
+                        data.addCollectedItems(m, stack.getAmount());
+                    }
                 }
             }
         }
@@ -118,33 +133,7 @@ public class JobsListener implements Listener {
         Player p = event.getEntity().getKiller();
 
         if (p != null) {
-            Iterator<ItemStack> stacks = event.getDrops().iterator();
-            while (stacks.hasNext()) {
-                ItemStack stack = stacks.next();
-                Material m = stack.getType();
-
-                int limit = manager.getCollectLimit(m);
-                if (limit >= 0) {
-                    if (!manager.canCollect(p, m)) {
-                        PlayerData data = RPMachine.getInstance().getDatabaseManager().getPlayerData(p);
-
-                        if (data.getCollectedItems(m) + stack.getAmount() > limit) {
-                            int newAmt = limit - data.getCollectedItems(m);
-
-                            if (newAmt <= 0)
-                                stacks.remove();
-                            else {
-                                stack.setAmount(newAmt);
-                                data.addCollectedItems(m, newAmt);
-                            }
-
-                            manager.printAvailableJobsToCollect(m, p, limit);
-                        } else {
-                            data.addCollectedItems(m, stack.getAmount());
-                        }
-                    }
-                }
-            }
+            checkItems(p, event.getDrops(), u -> u);
         } else {
             // Remove loots
             Iterator<ItemStack> stacks = event.getDrops().iterator();

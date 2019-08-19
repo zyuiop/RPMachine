@@ -7,6 +7,7 @@ import net.zyuiop.rpmachine.jobs.restrictions.*;
  */
 public enum JobRestrictions {
     ENCHANTING(EnchantingRestriction.class),
+    REPAIRING(RepairingRestriction.class),
     FARMING(FarmingRestriction.class),
     KILLING_ANIMALS(KillingRestriction.class),
     CAPTURING(CapturingRestriction.class),

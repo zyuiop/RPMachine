@@ -190,4 +190,12 @@ public class JobsManager {
     public int getQuitFrequency() {
         return quitFrequency;
     }
+
+    public void checkPlayerJob(Player player, PlayerData data) {
+        if (data.getJob() != null && getJob(data.getJob()) == null) {
+            player.sendMessage(ChatColor.RED + "Votre métier a été supprimé depuis votre dernière connexion !");
+            player.sendMessage(ChatColor.GRAY + "Vous pouvez changer gratuitement de métier via " + ChatColor.YELLOW + "/jobs choose");
+            data.setJob(null);
+        }
+    }
 }

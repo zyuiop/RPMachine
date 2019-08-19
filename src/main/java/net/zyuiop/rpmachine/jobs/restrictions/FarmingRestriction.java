@@ -15,11 +15,14 @@ import java.util.Set;
  */
 public class FarmingRestriction extends JobRestriction {
     private static final Set<Material> seeds = ImmutableSet.of(
-            Material.BEETROOT_SEEDS, Material.MELON_SEEDS, Material.PUMPKIN_SEEDS, Material.WHEAT_SEEDS,
-            Material.COCOA, Material.COCOA_BEANS, Material.SUGAR_CANE,
-            Material.CARROT, Material.MELON_SEEDS,
-
-            Material.MELON_STEM, Material.WHEAT, Material.MUSHROOM_STEM, Material.PUMPKIN_STEM
+            Material.WHEAT, Material.WHEAT_SEEDS,
+            Material.POTATO, Material.POTATOES,
+            Material.CARROT, Material.CARROTS,
+            Material.MELON, Material.MELON_SEEDS, Material.MELON_STEM, Material.ATTACHED_MELON_STEM,
+            Material.PUMPKIN, Material.PUMPKIN_SEEDS, Material.PUMPKIN_STEM, Material.ATTACHED_PUMPKIN_STEM,
+            Material.BEETROOT, Material.BEETROOT_SEEDS, Material.BEETROOTS,
+            Material.SUGAR_CANE,
+            Material.COCOA, Material.COCOA_BEANS
     );
     private static final Set<Material> hoes = ImmutableSet.of(
             Material.WOODEN_HOE, Material.STONE_HOE, Material.IRON_HOE, Material.GOLDEN_HOE, Material.DIAMOND_HOE

@@ -48,6 +48,7 @@ public class PlayerListener implements Listener {
             event.getPlayer().getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 16));
         } else {
             event.setJoinMessage(ChatColor.YELLOW + event.getPlayer().getDisplayName() + ChatColor.GRAY + "" + ChatColor.ITALIC + " vient de se connecter.");
+            RPMachine.getInstance().getJobsManager().checkPlayerJob(event.getPlayer(), d);
         }
 
         String date = DateFormat.getDateInstance().format(new Date());

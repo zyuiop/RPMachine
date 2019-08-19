@@ -80,9 +80,10 @@ global:
 
 
 jobs:
-  - name: Décorateur
-    description: "Fournit des ressources avant tout décoratives"
+  - name: Constructeur
+    description: "Fournit des blocs utiles pour la construction"
     restrictCraft:
+      - GLASS_PANE
       - BLACK_STAINED_GLASS
       - BLACK_STAINED_GLASS_PANE
       - BLUE_STAINED_GLASS
@@ -291,57 +292,6 @@ jobs:
       - LEGACY_FIREWORK_CHARGE
       - BLAZE_POWDER
       - SPAWNER
-    restrictions:
-      - ENCHANTING
-  - name: Forgeron
-    description: "Le forgeron collecte des métaux et confectionne des armes et armures avec"
-    restrictCraft:
-      - RAIL
-      - ACTIVATOR_RAIL
-      - DETECTOR_RAIL
-      - POWERED_RAIL
-      - BLAST_FURNACE
-  - name: Fermier
-    description: "Le fermier est le seul à pouvoir entretenir des cultures et un troupeau."
-    restrictions:
-      - FARMING
-      - BREEDING
-    restrictSale:
-      - GOLDEN_APPLE
-      - APPLE
-      - ENCHANTED_GOLDEN_APPLE
-      - MUSHROOM_STEW
-      - BREAD
-      - COOKED_PORKCHOP
-      - PORKCHOP
-      - CAKE
-      - COOKIE
-      - MELON_SLICE
-      - MELON
-      - BEEF
-      - COOKED_BEEF
-      - CHICKEN
-      - COOKED_CHICKEN
-      - BAKED_POTATO
-      - PUMPKIN_PIE
-      - RABBIT
-      - COOKED_RABBIT
-      - RABBIT_STEW
-      - MUTTON
-      - COOKED_MUTTON
-      - SUGAR_CANE
-      - HAY_BLOCK
-      - BEETROOT
-      - BEETROOT_SOUP
-    restrictCraft:
-      - CARROT
-      - POTATO
-    restrictUse:
-      - SMOKER
-  - name: Chasseur
-    description: "Parcourez la terre à la recherche de loots"
-    restrictions:
-      - CAPTURING
     restrictCollect:
       WITHER_SKELETON_SKULL: 1
       SKELETON_SKULL: 0
@@ -353,38 +303,113 @@ jobs:
       RABBIT: 4
       MUTTON: 4
       BEEF: 4
-
-
-      - COD
-      - SALMON
-      - TROPICAL_FISH
-      - PUFFERFISH
-      - COOKED_COD
-      - COOKED_SALMON
-      - MUSIC_DISC_11
-      - MUSIC_DISC_13
-      - MUSIC_DISC_BLOCKS
-      - MUSIC_DISC_CAT
-      - MUSIC_DISC_CHIRP
-      - MUSIC_DISC_FAR
-      - MUSIC_DISC_MALL
-      - MUSIC_DISC_MELLOHI
-      - MUSIC_DISC_STAL
-      - MUSIC_DISC_STRAD
-      - MUSIC_DISC_WAIT
-      - MUSIC_DISC_WARD
-      - NETHER_STAR
-      - HEART_OF_THE_SEA
-      - NAUTILUS_SHELL
-      - GHAST_TEAR
-      - SULPHUR
-      - BLAZE_ROD
-      - STRING
-      - SPIDER_EYE
-      - EYE_OF_ENDER
-      - ENDER_PEARL
-      - SLIME_BALL
-      - TOTEM_OF_UNDYING
-      - TRIDENT
-      - MAGMA_CREAM
-
+      COD: 4
+      SALMON: 4
+      TROPICAL_FISH: 4
+      PUFFERFISH: 4
+      GHAST_TEAR: 2
+      SULPHUR: 2
+      BLAZE_ROD: 2
+      SPIDER_EYE: 2
+      ENDER_PEARL: 2
+      SLIME_BALL: 2
+      TRIDENT: 0
+      MAGMA_CREAM: 2
+      # MUSIC_DISC_11: 0
+      # MUSIC_DISC_13: 0
+      # MUSIC_DISC_BLOCKS: 0
+      # MUSIC_DISC_CAT: 0
+      # MUSIC_DISC_CHIRP: 0
+      # MUSIC_DISC_FAR: 0
+      # MUSIC_DISC_MALL: 0
+      # MUSIC_DISC_MELLOHI: 0
+      # MUSIC_DISC_STAL: 0
+      # MUSIC_DISC_STRAD: 0
+      # MUSIC_DISC_WAIT: 0
+      # MUSIC_DISC_WARD: 0
+      # NETHER_STAR: 0
+      # HEART_OF_THE_SEA: 0
+      # NAUTILUS_SHELL: 0
+    restrictions:
+      - ENCHANTING
+      - CAPTURING
+      - REPAIRING
+  - name: Forgeron
+    description: "Le forgeron collecte des métaux et confectionne des armes et armures"
+    restrictions:
+      - REPAIRING
+    restrictCollect:
+      DIAMOND_ORE: 0
+      DIAMOND: 4
+      IRON_ORE: 16
+      GOLD_ORE: 8
+      REDSTONE_ORE: 0
+      REDSTONE: 32
+      LAPIS_ORE: 0
+      LAPIS_LAZULI: 16
+      COAL_ORE: 0
+      COAL: 32
+      NETHER_QUARTZ_ORE: 0
+      NETHER_QUARTZ: 16
+    restrictUse:
+      - GRINDSTONE
+    restrictCraft:
+      - RAIL
+      - ACTIVATOR_RAIL
+      - DETECTOR_RAIL
+      - POWERED_RAIL
+      - BLAST_FURNACE
+      - DIAMOND_AXE
+      - IRON_AXE
+      - GOLD_AXE
+      - DIAMOND_BOOTS
+      - IRON_BOOTS
+      - GOLD_BOOTS
+      - DIAMOND_CHESTPLATE
+      - IRON_CHESTPLATE
+      - GOLD_CHESTPLATE
+      - DIAMOND_HELMET
+      - IRON_HELMET
+      - GOLD_HELMET
+      - DIAMOND_HOE
+      - IRON_HOE
+      - GOLD_HOE
+      - DIAMOND_LEGGINGS
+      - IRON_LEGGINGS
+      - GOLD_LEGGINGS
+      - DIAMOND_PICKAXE
+      - IRON_PICKAXE
+      - GOLD_PICKAXE
+      - DIAMOND_SHOVEL
+      - IRON_SHOVEL
+      - GOLD_SHOVEL
+      - DIAMOND_SWORD
+      - IRON_SWORD
+      - GOLD_SWORD
+  - name: Fermier
+    description: "Le fermier est le seul à pouvoir entretenir des cultures et un troupeau."
+    restrictions:
+      - FARMING
+      - BREEDING
+    restrictCollect:
+      WHEAT: 8
+      POTATO: 8
+      POTATOES: 0
+      CARROT: 8
+      CARROTS: 0
+      BEETROOT: 8
+      MELON: 1
+      MELON_SLICE: 8
+      PUMPKIN: 1
+      SUGAR_CANE: 3
+      COCOA: 1
+      APPLE: 3 # Not sure it'll work
+    restrictCraft:
+      - BREAD
+      - CAKE
+      - COOKIE
+      - PUMPKIN_PIE
+      - RABBIT_STEW
+      - BEETROOT_SOUP
+    restrictUse:
+      - SMOKER
