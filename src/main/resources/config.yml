@@ -53,15 +53,15 @@ dailyWage:
 
 database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
 
-multiverses: []
-#  - name: resources
-#    generatePlatform: true
-#    allowNether: true
-#    allowEnd: true
-#    regenFrequency: MONTHLY
-#    forceLoad: false
-#    forceLoadArea: 5000
-#    loadSpeed: 10
+multiverses:
+  - name: resources
+    generatePlatform: true
+    allowNether: true
+    allowEnd: true
+    regenFrequency: MONTHLY
+    forceLoad: false
+    forceLoadArea: 5000
+    loadSpeed: 10
 
 citytp:
   fromCityOnly: false
