@@ -117,6 +117,9 @@ public class JobsListener implements Listener {
 
                         manager.printAvailableJobsToCollect(m, p, limit);
                     } else {
+                        if (data.getCollectedItems(m) < (.75 * limit) && data.getCollectedItems(m) + stack.getAmount() >= (.75 * limit))
+                            manager.printAlmostCollectedAll(m, p, limit, data.getCollectedItems(m) + stack.getAmount());
+
                         data.addCollectedItems(m, stack.getAmount());
                     }
                 }

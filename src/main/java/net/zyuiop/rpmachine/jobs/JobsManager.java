@@ -175,6 +175,10 @@ public class JobsManager {
         printAvailableJobs(j -> j.canCollect(m), "Vous avez dépassé la limite quotidienne de collecte (max " + limit + "/j) pour l'item " + m + ".", p);
     }
 
+    public void printAlmostCollectedAll(Material m, Player p, int limit, int current) {
+        printAvailableJobs(j -> j.canCollect(m), ChatColor.GOLD + "Attention, vous avez collecté " + current + " " + m + " sur un maximum de " + limit + "/jour.", p);
+    }
+
     public HashMap<String, Job> getJobs() {
         return jobs;
     }
