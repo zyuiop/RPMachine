@@ -1,6 +1,7 @@
 package net.zyuiop.rpmachine.jobs;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,11 +12,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Iterator;
 
@@ -82,6 +85,11 @@ public class JobsListener implements Listener {
 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
+        if (RPMachine.getInstance().getCitiesManager().getCityHere(event.getBlock().getChunk()) != null)
+            return;
+        if (RPMachine.getInstance().getProjectsManager().getZoneHere(event.getBlock().getLocation()) != null)
+            return;
+
         Player p = event.getPlayer();
         Material m = event.getBlock().getType();
         int limit = manager.getCollectLimit(m);
@@ -99,7 +107,6 @@ public class JobsListener implements Listener {
                 }
             }
         }
-
     }
 
 
@@ -138,8 +145,17 @@ public class JobsListener implements Listener {
                     }
                 }
             }
+        } else {
+            // Remove loots
+            Iterator<ItemStack> stacks = event.getDrops().iterator();
+            while (stacks.hasNext()) {
+                ItemStack stack = stacks.next();
+                Material m = stack.getType();
+
+                int limit = manager.getCollectLimit(m);
+                if (limit > 0)
+                    stacks.remove();
+            }
         }
-
-
     }
 }

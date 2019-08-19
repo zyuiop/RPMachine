@@ -218,5 +218,6 @@ public class PlayerData implements LegalEntity {
 
 	public void resetCollectedItems() {
 		data.set("collected_items", null);
+		save();
 	}
 }

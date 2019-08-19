@@ -47,7 +47,7 @@ public class JobsManager {
                     ));
 
 
-            builder = builder
+            builder
                     .withRestrictCraft(restrictCraft)
                     .withRestrictUse(restrictUse)
                     .withRestrictCollect(restrictCollect);
@@ -59,7 +59,7 @@ public class JobsManager {
                     restrictions.add(JobRestrictions.valueOf((String) rest));
             }
 
-            builder = builder.withRestrictions(restrictions);
+            builder.withRestrictions(restrictions);
 
             enabledRestrictions.addAll(restrictions);
             this.restrictCraft.addAll(restrictCraft);
@@ -127,17 +127,17 @@ public class JobsManager {
         return !restrictUse.contains(m);
     }
 
-	public int getCollectLimit(Material m) {
-		return restrictCollect.getOrDefault(m, -1);
-	}
+    public int getCollectLimit(Material m) {
+        return restrictCollect.getOrDefault(m, -1);
+    }
 
     public boolean canCraft(Player p, Material m) {
         return isFreeToCraft(m) || (getJob(p) != null && getJob(p).canCraft(m));
     }
 
-	public boolean canCollect(Player p, Material m) {
-		return getCollectLimit(m) < 0 || (getJob(p) != null && getJob(p).canCollect(m));
-	}
+    public boolean canCollect(Player p, Material m) {
+        return getCollectLimit(m) < 0 || (getJob(p) != null && getJob(p).canCollect(m));
+    }
 
     public boolean canUse(Player p, Material m) {
         return isFreeToUse(m) || (getJob(p) != null && getJob(p).canUse(m));
@@ -170,9 +170,10 @@ public class JobsManager {
     public void printAvailableJobsToUse(Material block, Player player) {
         printAvailableJobs(j -> j.canUse(block), "Ce block ne peut être crafté, placé et utilisé que par certains métiers.", player);
     }
-	public void printAvailableJobsToCollect(Material m, Player p, int limit) {
-		printAvailableJobs(j -> j.canCollect(m), "Vous avez dépassé la limite quotidienne de collecte (max " + limit + "/j) pour l'item " + m + ".", p);
-	}
+
+    public void printAvailableJobsToCollect(Material m, Player p, int limit) {
+        printAvailableJobs(j -> j.canCollect(m), "Vous avez dépassé la limite quotidienne de collecte (max " + limit + "/j) pour l'item " + m + ".", p);
+    }
 
     public HashMap<String, Job> getJobs() {
         return jobs;
