@@ -1,34 +1,83 @@
-# Montant nécessaire pour créeer une ville :
-# createcity:
-#    p0: 500
-#    coeff: 1050
-#    function: LINEAR
-# createcity:
-#   p0: 500
-#   power: 1.35
-#   function: QUADRATIC
-#
-# createcity:
-#   p0: 500
-#   basis: 2.7143
-#   function: SLOW_EXPONENTIAL
-#
-# createcity:
-#   p0: 500
-#   basis: 1.394955
-#   function: EXPONENTIAL
-#
-
 createcity:
- value: 5000
+ value: 7500
  function: FIXED
 
-#
-# createcity:
-#   max: 100000
-#   delta: 15.3876
-#   coeff: 0.34398
-#   function: SIGMOID
+jobsquit:
+  price: 100
+  mindays: 7
+
+floors:
+  - name: Hameau
+    inhabitants: 0
+    max-chunks: 49
+    max-taxes: 0
+    chunk-price: 125
+  - name: Bourg
+    inhabitants: 4
+    max-chunks: 144
+    max-taxes: 1
+    chunk-price: 115
+  - name: Village
+    inhabitants: 8
+    max-chunks: 300
+    max-taxes: 3
+    chunk-price: 105
+  - name: Ville
+    inhabitants: 15
+    max-chunks: 441
+    max-taxes: 5
+    chunk-price: 100
+  - name: Métropole
+    inhabitants: 25
+    max-chunks: 676
+    max-taxes: 7
+    chunk-price: 100
+  - name: Capitale
+    inhabitants: 40
+    max-chunks: 1024
+    max-taxes: 10
+    chunk-price: 100
+
+money:
+  symbol: "$"
+  baseAmount: 1500.0
+
+dailyAmount:
+  function: BOUNDED
+  min: 5.0
+  max: 100.0
+  of:
+    function: LINEAR
+    p0: 500000
+    coeff: -100.0
+
+database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
+
+multiverses:
+  - name: resources
+    generatePlatform: true
+    allowNether: true
+    allowEnd: true
+    regenFrequency: MONTHLY
+    forceLoad: false
+    forceLoadArea: 5000
+    loadSpeed: 10
+
+citytp:
+  fromCityOnly: false
+  cost: 1
+  enable: false
+
+home:
+  fromCityOnly: false
+
+spawn:
+  fromCityOnly: false
+
+global:
+  vat: 0.2
+  plotSellTaxRate: 0.5
+
 
 jobs:
   - name: Décorateur
@@ -262,7 +311,6 @@ jobs:
     restrictions:
       - FARMING
       - BREEDING
-      - CAPTURING
     restrictSale:
       - GOLDEN_APPLE
       - APPLE
@@ -291,19 +339,6 @@ jobs:
       - BEETROOT
       - BEETROOT_SOUP
     restrictCraft:
-      - CHICKEN_SPAWN_EGG
-      - COW_SPAWN_EGG
-      - DONKEY_SPAWN_EGG
-      - FOX_SPAWN_EGG
-      - HORSE_SPAWN_EGG
-      - LLAMA_SPAWN_EGG
-      - MOOSHROOM_SPAWN_EGG
-      - MULE_SPAWN_EGG
-      - OCELOT_SPAWN_EGG
-      - PIG_SPAWN_EGG
-      - RABBIT_SPAWN_EGG
-      - SHEEP_SPAWN_EGG
-      - WOLF_SPAWN_EGG
       - CARROT
       - POTATO
     restrictUse:
@@ -408,94 +443,5 @@ jobs:
       - SLIME_SPAWN_EGG
       - TURTLE_SPAWN_EGG
       - WOLF_SPAWN_EGG
-jobsquit:
-  price: 100
-  mindays: 7
+      - SPAWNER
 
-
-# Paliers de villes :
-
-floors:
-  - name: Hameau
-    inhabitants: 0
-    max-chunks: 49
-    max-taxes: 0
-    chunk-price: 125
-  - name: Bourg
-    inhabitants: 4
-    max-chunks: 144
-    max-taxes: 1
-    chunk-price: 115
-  - name: Village
-    inhabitants: 8
-    max-chunks: 300
-    max-taxes: 3
-    chunk-price: 105
-  - name: Ville
-    inhabitants: 15
-    max-chunks: 441
-    max-taxes: 5
-    chunk-price: 100
-  - name: Métropole
-    inhabitants: 25
-    max-chunks: 676
-    max-taxes: 7
-    chunk-price: 100
-  - name: Capitale
-    inhabitants: 40
-    max-chunks: 1024
-    max-taxes: 10
-    chunk-price: 100
-
-money:
-  symbol: "$"
-  baseAmount: 1500.0
-
-dailyAmount: # as a function of the wage
-  function: BOUNDED
-  min: 5.0
-  max: 100.0
-  of:
-    function: LINEAR
-    p0: 0
-    coeff: 0.01
-
-# This method gives fixed MAX amount to all persons that have a "low" value, and MIN to the others
-#  dailyAmount:
-#   function: BOUNDED
-#   min: 5.0
-#   max: 100.0
-#   of:
-#     function: LINEAR
-#     p0: 500000
-#     coeff: -100.0
-
-database: net.zyuiop.rpmachine.database.filestorage.FileStorageDatabase
-
-multiverses:
-  - name: resources
-    generatePlatform: true
-    allowNether: true
-    allowEnd: true
-    regenFrequency: MONTHLY
-    forceLoad: false
-    forceLoadArea: 8000 # 4k takes 15mn -- 8k should take 1h
-    loadSpeed: 30
-
-citytp:
-  # If true, one can teleport to an other city only if he is himself in a city
-  fromCityOnly: false
-  # The teleport fee the player will have to pay to teleport himself to a city he's not a member of
-  cost: 1
-
-home:
-  # If true, one can teleport to his home only if he is in a city
-  fromCityOnly: false
-
-spawn:
-  fromCityOnly: false
-
-global:
-  vat: 0.2
-  # taxes: 0 # not working yet
-  plotSellTaxRate: 0.5
