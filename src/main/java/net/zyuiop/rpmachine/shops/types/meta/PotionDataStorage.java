@@ -20,7 +20,7 @@ public class PotionDataStorage implements ItemStackDataStorage {
         String longPrefix = potionType.isExtended() ? "L " : "";
         String upSuffix = potionType.isUpgraded() ? " II" : "";
 
-        return StringUtils.abbreviateMiddle(longPrefix + potionType.getType().name() + upSuffix, "...", 17);
+        return StringUtils.abbreviateMiddle(longPrefix + potionType.getType().name() + upSuffix, "...", 16);
     }
 
     @Override

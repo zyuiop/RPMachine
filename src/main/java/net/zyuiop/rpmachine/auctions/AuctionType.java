@@ -29,30 +29,30 @@ public class AuctionType {
 
     public String[] getSignName() {
         String name = this.name;
-        if (name.length() > 17) {
-            if (name.length() > 34)
-                name = StringUtils.abbreviate(name, 34);
+        if (name.length() > 16) {
+            if (name.length() > 32)
+                name = StringUtils.abbreviate(name, 32);
 
             // Try split
             String[] parts = name.split(" ");
-            if (parts.length == 1 || (parts.length == 2 && (parts[0].length() > 17 || parts[1].length() > 17))) {
-                return new String[]{name.substring(0, 17), name.substring(17)};
+            if (parts.length == 1 || (parts.length == 2 && (parts[0].length() > 16 || parts[1].length() > 16))) {
+                return new String[]{name.substring(0, 16), name.substring(16)};
             } else if (parts.length == 2) {
                 return parts;
             } else {
                 // Try all combinations, and return as soon as left becomes too long
-                String prevLeft = name.substring(0, 17);
-                String prevRight = name.substring(17);
+                String prevLeft = name.substring(0, 16);
+                String prevRight = name.substring(16);
 
                 for (int i = 1; i < parts.length; ++i) {
                     String left = StringUtils.join(parts, " ", 0, i);
                     String right = StringUtils.join(parts, " ", i, parts.length);
 
-                    if (left.length() > 17) {
+                    if (left.length() > 16) {
                         return new String[] { prevLeft, prevRight };
                     } else {
                         prevLeft = left;
-                        prevRight = StringUtils.abbreviate(right, 17); // just in case
+                        prevRight = StringUtils.abbreviate(right, 16); // just in case
                     }
 
                 }

@@ -303,7 +303,7 @@ jobs:
       TROPICAL_FISH: 4
       PUFFERFISH: 4
       GHAST_TEAR: 2
-      SULPHUR: 2
+      GUNPOWDER: 2
       BLAZE_ROD: 2
       SPIDER_EYE: 2
       ENDER_PEARL: 2
@@ -345,7 +345,7 @@ jobs:
       COAL_ORE: 0
       COAL: 32
       NETHER_QUARTZ_ORE: 0
-      NETHER_QUARTZ: 16
+      QUARTZ: 16
     restrictUse:
       - GRINDSTONE
     restrictCraft:
