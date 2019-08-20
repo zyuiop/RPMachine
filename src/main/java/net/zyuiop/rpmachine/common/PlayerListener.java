@@ -51,6 +51,8 @@ public class PlayerListener implements Listener {
             RPMachine.getInstance().getJobsManager().checkPlayerJob(event.getPlayer(), d);
         }
 
+        d.setLastLogin();
+
         String date = DateFormat.getDateInstance().format(new Date());
         if (!d.hasAttribute(ATTRIBUTE_LAST_DAILY_WAGE) || !d.getAttribute(ATTRIBUTE_LAST_DAILY_WAGE).equals(date)) {
             d.setAttribute(ATTRIBUTE_LAST_DAILY_WAGE, date);

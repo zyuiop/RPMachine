@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -201,5 +202,52 @@ public class JobsManager {
             player.sendMessage(ChatColor.GRAY + "Vous pouvez changer gratuitement de métier via " + ChatColor.YELLOW + "/jobs choose");
             data.setJob(null);
         }
+    }
+
+    public Map<Job, Long> getJobsQuantities() {
+        long last48 = System.currentTimeMillis() - 48L * 3600L * 1000L;
+
+        Map<Job, Long> jobs = RPMachine.getInstance().getDatabaseManager()
+                .getPlayers(p -> p.getLastLogin() >= last48)
+                .stream()
+                .map(PlayerData::getJob).filter(Objects::nonNull)
+                .map(this::getJob).filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        for (Job j : this.jobs.values())
+            if (!jobs.containsKey(j))
+                jobs.put(j, 0L);
+
+        return jobs;
+    }
+
+    /**
+     * Get the proportion of jobs among players that logged in in the last 48 hours
+     */
+    public Map<Job, Double> getJobsProportion() {
+        Map<Job, Long> map = getJobsQuantities();
+        long totalNum = map.values().stream().mapToLong(l -> l).sum();
+
+        return map.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey, e -> {
+                    if (totalNum < 15) return 0D; // if less than 15 players, stats are not significant
+                    else return e.getValue().doubleValue() / totalNum;
+                }
+        ));
+    }
+
+    public double getMaxJobProportion() {
+        int nbJobs = jobs.size();
+        double baseProportion = 1.0 / nbJobs;
+
+        return (1.0 - baseProportion / 2) / (nbJobs - 1); // Less used job must never have less than half of base average
+    }
+
+    public Map<Job, Boolean> getAvailableJobs() {
+        double p = getMaxJobProportion();
+
+        return getJobsProportion().entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey, e -> e.getValue() < p
+        ));
     }
 }

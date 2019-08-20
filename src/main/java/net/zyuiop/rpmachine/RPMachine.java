@@ -150,6 +150,7 @@ public class RPMachine extends JavaPlugin {
         new CommandJob();
         new SelectionCommand();
         new AuctionTypesCommand();
+        new CommandRanking();
 
         // Classic commands
         getCommand("fly").setExecutor(new CommandFly());

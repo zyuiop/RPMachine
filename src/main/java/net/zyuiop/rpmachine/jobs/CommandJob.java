@@ -6,8 +6,6 @@ import net.zyuiop.rpmachine.commands.ConfirmationCommand;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.shops.types.AbstractShopSign;
 import net.zyuiop.rpmachine.shops.types.EnchantingSign;
-import net.zyuiop.rpmachine.shops.types.ItemShopSign;
-import net.zyuiop.rpmachine.shops.types.ShopAction;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,6 +13,7 @@ import org.bukkit.entity.Player;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CommandJob extends AbstractCommand implements ConfirmationCommand {
@@ -35,9 +34,33 @@ public class CommandJob extends AbstractCommand implements ConfirmationCommand {
             RPMachine rpMachine = RPMachine.getInstance();
             String com = strings[0];
             if (com.equalsIgnoreCase("list")) {
-                commandSender.sendMessage(ChatColor.GOLD + "Voici la liste des métiers que vous pouvez choisir :");
-                for (Job job : rpMachine.getJobsManager().getJobs().values())
-                    commandSender.sendMessage("- " + ChatColor.DARK_AQUA + job.getJobName() + " : " + ChatColor.AQUA + job.getJobDescription());
+                commandSender.sendMessage(ChatColor.YELLOW + "Voici la liste des métiers que vous pouvez choisir :");
+                Map<Job, Boolean> available = rpMachine.getJobsManager().getAvailableJobs();
+
+
+                for (Map.Entry<Job, Boolean> entry : available.entrySet()) {
+                    Job job = entry.getKey();
+                    ChatColor color = entry.getValue() ? ChatColor.GREEN : ChatColor.RED;
+
+                    commandSender.sendMessage(ChatColor.YELLOW + "- " + color + job.getJobName() + ChatColor.YELLOW + " : " + ChatColor.WHITE + job.getJobDescription());
+                }
+
+                commandSender.sendMessage(ChatColor.GRAY + "En " + ChatColor.GREEN + "vert" + ChatColor.GRAY + " les métiers que vous pouvez choisir, en " + ChatColor.RED + "rouge" + ChatColor.GRAY + " les métiers déjà trop choisis");
+            } else if (com.equalsIgnoreCase("stats")) {
+                commandSender.sendMessage(ChatColor.YELLOW + "Voici la liste des métiers avec leur nombre et proportion :");
+                Map<Job, Long> q = rpMachine.getJobsManager().getJobsQuantities();
+                Map<Job, Double> p = rpMachine.getJobsManager().getJobsProportion();
+
+                for (Map.Entry<Job, Long> entry : q.entrySet()) {
+                    Job job = entry.getKey();
+                    Long quantity = entry.getValue();
+                    Double prop = p.get(job);
+
+                    commandSender.sendMessage(ChatColor.YELLOW + "- " + job.getJobName() + " : " + ChatColor.YELLOW + quantity +
+                            ChatColor.WHITE + " utilisateurs (" + ChatColor.YELLOW + String.format("%.2f", prop * 100) + " %" + ChatColor.WHITE + ")");
+                }
+
+                commandSender.sendMessage(ChatColor.GRAY + "Lorsque le total d'utilisateurs actifs ayant un travail est inférieur à 15, les pourcentages sont forcés à 0.");
             } else if (com.equalsIgnoreCase("info")) {
                 if (strings.length < 2) {
                     commandSender.sendMessage(ChatColor.RED + "Utilisation : /jobs info <métier>");

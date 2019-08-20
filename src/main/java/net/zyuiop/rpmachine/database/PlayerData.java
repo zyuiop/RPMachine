@@ -78,7 +78,7 @@ public class PlayerData implements LegalEntity {
 
 	@Override
 	public double getBalance() {
-		return Math.round(data.getDouble("rpmoney", 0.0) * 100) / 100;
+		return Math.round(data.getDouble("rpmoney", 0.0) * 100.0D) / 100.0D;
 	}
 
 	@Override
@@ -219,5 +219,14 @@ public class PlayerData implements LegalEntity {
 	public void resetCollectedItems() {
 		data.set("collected_items", null);
 		save();
+	}
+
+	public void setLastLogin() {
+		data.set("last_login", System.currentTimeMillis());
+		save();
+	}
+
+	public long getLastLogin() {
+		return data.getLong("last_login", -1);
 	}
 }

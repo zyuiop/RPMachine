@@ -5,13 +5,15 @@ import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.database.UUIDTranslator;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author zyuiop
@@ -36,6 +38,22 @@ public class FileStorageDatabase implements DatabaseManager, LegalEntityReposito
         if (!playersDirectory.isDirectory()) {
             throw new IOException("Error : players directory is not a directory at " + playersDirectory.getAbsolutePath());
         }
+
+
+        Bukkit.getLogger().info("Loading all player files!");
+        // Load all players :)
+        for (File f : Objects.requireNonNull(playersDirectory.listFiles((dir, name) -> name.endsWith(".yml")))) {
+            String name = f.getName().substring(0, f.getName().length() - 4);
+            try {
+                UUID uuid = UUID.fromString(name);
+                YamlConfiguration configuration = YamlConfiguration.loadConfiguration(f);
+                playerFileMap.put(uuid, new PlayerData(uuid, configuration, f));
+            } catch (IllegalArgumentException ignored) {
+                Bukkit.getLogger().warning("IllegalArgumentException while loading " + f.getAbsolutePath());
+            }
+        }
+
+        Bukkit.getLogger().info("Loaded " + playerFileMap.size() + " player files!");
     }
 
     @Override
@@ -48,6 +66,8 @@ public class FileStorageDatabase implements DatabaseManager, LegalEntityReposito
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else {
+                Bukkit.getLogger().warning("PlayerData file for " + uuid + " was not loaded before...");
             }
 
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(data);
@@ -55,6 +75,16 @@ public class FileStorageDatabase implements DatabaseManager, LegalEntityReposito
         }
 
         return playerFileMap.get(uuid);
+    }
+
+    @Override
+    public List<PlayerData> getPlayers() {
+        return getPlayers(u -> true);
+    }
+
+    @Override
+    public List<PlayerData> getPlayers(Predicate<PlayerData> filter) {
+        return playerFileMap.values().stream().filter(filter).collect(Collectors.toList());
     }
 
     @Override

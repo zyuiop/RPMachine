@@ -84,7 +84,7 @@ public class ScoreboardThread implements Runnable {
 
 		sign.setLine(1, ChatColor.RED + "  ");
 		sign.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
-		sign.setLine(3, ChatColor.AQUA + "" + money + " " + RPMachine.getCurrencyName());
+		sign.setLine(3, ChatColor.AQUA + "" + String.format("%.2f", money) + " " + RPMachine.getCurrencyName());
 		sign.setLine(4, ChatColor.RED + "   ");
 		sign.setLine(5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Métier");
 		sign.setLine(6, job);
@@ -112,7 +112,7 @@ public class ScoreboardThread implements Runnable {
 
 		sign.setLine(1, ChatColor.RED + "  ");
 		sign.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
-		sign.setLine(3, ChatColor.AQUA + "" + city.getBalance() + " " + RPMachine.getCurrencyName());
+		sign.setLine(3, ChatColor.AQUA + "" + String.format("%.2f", city.getBalance()) + " " + RPMachine.getCurrencyName());
 		sign.setLine(4, ChatColor.RED + "   ");
 		sign.setLine(5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Habitants");
 		sign.setLine(6, ChatColor.AQUA + "" + city.countInhabitants() + " Hab.");
