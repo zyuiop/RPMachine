@@ -298,11 +298,6 @@ jobs:
       CREEPER_HEAD: 0
       ZOMBIE_HEAD: 0
       SHULKER_SHELL: 1
-      CHICKEN: 4
-      PORKCHOP: 4
-      RABBIT: 4
-      MUTTON: 4
-      BEEF: 4
       COD: 4
       SALMON: 4
       TROPICAL_FISH: 4
@@ -391,6 +386,7 @@ jobs:
     restrictions:
       - FARMING
       - BREEDING
+      - CAPTURING
     restrictCollect:
       WHEAT: 8
       POTATO: 8
@@ -404,6 +400,15 @@ jobs:
       SUGAR_CANE: 3
       COCOA: 1
       APPLE: 3 # Not sure it'll work
+      CHICKEN: 4
+      PORKCHOP: 4
+      RABBIT: 4
+      MUTTON: 4
+      BEEF: 4
+      COD: 4
+      SALMON: 4
+      TROPICAL_FISH: 4
+      PUFFERFISH: 4
     restrictCraft:
       - BREAD
       - CAKE
