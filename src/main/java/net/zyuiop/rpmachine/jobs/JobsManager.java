@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -173,7 +174,12 @@ public class JobsManager {
     }
 
     public void printAvailableJobsToCollect(Material m, Player p, int limit) {
-        printAvailableJobs(j -> j.canCollect(m), "Vous avez dépassé la limite quotidienne de collecte (max " + limit + "/j) pour l'item " + m + ".", p);
+        String availableJobs =
+                StringUtils.join(jobs.values().stream().filter(j -> j.canCollect(m)).map(Job::getJobName).collect(Collectors.toList()),
+                        ChatColor.GOLD + ", " + ChatColor.YELLOW);
+
+        p.sendActionBar(ChatColor.RED + "Limite quotidienne de collecte dépassée pour " + m + ". Devenez " + availableJobs);
+        p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1F, 1F);
     }
 
     public void printAlmostCollectedAll(Material m, Player p, int limit, int current) {
