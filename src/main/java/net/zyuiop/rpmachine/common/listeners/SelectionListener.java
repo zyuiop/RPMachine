@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.listeners;
+package net.zyuiop.rpmachine.common.listeners;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.City;

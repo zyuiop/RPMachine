@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.common;
+package net.zyuiop.rpmachine.common.listeners;
 
 import com.destroystokyo.paper.event.entity.PhantomPreSpawnEvent;
 import net.md_5.bungee.api.ChatColor;

@@ -1,6 +1,5 @@
 package net.zyuiop.rpmachine;
 
-import net.zyuiop.rpmachine.auctions.Auction;
 import net.zyuiop.rpmachine.auctions.AuctionManager;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.City;
@@ -11,7 +10,8 @@ import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.common.PlayerHeadCraft;
-import net.zyuiop.rpmachine.common.PlayerListener;
+import net.zyuiop.rpmachine.common.listeners.MendingListener;
+import net.zyuiop.rpmachine.common.listeners.PlayerListener;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.entities.LegalEntity;
@@ -19,7 +19,7 @@ import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.gui.WindowsListener;
 import net.zyuiop.rpmachine.jobs.CommandJob;
 import net.zyuiop.rpmachine.jobs.JobsManager;
-import net.zyuiop.rpmachine.listeners.SelectionListener;
+import net.zyuiop.rpmachine.common.listeners.SelectionListener;
 import net.zyuiop.rpmachine.multiverse.MultiverseManager;
 import net.zyuiop.rpmachine.projects.ProjectCommand;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
@@ -168,6 +168,7 @@ public class RPMachine extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SignsListener(), this);
         Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerHeadCraft(), this);
+        Bukkit.getPluginManager().registerEvents(new MendingListener(), this);
 
 
         // Change world spawn
