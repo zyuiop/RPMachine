@@ -268,21 +268,27 @@ public class ItemAuctionGui extends Window {
             player.sendMessage(ChatColor.YELLOW + "Mettez les items à vendre dans l'inventaire qui va s'ouvrir...");
             player.sendMessage(ChatColor.YELLOW + "Fermez l'inventaire pour valider :=)");
 
+            Bukkit.getLogger().info("Opening SELL inventory for player " + player.getName() + " -- item " + mat + " / price " + value);
+
             Inventory inventory = Bukkit.createInventory(player, 6 * 9, "Vendre à " + String.format("%.2f", value) + RPMachine.getCurrencyName() + " /unit");
 
-            player.openInventory(inventory);
             AuctionInventoryListener.INSTANCE.addPlayer(player, () -> {
+                Bukkit.getLogger().info("Closing SELL inventory for player " + player.getName() + " -- item " + mat + " / price " + value);
+
                 int count = 0;
                 for (ItemStack stack : inventory.getContents()) {
                     if (stack == null) continue;
 
                     if (stack.getType() != mat) {
+                        Bukkit.getLogger().info(" --> Putting back stack " + stack.getType() + " x " + stack.getAmount() + " " + stack);
+
                         // Illegal items go back to their country
 
                         player.getInventory().addItem(stack);
                     } else {
                         // Right material, add to the count
                         count += stack.getAmount();
+                        Bukkit.getLogger().info(" --> Adding " + stack.getAmount() + " (count " + count + ")");
                     }
                 }
 
@@ -297,12 +303,14 @@ public class ItemAuctionGui extends Window {
                                 player.saveData();
                                 return;
                             }
+                            Bukkit.getLogger().info("Opening confirm sale window for " + player.getName() + " / " + mat + " / " + finalCount + " total items");
 
                             new PutOnSaleConfirmGui(value, finalCount).open();
                         }
                         , 1);
             });
 
+            player.openInventory(inventory);
         }
     }
 
@@ -327,6 +335,8 @@ public class ItemAuctionGui extends Window {
 
         @Override
         protected void finish(boolean accepted) {
+            Bukkit.getLogger().info("Sale confirm window closed " + player.getName() + ", result was " + accepted);
+
             if (accepted) {
                 AuctionManager.INSTANCE.addAuction(new Auction(mat, price, quantity, RPMachine.getPlayerRoleToken(player).getTag()));
                 AuctionManager.INSTANCE.save();

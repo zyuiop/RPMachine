@@ -168,7 +168,7 @@ public class RPMachine extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SignsListener(), this);
         Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerHeadCraft(), this);
-        Bukkit.getPluginManager().registerEvents(new MendingListener(), this);
+        // Bukkit.getPluginManager().registerEvents(new MendingListener(), this);
 
 
         // Change world spawn
