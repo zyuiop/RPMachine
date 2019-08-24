@@ -141,6 +141,10 @@ public class JobsManager {
         return getCollectLimit(m) < 0 || (getJob(p) != null && getJob(p).canCollect(m));
     }
 
+    public boolean canCollect(PlayerData p, Material m) {
+        return getCollectLimit(m) < 0 || (getJob(p.getUuid()) != null && getJob(p.getUuid()).canCollect(m));
+    }
+
     public boolean canUse(Player p, Material m) {
         return isFreeToUse(m) || (getJob(p) != null && getJob(p).canUse(m));
     }

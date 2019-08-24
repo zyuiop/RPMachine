@@ -1,7 +1,10 @@
 package net.zyuiop.rpmachine.jobs;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.cities.City;
+import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.PlayerData;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.HumanEntity;
@@ -11,6 +14,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -93,7 +97,7 @@ public class JobsListener implements Listener {
         Player p = event.getPlayer();
         checkItems(p, event.getItems(), Item::getItemStack);
     }
-
+    
     private <T> void checkItems(Player p, Iterable<T> drops, Function<T, ItemStack> converter) {
         Iterator<T> stacks = drops.iterator();
         PlayerData data = RPMachine.getInstance().getDatabaseManager().getPlayerData(p);
@@ -127,6 +131,26 @@ public class JobsListener implements Listener {
         }
     }
 
+    private <T> void checkNonPlayerItems(Location location, Iterable<T> drops, Function<T, ItemStack> converter) {
+        Iterator<T> stacks = drops.iterator();
+        City city = RPMachine.getInstance().getCitiesManager().getCityHere(location.getChunk());
+        Plot plot = city == null ? RPMachine.getInstance().getProjectsManager().getZoneHere(location) : city.getPlotHere(location);
+        PlayerData data = plot == null ? null : (plot.owner() instanceof PlayerData ? (PlayerData) plot.owner() : null);
+
+        while (stacks.hasNext()) {
+            ItemStack stack = converter.apply(stacks.next());
+            Material m = stack.getType();
+
+            int limit = manager.getCollectLimit(m);
+            if (limit >= 0) {
+                // For limited items, automated farming is always forbiden.
+                if (data == null || !manager.canCollect(data, m)) {
+                    stacks.remove();
+                }
+            }
+        }
+    }
+
 
     @EventHandler
     public void onKill(EntityDeathEvent event) {
@@ -138,16 +162,7 @@ public class JobsListener implements Listener {
         if (p != null) {
             checkItems(p, event.getDrops(), u -> u);
         } else {
-            // Remove loots
-            Iterator<ItemStack> stacks = event.getDrops().iterator();
-            while (stacks.hasNext()) {
-                ItemStack stack = stacks.next();
-                Material m = stack.getType();
-
-                int limit = manager.getCollectLimit(m);
-                if (limit > 0)
-                    stacks.remove();
-            }
+            checkNonPlayerItems(event.getEntity().getLocation(), event.getDrops(), u -> u);
         }
     }
 }

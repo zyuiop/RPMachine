@@ -12,6 +12,7 @@ import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.common.PlayerHeadCraft;
 import net.zyuiop.rpmachine.common.PlayerListener;
+import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
@@ -28,6 +29,7 @@ import net.zyuiop.rpmachine.shops.ShopsManager;
 import net.zyuiop.rpmachine.shops.SignsListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -274,6 +276,12 @@ public class RPMachine extends JavaPlugin {
         AuctionManager.INSTANCE.stop();
 
         super.onDisable();
+    }
+
+    public static Plot getPlotHere(Location location) {
+        City c = instance.citiesManager.getCityHere(location.getChunk());
+
+        return c == null ? instance.projectsManager.getZoneHere(location) : c.getPlotHere(location);
     }
 
     public ScoreboardManager getScoreboardManager() {

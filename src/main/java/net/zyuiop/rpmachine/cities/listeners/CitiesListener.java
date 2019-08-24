@@ -6,6 +6,7 @@ import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Sign;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -19,8 +20,10 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CitiesListener implements Listener {
 
