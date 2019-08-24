@@ -12,6 +12,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class CreateCityCommand implements SubCommand, ConfirmationCommand {
+    public static final String ALLOW_CREATE_ATTR_KEY = "city_create_allowed";
+
     private final CitiesManager citiesManager;
 
     public CreateCityCommand(CitiesManager citiesManager) {
@@ -30,7 +32,11 @@ public class CreateCityCommand implements SubCommand, ConfirmationCommand {
 
     @Override
     public boolean canUse(Player player) {
-        return player.hasPermission("rp.createcity") && citiesManager.getPlayerCity(player) == null;
+        PlayerData data = RPMachine.getInstance().getDatabaseManager().getPlayerData(player);
+        return player.hasPermission("rp.createcity")
+                && citiesManager.getPlayerCity(player) == null
+                && data.hasAttribute(ALLOW_CREATE_ATTR_KEY)
+                && data.<Long> getAttribute(ALLOW_CREATE_ATTR_KEY) > System.currentTimeMillis();
     }
 
     @Override
@@ -73,6 +79,7 @@ public class CreateCityCommand implements SubCommand, ConfirmationCommand {
                         boolean result = citiesManager.createCity(city);
                         if (result) {
                             player.sendMessage(ChatColor.GOLD + "Vous créez une ville sur ce chunk.");
+                            data.setAttribute(ALLOW_CREATE_ATTR_KEY, null);
 
                             if (!city.isRequireInvite()) {
                                 player.sendMessage(ChatColor.GRAY + "L'Histoire de la ville de " + city.shortDisplayable() + ChatColor.GRAY + " commence ce jour... Que le sort soit avec elle !");

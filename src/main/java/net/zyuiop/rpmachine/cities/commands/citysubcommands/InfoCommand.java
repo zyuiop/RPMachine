@@ -63,7 +63,7 @@ public class InfoCommand implements SubCommand {
             CityFloor floor = citiesManager.getFloor(target);
             player.sendMessage(ChatColor.YELLOW + "Palier : " + floor.getName());
 
-            if (player.getUniqueId().equals(target.getMayor()) || target.getCouncils().contains(player.getUniqueId())) {
+            if (player.getUniqueId().equals(target.getMayor()) || target.getCouncils().contains(player.getUniqueId()) || player.isOp()) {
                 player.sendMessage(ChatColor.YELLOW + "Monnaie : " + target.getBalance() + " " + RPMachine.getCurrencyName());
                 player.sendMessage(ChatColor.YELLOW + "Taille : " + target.getChunks().size() + " / " + floor.getMaxsurface());
             }

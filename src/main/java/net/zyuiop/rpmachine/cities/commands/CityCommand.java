@@ -35,5 +35,8 @@ public class CityCommand extends CompoundCommand {
         // Will also register a command with the same name
         FloorsCommand fc = new FloorsCommand();
         registerSubCommand("floors", fc, "paliers");
+
+        AllowCreateCityCommand ac = new AllowCreateCityCommand();
+        registerSubCommand("allowcreate", ac, "ac", "acc", "allow");
     }
 }
