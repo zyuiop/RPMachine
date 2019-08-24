@@ -19,7 +19,7 @@ public class CommandRanking extends AbstractCommand {
 
     @Override
     protected boolean onPlayerCommand(Player player, String command, String[] args) {
-        List<PlayerData> data = new ArrayList<>(RPMachine.getInstance().getDatabaseManager().getPlayers());
+        List<PlayerData> data = new ArrayList<>(RPMachine.getInstance().getDatabaseManager().getActivePlayers());
         data.sort(Comparator.comparing(PlayerData::getBalance).reversed());
 
         PlayerData own = RPMachine.getInstance().getDatabaseManager().getPlayerData(player);

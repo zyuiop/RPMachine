@@ -215,10 +215,9 @@ public class JobsManager {
     }
 
     public Map<Job, Long> getJobsQuantities() {
-        long last48 = System.currentTimeMillis() - 48L * 3600L * 1000L;
 
         Map<Job, Long> jobs = RPMachine.getInstance().getDatabaseManager()
-                .getPlayers(p -> p.getLastLogin() >= last48)
+                .getActivePlayers()
                 .stream()
                 .map(PlayerData::getJob).filter(Objects::nonNull)
                 .map(this::getJob).filter(Objects::nonNull)

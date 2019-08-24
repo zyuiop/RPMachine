@@ -25,5 +25,11 @@ public interface DatabaseManager extends LegalEntityRepository<PlayerData> {
 
 	List<PlayerData> getPlayers(Predicate<PlayerData> filter);
 
+	default List<PlayerData> getActivePlayers() {
+		long lastWeek = System.currentTimeMillis() - 24L * 3600L * 1000L * 7L;
+
+		return getPlayers(data -> data.getLastLogin() >= lastWeek);
+	}
+
 	UUIDTranslator getUUIDTranslator();
 }
