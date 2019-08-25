@@ -1,7 +1,7 @@
 package net.zyuiop.rpmachine.shops.types;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.auctions.Auction;
+import net.zyuiop.rpmachine.auctions.SellOrder;
 import net.zyuiop.rpmachine.auctions.AuctionManager;
 import net.zyuiop.rpmachine.auctions.AuctionType;
 import net.zyuiop.rpmachine.auctions.ItemAuctionGui;
@@ -17,7 +17,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.CauldronLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -124,7 +123,7 @@ public class AuctionAccessSign extends AbstractShopSign {
 
         if (auctionType == null) {
             if (itemType != null) {
-                for (Auction a : AuctionManager.INSTANCE.getAuctions(itemType))
+                for (SellOrder a : AuctionManager.INSTANCE.getAuctions(itemType))
                     p.sendMessage(ChatColor.YELLOW + " - " + a.getAvailable() + " items, price " + a.getItemPrice() + ", seller " + a.owner().displayable());
             }
         } else {
@@ -132,7 +131,7 @@ public class AuctionAccessSign extends AbstractShopSign {
 
             if (auctionType != null) {
                 for (Material m : auctionType.getMaterials()) {
-                    for (Auction a : AuctionManager.INSTANCE.getAuctions(m))
+                    for (SellOrder a : AuctionManager.INSTANCE.getAuctions(m))
                         p.sendMessage(ChatColor.YELLOW + " - " + m + " * " + a.getAvailable() + " items, price " + a.getItemPrice() + ", seller " + a.owner().displayable());
                 }
             }

@@ -3,16 +3,10 @@ package net.zyuiop.rpmachine.auctions;
 import com.google.gson.reflect.TypeToken;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.entities.LegalEntity;
-import net.zyuiop.rpmachine.entities.Ownable;
 import net.zyuiop.rpmachine.json.Json;
-import net.zyuiop.rpmachine.json.JsonExclude;
-import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,26 +20,30 @@ public class AuctionManager {
     private AuctionManager() {
     }
 
-    private static int TX_ID = 0;
-    private static long TX_EXPIRATION_TIME = 20 * 1000L;
-
     private final File folder = new File(RPMachine.getInstance().getDataFolder().getPath());
 
     private final File auctionsFile = new File(folder, "auctions.json");
+    private final File buysFile = new File(folder, "buy_orders.json");
     private final File typesFile = new File(folder, "auction_types.json");
     private final File transactionsFile = new File(folder, "transactions.json");
 
-    private final Map<Material, TreeSet<Auction>> auctions = new HashMap<>();
-    private final Map<Integer, Transaction> transactions = new HashMap<>();
+    private final Map<Material, TreeSet<SellOrder>> sellOffers = new HashMap<>();
+    private final Map<Material, TreeSet<BuyOrder>> buyOffers = new HashMap<>();
+    private final Map<Integer, AbstractTransaction> transactions = new HashMap<>();
     private final Map<String, AuctionType> types = new HashMap<>();
 
     public void load() {
         try {
-
             if (auctionsFile.exists()) {
-                TypeToken<Map<Material, TreeSet<Auction>>> tt = new TypeToken<Map<Material, TreeSet<Auction>>>() {
+                TypeToken<Map<Material, TreeSet<SellOrder>>> tt = new TypeToken<Map<Material, TreeSet<SellOrder>>>() {
                 };
-                this.auctions.putAll(Json.GSON.fromJson(new FileReader(auctionsFile), tt.getType()));
+                this.sellOffers.putAll(Json.GSON.fromJson(new FileReader(auctionsFile), tt.getType()));
+            }
+
+            if (buysFile.exists()) {
+                TypeToken<Map<Material, TreeSet<BuyOrder>>> tt = new TypeToken<Map<Material, TreeSet<BuyOrder>>>() {
+                };
+                this.buyOffers.putAll(Json.GSON.fromJson(new FileReader(buysFile), tt.getType()));
             }
 
             if (typesFile.exists()) {
@@ -55,7 +53,7 @@ public class AuctionManager {
             }
 
             if (transactionsFile.exists()) {
-                TypeToken<Map<Integer, Transaction>> tt = new TypeToken<Map<Integer, Transaction>>() {
+                TypeToken<Map<Integer, BuyTransaction>> tt = new TypeToken<Map<Integer, BuyTransaction>>() {
                 };
                 this.transactions.putAll(Json.GSON.fromJson(new FileReader(transactionsFile), tt.getType()));
             }
@@ -64,7 +62,7 @@ public class AuctionManager {
         }
 
         // Cancel all existing transactions (crash backup!)
-        new ArrayList<>(transactions.values()).forEach(Transaction::cancel);
+        new ArrayList<>(transactions.values()).forEach(AbstractTransaction::cancel);
         save();
 
         // Schedule auto purge
@@ -75,7 +73,7 @@ public class AuctionManager {
 
     public void stop() {
         // Cancel all existing transactions
-        new ArrayList<>(transactions.values()).forEach(Transaction::cancel);
+        new ArrayList<>(transactions.values()).forEach(AbstractTransaction::cancel);
 
         // Re-save
         doSave();
@@ -83,7 +81,7 @@ public class AuctionManager {
 
     public void purge() {
         // We clone the list to avoid ConcurrentModificationExceptions
-        new ArrayList<>(transactions.values()).forEach(Transaction::checkAutoCancel);
+        new ArrayList<>(transactions.values()).forEach(AbstractTransaction::checkAutoCancel);
 
         save();
     }
@@ -91,10 +89,12 @@ public class AuctionManager {
     private void doSave() {
         try {
             if (!auctionsFile.exists()) auctionsFile.createNewFile();
+            if (!buysFile.exists()) buysFile.createNewFile();
             if (!transactionsFile.exists()) transactionsFile.createNewFile();
             if (!typesFile.exists()) typesFile.createNewFile();
 
-            Json.GSON.toJson(this.auctions, new PrintStream(auctionsFile));
+            Json.GSON.toJson(this.sellOffers, new PrintStream(auctionsFile));
+            Json.GSON.toJson(this.buyOffers, new PrintStream(buysFile));
             Json.GSON.toJson(this.types, new PrintStream(typesFile));
             Json.GSON.toJson(this.transactions, new PrintStream(transactionsFile));
         } catch (IOException e) {
@@ -126,14 +126,19 @@ public class AuctionManager {
     }
 
     public double averagePrice(Material material) {
-        if (!auctions.containsKey(material)) return Double.NaN;
+        if (!sellOffers.containsKey(material) && !buyOffers.containsKey(material)) return Double.NaN;
 
-        if (auctions.get(material).isEmpty()) return Double.NaN;
+        if (sellOffers.get(material).isEmpty() && buyOffers.get(material).isEmpty()) return Double.NaN;
 
         double total = 0D;
         int items = 0;
 
-        for (Auction a : auctions.get(material)) {
+        if (sellOffers.containsKey(material)) for (SellOrder a : sellOffers.get(material)) {
+            total += a.getItemPrice() * a.getAvailable();
+            items += a.getAvailable();
+        }
+
+        if (buyOffers.containsKey(material)) for (BuyOrder a : buyOffers.get(material)) {
             total += a.getItemPrice() * a.getAvailable();
             items += a.getAvailable();
         }
@@ -142,209 +147,147 @@ public class AuctionManager {
     }
 
     public int countAvailable(Material material) {
-        if (!auctions.containsKey(material)) return 0;
+        if (!sellOffers.containsKey(material)) return 0;
 
-        if (auctions.get(material).isEmpty()) return 0;
+        if (sellOffers.get(material).isEmpty()) return 0;
 
-        return auctions.get(material).stream().mapToInt(Auction::getAvailable).sum();
+        return sellOffers.get(material).stream().mapToInt(SellOrder::getAvailable).sum();
     }
 
     public double minPrice(Material material) {
-        if (!auctions.containsKey(material) || auctions.get(material).isEmpty()) return Double.NaN;
+        if (!sellOffers.containsKey(material) || sellOffers.get(material).isEmpty()) return Double.NaN;
 
-        return auctions.get(material).first().getItemPrice();
+        return sellOffers.get(material).first().getItemPrice();
     }
 
-    public List<Auction> getMyAuctions(Material material, LegalEntity entity) {
-        if (auctions.containsKey(material)) {
-            return auctions.get(material).stream().filter(a -> a.ownerTag().equals(entity.tag())).collect(Collectors.toList());
+    public List<SellOrder> getMyAuctions(Material material, LegalEntity entity) {
+        if (sellOffers.containsKey(material)) {
+            return sellOffers.get(material).stream().filter(a -> a.ownerTag().equals(entity.tag())).collect(Collectors.toList());
         } else return Collections.emptyList();
     }
 
-    public boolean removeAuction(Auction auction) {
-        if (auctions.containsKey(auction.getMaterial()))
-            return auctions.get(auction.getMaterial()).remove(auction);
+    public boolean removeAuction(SellOrder auction) {
+        if (sellOffers.containsKey(auction.getMaterial()))
+            return sellOffers.get(auction.getMaterial()).remove(auction);
         return false;
     }
 
-    public boolean hasAuction(Auction auction) {
-        if (auctions.containsKey(auction.getMaterial()))
-            return auctions.get(auction.getMaterial()).contains(auction);
+    public boolean removeAuction(BuyOrder auction) {
+        if (buyOffers.containsKey(auction.getMaterial()))
+            return buyOffers.get(auction.getMaterial()).remove(auction);
         return false;
     }
 
-    public void addAuction(Auction auction) {
-        if (!auctions.containsKey(auction.getMaterial()) || auctions.get(auction.getMaterial()) == null)
-            auctions.put(auction.getMaterial(), new TreeSet<>());
-
-        auctions.get(auction.getMaterial()).add(auction);
+    public boolean hasAuction(SellOrder auction) {
+        if (sellOffers.containsKey(auction.getMaterial()))
+            return sellOffers.get(auction.getMaterial()).contains(auction);
+        return false;
     }
 
-    public TreeSet<Auction> getAuctions(Material itemType) {
-        return auctions.containsKey(itemType) ? auctions.get(itemType) : new TreeSet<>();
+    public void addAuction(SellOrder auction) {
+        if (!sellOffers.containsKey(auction.getMaterial()) || sellOffers.get(auction.getMaterial()) == null)
+            sellOffers.put(auction.getMaterial(), new TreeSet<>());
+
+        sellOffers.get(auction.getMaterial()).add(auction);
     }
 
-    public static class Transaction implements Ownable {
-        private final int id;
-        private final String buyer;
-        private final long startTime;
-        private final TreeSet<Auction> content;
-        private final int requestedItems;
+    public void addAuction(BuyOrder auction) {
+        if (!buyOffers.containsKey(auction.getMaterial()) || buyOffers.get(auction.getMaterial()) == null)
+            buyOffers.put(auction.getMaterial(), new TreeSet<>());
 
-        @JsonExclude
-        private boolean canceled = false;
+        buyOffers.get(auction.getMaterial()).add(auction);
+    }
 
-        public Transaction(LegalEntity buyer, int requestedItems) {
-            this.id = TX_ID++;
-            this.startTime = System.currentTimeMillis();
-            this.content = new TreeSet<>();
-            this.buyer = buyer.tag();
-            this.requestedItems = requestedItems;
-        }
-
-        public int getRequestedItems() {
-            return requestedItems;
-        }
-
-        public int remainingSeconds() {
-            long end = startTime + TX_EXPIRATION_TIME;
-            long remain = end - System.currentTimeMillis();
-
-            return (remain < 0 ? 0 : (int) (remain / 1000));
-        }
-
-        @Nullable
-        @Override
-        public String ownerTag() {
-            return buyer;
-        }
-
-        public void cancel() {
-            if (canceled)
-                return;
-            canceled = true;
-
-            Iterator<Auction> iter = content.iterator();
-
-            while (iter.hasNext()) {
-                Auction next = iter.next();
-                if (next != null)
-                    INSTANCE.addAuction(next);
-                iter.remove();
-            }
-            INSTANCE.transactions.remove(id);
-        }
-
-        boolean checkAutoCancel() {
-            if (System.currentTimeMillis() > startTime + TX_EXPIRATION_TIME) {
-                cancel();
-            }
-
-            return canceled;
-        }
-
-        public boolean complete(Player player) {
-            checkAutoCancel();
-
-            if (canceled) {
-                player.sendMessage(ChatColor.RED + "Transaction déjà acceptée ou invalide.");
-                INSTANCE.transactions.remove(id);
-                return false;
-            }
-
-
-            double price = getPrice();
-            if (owner().getBalance() < price) {
-                Messages.notEnoughMoneyEntity(player, owner(), price);
-                cancel();
-                return true;
-            }
-
-            canceled = true;
-
-            Iterator<Auction> auctionIterator = content.iterator();
-            int remaining = requestedItems;
-            while (remaining > 0) {
-                Auction a = auctionIterator.next();
-
-                if (remaining < a.getAvailable()) {
-                    Auction toAdd = a.buy(remaining, player, owner());
-
-                    Bukkit.getLogger().info("Adding remainings of auction " + a.getItemPrice() + " " + a.getMaterial() + " " + a.ownerTag());
-
-                    INSTANCE.addAuction(toAdd);
-                    INSTANCE.transactions.remove(id);
-                    INSTANCE.save();
-                    return true;
-                } else {
-                    Auction ret = a.buy(a.getAvailable(), player, owner());
-
-                    if (ret == a)
-                        return false; // Not enough money
-
-                    remaining -= a.getAvailable();
-                }
-
-                auctionIterator.remove();
-            }
-
-            INSTANCE.transactions.remove(id);
-            INSTANCE.save();
-            return true;
-        }
-
-        public double getPrice() {
-            Iterator<Auction> auctionIterator = content.iterator();
-            int remaining = requestedItems;
-            double price = 0;
-            while (remaining > 0) {
-                Auction a = auctionIterator.next();
-
-                if (remaining < a.getAvailable()) {
-                    price += remaining * a.getItemPrice();
-                } else {
-                    price += a.getItemPrice() * a.getAvailable();
-                }
-
-                remaining -= a.getAvailable();
-            }
-
-            return price;
-        }
-
+    public TreeSet<SellOrder> getAuctions(Material itemType) {
+        return sellOffers.containsKey(itemType) ? sellOffers.get(itemType) : new TreeSet<>();
     }
 
 
-    public Transaction startTransaction(LegalEntity buyer, Material material, int amount) {
-        if (!auctions.containsKey(material) || auctions.get(material).isEmpty())
+    public BuyTransaction startBuy(LegalEntity buyer, Material material, int amount) {
+        if (!sellOffers.containsKey(material) || sellOffers.get(material).isEmpty())
             return null;
 
-        TreeSet<Auction> target = new TreeSet<>();
-        Iterator<Auction> auctionIterator = auctions.get(material).iterator();
+        TreeSet<SellOrder> target = new TreeSet<>();
+        Iterator<SellOrder> auctionIterator = sellOffers.get(material).iterator();
         int total = 0;
         while (total < amount && auctionIterator.hasNext()) {
-            Auction a = auctionIterator.next();
+            SellOrder a = auctionIterator.next();
             total += a.getAvailable();
             target.add(a);
             auctionIterator.remove();
         }
 
-        Transaction tx = new Transaction(buyer, Math.min(amount, total));
-        tx.content.addAll(target);
+        BuyTransaction tx = new BuyTransaction(buyer, Math.min(amount, total));
+        tx.getContent().addAll(target);
 
-        transactions.put(tx.id, tx);
+        transactions.put(tx.getId(), tx);
         save();
 
         return tx;
     }
 
-    public Transaction startTransactionWithRemovedAuction(LegalEntity buyer, Auction auction) {
-        Transaction tx = new Transaction(buyer, auction.getAvailable());
-        tx.content.add(auction);
+    public BuyTransaction startBuyRemovedOrder(LegalEntity buyer, SellOrder auction) {
+        BuyTransaction tx = new BuyTransaction(buyer, auction.getAvailable());
+        tx.getContent().add(auction);
 
-        transactions.put(tx.id, tx);
+        transactions.put(tx.getId(), tx);
         save();
 
         return tx;
+    }
+
+    public SellTransaction startSell(LegalEntity seller, Material material, int amount) {
+        if (!buyOffers.containsKey(material) || buyOffers.get(material).isEmpty())
+            return null;
+
+        TreeSet<BuyOrder> target = new TreeSet<>();
+        Iterator<BuyOrder> auctionIterator = buyOffers.get(material).iterator();
+        int total = 0;
+        while (total < amount && auctionIterator.hasNext()) {
+            BuyOrder a = auctionIterator.next();
+            if (a.getRemainingItems() <= 0)
+                continue;
+
+            total += a.getRemainingItems();
+            target.add(a);
+            auctionIterator.remove();
+        }
+
+        if (total == 0)
+            return null;
+
+        SellTransaction tx = new SellTransaction(seller, Math.min(amount, total));
+        tx.getContent().addAll(target);
+
+        transactions.put(tx.getId(), tx);
+        save();
+
+        return tx;
+    }
+
+    public SellTransaction startBuyRemovedOrder(LegalEntity seller, BuyOrder auction) {
+        SellTransaction tx = new SellTransaction(seller, auction.getRemainingItems());
+        tx.getContent().add(auction);
+
+        transactions.put(tx.getId(), tx);
+        save();
+
+        return tx;
+    }
+
+
+    public void removeTransaction(AbstractTransaction tx) {
+        removeTransaction(tx, true);
+    }
+
+    public void removeTransaction(AbstractTransaction tx, boolean save) {
+        transactions.remove(tx.getId());
+        if (save) save();
+    }
+
+    public List<BuyOrder> getMyBuys(Material material, LegalEntity entity) {
+        if (buyOffers.containsKey(material)) {
+            return buyOffers.get(material).stream().filter(a -> a.ownerTag().equals(entity.tag())).collect(Collectors.toList());
+        } else return Collections.emptyList();
     }
 }

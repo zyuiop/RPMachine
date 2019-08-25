@@ -14,14 +14,14 @@ import javax.annotation.Nullable;
 /**
  * @author Louis Vialar
  */
-public class Auction implements Ownable, Comparable<Auction> {
+public abstract class Order<T extends Order> implements Ownable, Comparable<T> {
     private final Long id;
     private final Material material;
     private final double itemPrice;
     private final int available;
     private final String ownerTag;
 
-    public Auction(Material material, double itemPrice, int available, String ownerTag) {
+    protected Order(Material material, double itemPrice, int available, String ownerTag) {
         Preconditions.checkNotNull(ownerTag);
         Preconditions.checkNotNull(material);
         Preconditions.checkArgument(itemPrice >= 0, "itemPrice cannot be negative");
@@ -42,45 +42,30 @@ public class Auction implements Ownable, Comparable<Auction> {
         return itemPrice;
     }
 
+    public String getFormattedItemPrice() {
+        return String.format("%.2f", getItemPrice()) + RPMachine.getCurrencyName();
+    }
+
     public int getAvailable() {
         return available;
     }
 
-    public Auction add(int amt) {
+    public T add(int amt) {
         if (amt < 0) throw new IllegalArgumentException("amt");
 
         return updateQty(available + amt);
     }
 
-    private Auction updateQty(int newQty) {
-        return new Auction(material, itemPrice, newQty, ownerTag);
+    public Long getId() {
+        return id;
     }
 
-    public Auction remove(int amt) {
+    protected abstract T updateQty(int newQty);
+
+    public T remove(int amt) {
         if (amt < 0) throw new IllegalArgumentException("amt");
 
         return updateQty(available - amt);
-    }
-
-    public Auction buy(int amt, Player buyer, LegalEntity buyerEntity) {
-        if (amt > available) {
-            throw new IllegalArgumentException("amt");
-        }
-
-        double price = amt * getItemPrice();
-        if (buyerEntity.transfer(price, owner())) {
-            Messages.credit(owner(), price, "hotel des ventes - " + amt + " * " + material + " à " + itemPrice + RPMachine.getCurrencyName() + "/pièce par " + buyerEntity.shortDisplayable());
-            Messages.debit(buyerEntity, price, "hotel des ventes - " + amt + " * " + material + " à " + itemPrice + RPMachine.getCurrencyName() + "/pièce à " + owner().shortDisplayable());
-            buyer.getInventory().addItem(new ItemStack(material, amt));
-            return remove(amt);
-        } else {
-            Messages.notEnoughMoneyEntity(buyer, buyerEntity, price);
-            return this;
-        }
-    }
-
-    public Auction updatePrice(double price) {
-        return new Auction(material, price, available, ownerTag);
     }
 
     @Nullable
@@ -90,26 +75,17 @@ public class Auction implements Ownable, Comparable<Auction> {
     }
 
     @Override
-    public int compareTo(Auction o) {
-        int cmp = Double.compare(itemPrice, o.itemPrice);
-        cmp = cmp == 0 ? Long.compare(id == null ? 0 : id, o.id == null ? 0 : o.id) : cmp;
-        cmp = cmp == 0 ? ownerTag.compareTo(o.ownerTag) : cmp;
-
-        return cmp;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Auction)) return false;
+        if (!(o instanceof Order)) return false;
 
-        Auction auction = (Auction) o;
+        Order<?> order = (Order<?>) o;
 
-        if (Double.compare(auction.itemPrice, itemPrice) != 0) return false;
-        if (available != auction.available) return false;
-        if (id != null ? !id.equals(auction.id) : auction.id != null) return false;
-        if (material != auction.material) return false;
-        return ownerTag != null ? ownerTag.equals(auction.ownerTag) : auction.ownerTag == null;
+        if (Double.compare(order.itemPrice, itemPrice) != 0) return false;
+        if (available != order.available) return false;
+        if (id != null ? !id.equals(order.id) : order.id != null) return false;
+        if (material != order.material) return false;
+        return ownerTag != null ? ownerTag.equals(order.ownerTag) : order.ownerTag == null;
     }
 
     @Override
