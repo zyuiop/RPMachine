@@ -26,19 +26,19 @@ public class JobChooseCommand implements SubCommand, ConfirmationCommand {
 
     @Override
     public boolean run(Player commandSender, String command, String subCommand, String[] strings) {
-        if (strings.length < 2) {
+        if (strings.length < 1) {
             commandSender.sendMessage(ChatColor.RED + "Utilisation : /jobs choose <métier>");
             return true;
         }
 
-        String job = strings[1];
+        String job = strings[0];
         Job j = RPMachine.getInstance().getJobsManager().getJob(job);
         if (j == null) {
             commandSender.sendMessage(ChatColor.RED + "Ce métier n'a pas été trouvé.");
             return true;
         }
 
-        PlayerData data = RPMachine.database().getPlayerData(((Player) commandSender).getUniqueId());
+        PlayerData data = RPMachine.database().getPlayerData(commandSender);
         if (data.getJob() != null)
             commandSender.sendMessage(ChatColor.RED + "Vous avez déjà un métier. " + ChatColor.YELLOW + "/jobs quit" + ChatColor.RED + " pour le quitter.");
         else {
@@ -47,7 +47,7 @@ public class JobChooseCommand implements SubCommand, ConfirmationCommand {
                     ChatColor.YELLOW + "Voulez vous vraiment adopter le métier " + ChatColor.GOLD + j.getJobName() + ChatColor.YELLOW + " ? " +
                             "Vous ne pourrez pas changer avant " + ChatColor.GOLD + RPMachine.getInstance().getJobsManager().getQuitFrequency() + " jours " + ChatColor.YELLOW +
                             " et le prochain changement coûtera " + ChatColor.AQUA + RPMachine.getInstance().getJobsManager().getQuitPrice() + RPMachine.getCurrencyName(),
-                    command, strings)) {
+                    command + " " + subCommand, strings)) {
                 data.setJob(j.getJobName());
                 data.setAttribute(CommandJob.ATTRIBUTE_LAST_CHANGE, System.currentTimeMillis());
 

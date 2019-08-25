@@ -57,7 +57,7 @@ public class JobQuitCommand implements SubCommand, ConfirmationCommand {
         }).collect(Collectors.toList());
 
         // TODO: maybe adapt to confirmation command via new method
-        if (strings.length < 2) {
+        if (strings.length < 1) {
             if (signs.isEmpty()) {
                 commandSender.sendMessage(ChatColor.RED + "Voulez vous vraiment quitter votre métier ? Merci de confirmer l'opération avec /jobs quit confirm");
             } else {
@@ -69,7 +69,7 @@ public class JobQuitCommand implements SubCommand, ConfirmationCommand {
             }
             commandSender.sendMessage(ChatColor.YELLOW + "L'abandon de votre métier coûtera " + ChatColor.AQUA + RPMachine.getInstance().getJobsManager().getQuitPrice() + RPMachine.getCurrencyName());
             return true;
-        } else if (strings[1].equalsIgnoreCase("confirm")) {
+        } else if (strings[0].equalsIgnoreCase("confirm")) {
             int i = 0;
             for (AbstractShopSign sign : signs) {
                 sign.breakSign((Player) commandSender);

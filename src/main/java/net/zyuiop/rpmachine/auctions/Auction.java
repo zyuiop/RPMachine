@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
  * @author Louis Vialar
  */
 public class Auction implements Ownable, Comparable<Auction> {
+    private final Long id;
     private final Material material;
     private final double itemPrice;
     private final int available;
@@ -26,6 +27,7 @@ public class Auction implements Ownable, Comparable<Auction> {
         Preconditions.checkArgument(itemPrice >= 0, "itemPrice cannot be negative");
         Preconditions.checkArgument(available >= 0, "available cannot be negative");
 
+        this.id = System.currentTimeMillis();
         this.material = material;
         this.itemPrice = itemPrice;
         this.available = available;
@@ -89,6 +91,37 @@ public class Auction implements Ownable, Comparable<Auction> {
 
     @Override
     public int compareTo(Auction o) {
-        return Double.compare(itemPrice, o.itemPrice);
+        int cmp = Double.compare(itemPrice, o.itemPrice);
+        cmp = cmp == 0 ? Long.compare(id == null ? 0 : id, o.id == null ? 0 : o.id) : cmp;
+        cmp = cmp == 0 ? ownerTag.compareTo(o.ownerTag) : cmp;
+
+        return cmp;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Auction)) return false;
+
+        Auction auction = (Auction) o;
+
+        if (Double.compare(auction.itemPrice, itemPrice) != 0) return false;
+        if (available != auction.available) return false;
+        if (id != null ? !id.equals(auction.id) : auction.id != null) return false;
+        if (material != auction.material) return false;
+        return ownerTag != null ? ownerTag.equals(auction.ownerTag) : auction.ownerTag == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (material != null ? material.hashCode() : 0);
+        temp = Double.doubleToLongBits(itemPrice);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + available;
+        result = 31 * result + (ownerTag != null ? ownerTag.hashCode() : 0);
+        return result;
     }
 }

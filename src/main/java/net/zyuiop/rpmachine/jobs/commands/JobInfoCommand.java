@@ -24,12 +24,12 @@ public class JobInfoCommand implements SubCommand {
 
     @Override
     public boolean run(Player commandSender, String command, String subCommand, String[] strings) {
-        if (strings.length < 2) {
+        if (strings.length < 1) {
             commandSender.sendMessage(ChatColor.RED + "Utilisation : /jobs info <métier>");
             return true;
         }
 
-        String job = strings[1];
+        String job = strings[0];
         Job j = RPMachine.getInstance().getJobsManager().getJob(job);
         if (j == null) {
             commandSender.sendMessage(ChatColor.RED + "Ce métier n'a pas été trouvé.");

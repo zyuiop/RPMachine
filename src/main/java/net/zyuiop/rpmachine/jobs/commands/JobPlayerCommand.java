@@ -25,7 +25,7 @@ public class JobPlayerCommand implements SubCommand {
 
     @Override
     public boolean run(Player commandSender, String command, String subCommand, String[] args) {
-        if (args.length < 2) {
+        if (args.length < 1) {
             commandSender.sendMessage(ChatColor.RED + "Utilisation : /" + command + " " + subCommand + " <joueur>");
             return true;
         }
