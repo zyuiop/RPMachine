@@ -1,6 +1,7 @@
 package net.zyuiop.rpmachine.auctions;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.auctions.ui.ItemAuctionGui;
 import net.zyuiop.rpmachine.gui.Window;
 import net.zyuiop.rpmachine.utils.MenuItem;
 import org.apache.commons.lang.StringUtils;

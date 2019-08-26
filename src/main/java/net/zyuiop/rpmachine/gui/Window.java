@@ -31,6 +31,10 @@ public abstract class Window {
         this.player = player;
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
     public abstract void fill();
 
     public static Window createWindow(Class<? extends Window> window, Player player) throws ReflectiveOperationException {

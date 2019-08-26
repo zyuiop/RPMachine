@@ -51,7 +51,7 @@ public abstract class AbstractTransaction<T extends Order> implements Ownable {
 
     public abstract void cancel();
 
-    boolean checkAutoCancel() {
+    public boolean checkAutoCancel() {
         if (System.currentTimeMillis() > startTime + TX_EXPIRATION_TIME) {
             cancel();
         }

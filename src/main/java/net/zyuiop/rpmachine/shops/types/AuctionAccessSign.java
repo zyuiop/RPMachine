@@ -4,7 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.auctions.SellOrder;
 import net.zyuiop.rpmachine.auctions.AuctionManager;
 import net.zyuiop.rpmachine.auctions.AuctionType;
-import net.zyuiop.rpmachine.auctions.ItemAuctionGui;
+import net.zyuiop.rpmachine.auctions.ui.ItemAuctionGui;
 import net.zyuiop.rpmachine.entities.AdminLegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.json.JsonExclude;
