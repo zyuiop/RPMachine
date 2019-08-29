@@ -31,6 +31,7 @@ public class CityCommand extends CompoundCommand {
         registerSubCommand("allowspawn", new AllowSpawnCommand(citiesManager), "spawn");
 
         registerSubCommand("teleport", new TeleportCommand(citiesManager), "tp");
+        registerSubCommand("discord", new CreateDiscordCommand(), "creatediscord");
 
         // Will also register a command with the same name
         FloorsCommand fc = new FloorsCommand();

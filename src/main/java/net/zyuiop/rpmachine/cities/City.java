@@ -32,6 +32,9 @@ public class City implements LegalEntity, StoredEntity {
     private String fileName;
     private CityTaxPayer taxPayer = new CityTaxPayer(); // loaded by Gson
 
+    private long privateChannelId = 0;
+    private long publicChannelId = 0;
+
     @JsonExclude
     private PoliticalSystem politicalSystem = StateOfRights.INSTANCE; // todo: make possible to change
 
@@ -461,6 +464,22 @@ public class City implements LegalEntity, StoredEntity {
             councils.get(target).remove(permission);
             save();
         }
+    }
+
+    public long getPrivateChannelId() {
+        return privateChannelId;
+    }
+
+    public void setPrivateChannelId(long privateChannelId) {
+        this.privateChannelId = privateChannelId;
+    }
+
+    public long getPublicChannelId() {
+        return publicChannelId;
+    }
+
+    public void setPublicChannelId(long publicChannelId) {
+        this.publicChannelId = publicChannelId;
     }
 
     public ChatColor getChatColor() {

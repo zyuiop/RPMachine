@@ -76,5 +76,12 @@
             <scope>provided</scope>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>com.discord4j</groupId>
+            <artifactId>discord4j-core</artifactId>
+            <version>3.0.8</version>
+            <scope>compile</scope>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 </project>

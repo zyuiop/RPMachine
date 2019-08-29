@@ -13,6 +13,7 @@ import net.zyuiop.rpmachine.common.PlayerHeadCraft;
 import net.zyuiop.rpmachine.common.listeners.PlayerListener;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.DatabaseManager;
+import net.zyuiop.rpmachine.discord.DiscordManager;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.gui.WindowsListener;
@@ -51,6 +52,7 @@ public class RPMachine extends JavaPlugin {
     private ProjectsManager projectsManager;
     private ShopsManager shopsManager;
     private MultiverseManager multiverseManager;
+    private DiscordManager discordManager;
 
     public static RPMachine getInstance() {
         return instance;
@@ -128,6 +130,7 @@ public class RPMachine extends JavaPlugin {
         this.scoreboardManager = new ScoreboardManager(this);
         this.projectsManager = new ProjectsManager(this);
         this.multiverseManager = new MultiverseManager();
+        this.discordManager = new DiscordManager(getConfig().getString("discord.token"));
 
         // Load DB
         if (!loadDatabase()) {
@@ -262,6 +265,10 @@ public class RPMachine extends JavaPlugin {
 
     public JobsManager getJobsManager() {
         return jobsManager;
+    }
+
+    public DiscordManager getDiscordManager() {
+        return discordManager;
     }
 
     public ShopsManager getShopsManager() {
