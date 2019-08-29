@@ -3,9 +3,13 @@ package net.zyuiop.rpmachine.auctions;
 import com.google.gson.reflect.TypeToken;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.entities.LegalEntity;
+import net.zyuiop.rpmachine.jobs.Job;
+import net.zyuiop.rpmachine.jobs.JobsManager;
 import net.zyuiop.rpmachine.json.Json;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 
 import java.io.*;
 import java.util.*;
@@ -16,21 +20,18 @@ import java.util.stream.Collectors;
  */
 public class AuctionManager {
     public static final AuctionManager INSTANCE = new AuctionManager();
-
-    private AuctionManager() {
-    }
-
     private final File folder = new File(RPMachine.getInstance().getDataFolder().getPath());
-
     private final File auctionsFile = new File(folder, "auctions.json");
     private final File buysFile = new File(folder, "buy_orders.json");
     private final File typesFile = new File(folder, "auction_types.json");
     private final File transactionsFile = new File(folder, "transactions.json");
-
     private final Map<Material, TreeSet<SellOrder>> sellOffers = new HashMap<>();
     private final Map<Material, TreeSet<BuyOrder>> buyOffers = new HashMap<>();
     private final Map<Integer, AbstractTransaction> transactions = new HashMap<>();
     private final Map<String, AuctionType> types = new HashMap<>();
+
+    private AuctionManager() {
+    }
 
     public void load() {
         try {
@@ -67,6 +68,7 @@ public class AuctionManager {
 
         // Schedule auto purge
         Bukkit.getScheduler().runTaskTimer(RPMachine.getInstance(), this::purge, 15 * 20L, 15 * 20L);
+        Bukkit.getScheduler().runTaskTimer(RPMachine.getInstance(), this::broadcastInterestingOffers, 30 * 20L, 5 * 60 * 20L);
 
         Bukkit.getPluginManager().registerEvents(AuctionInventoryListener.INSTANCE, RPMachine.getInstance());
     }
@@ -293,5 +295,50 @@ public class AuctionManager {
         if (buyOffers.containsKey(material)) {
             return buyOffers.get(material).stream().filter(a -> a.ownerTag().equals(entity.tag())).collect(Collectors.toList());
         } else return Collections.emptyList();
+    }
+
+    public void broadcastInterestingOffers() {
+        JobsManager jm = RPMachine.getInstance().getJobsManager();
+        Map<Boolean, Set<Material>> freeMap = buyOffers.keySet().stream().collect(Collectors.partitioningBy(mat -> jm.isFreeToUse(mat) && jm.isFreeToCraft(mat) && jm.getCollectLimit(mat) < 0, Collectors.toSet()));
+        Set<BuyOrder> free = freeMap.getOrDefault(true, new HashSet<>()).stream()
+                .flatMap(mat -> getBuyOrders(mat).stream())
+                .collect(Collectors.toSet());
+
+        Set<Material> restricted = freeMap.getOrDefault(false, new HashSet<>());
+
+        Map<Job, Set<BuyOrder>> restrictedMap = new HashMap<>();
+        for (Job j : jm.getJobs().values()) {
+            Set<Material> allowed = new HashSet<>();
+            allowed.addAll(j.getRestrictCollect().keySet().stream().filter(restricted::contains).collect(Collectors.toList()));
+            allowed.addAll(j.getRestrictUse().stream().filter(restricted::contains).collect(Collectors.toList()));
+            allowed.addAll(j.getRestrictCraft().stream().filter(restricted::contains).collect(Collectors.toList()));
+
+            restrictedMap.put(j, allowed.stream().flatMap(mat -> getBuyOrders(mat).stream()).collect(Collectors.toSet()));
+        }
+
+        for (Player pl : Bukkit.getOnlinePlayers()) {
+            Job j = jm.getJob(pl);
+            Set<BuyOrder> orders = new TreeSet<>(free);
+            if (j != null)
+                orders.addAll(restrictedMap.get(j));
+
+            if (orders.size() > 0) {
+                pl.sendMessage(ChatColor.GOLD + "[HdV] " + ChatColor.YELLOW + "Offres d'achat intéressantes");
+                pl.sendMessage(ChatColor.GRAY + "Les offres d'achat suivantes à l'hotel des ventes devraient vous intéresser.");
+
+                int i = 0;
+                for (BuyOrder o : orders) {
+                    pl.sendMessage(ChatColor.GRAY + " - " + ChatColor.YELLOW + o.getMaterial() +
+                            ChatColor.GRAY + " * " +
+                            ChatColor.YELLOW + o.getRemainingItems() +
+                            ChatColor.GRAY + " à " +
+                            ChatColor.YELLOW + o.getFormattedItemPrice() + " /unit" +
+                            ChatColor.GRAY + " (soit au total " + String.format("%.2f", (o.getRemainingItems() * o.getItemPrice())) + RPMachine.getCurrencyName() + ")"
+                    );
+
+                    if (++i > 3) break;
+                }
+            }
+        }
     }
 }
