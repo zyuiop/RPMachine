@@ -69,7 +69,7 @@ public class SellTransaction extends AbstractTransaction<BuyOrder> {
                     return false; // Something happened
 
                 AuctionManager.INSTANCE.addAuction(ret);
-                remaining -= a.getAvailable();
+                remaining -= a.getRemainingItems();
             }
 
             auctionIterator.remove();

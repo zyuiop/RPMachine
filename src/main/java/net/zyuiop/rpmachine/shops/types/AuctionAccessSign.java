@@ -123,7 +123,7 @@ public class AuctionAccessSign extends AbstractShopSign {
 
         if (auctionType == null) {
             if (itemType != null) {
-                for (SellOrder a : AuctionManager.INSTANCE.getAuctions(itemType))
+                for (SellOrder a : AuctionManager.INSTANCE.getSellOrders(itemType))
                     p.sendMessage(ChatColor.YELLOW + " - " + a.getAvailable() + " items, price " + a.getItemPrice() + ", seller " + a.owner().displayable());
             }
         } else {
@@ -131,7 +131,7 @@ public class AuctionAccessSign extends AbstractShopSign {
 
             if (auctionType != null) {
                 for (Material m : auctionType.getMaterials()) {
-                    for (SellOrder a : AuctionManager.INSTANCE.getAuctions(m))
+                    for (SellOrder a : AuctionManager.INSTANCE.getSellOrders(m))
                         p.sendMessage(ChatColor.YELLOW + " - " + m + " * " + a.getAvailable() + " items, price " + a.getItemPrice() + ", seller " + a.owner().displayable());
                 }
             }

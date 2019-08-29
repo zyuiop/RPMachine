@@ -2,6 +2,8 @@ package net.zyuiop.rpmachine.utils;
 
 import com.google.common.collect.Lists;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -46,6 +48,13 @@ public class MenuItem {
         ItemMeta meta = getItemMeta();
         meta.setLore(Lists.newArrayList(lines));
         setItemMeta(meta);
+        return this;
+    }
+
+    public MenuItem glowing() {
+        stack.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        stack.addUnsafeEnchantment(Enchantment.DAMAGE_ALL, 1);
+
         return this;
     }
 

@@ -198,8 +198,12 @@ public class AuctionManager {
         buyOffers.get(auction.getMaterial()).add(auction);
     }
 
-    public TreeSet<SellOrder> getAuctions(Material itemType) {
+    public TreeSet<SellOrder> getSellOrders(Material itemType) {
         return sellOffers.containsKey(itemType) ? sellOffers.get(itemType) : new TreeSet<>();
+    }
+
+    public TreeSet<BuyOrder> getBuyOrders(Material itemType) {
+        return buyOffers.containsKey(itemType) ? buyOffers.get(itemType) : new TreeSet<>();
     }
 
 
@@ -265,7 +269,7 @@ public class AuctionManager {
         return tx;
     }
 
-    public SellTransaction startBuyRemovedOrder(LegalEntity seller, BuyOrder auction) {
+    public SellTransaction startSellRemovedOrder(LegalEntity seller, BuyOrder auction) {
         SellTransaction tx = new SellTransaction(seller, auction.getRemainingItems());
         tx.getContent().add(auction);
 

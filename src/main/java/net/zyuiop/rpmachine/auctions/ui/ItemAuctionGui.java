@@ -36,16 +36,16 @@ public class ItemAuctionGui extends Window {
 
         setItem(4, new MenuItem(mat).setName(mat.name()).setDescriptionBlock(desc +
                 "\n" + ChatColor.GREEN +
-                "\n" + ChatColor.YELLOW + Symbols.ARROW_RIGHT_FULL + "Clic : voir le détail des offres de vente"
+                "\n" + ChatColor.YELLOW + Symbols.ARROW_RIGHT_FULL + "Clic : voir le détail des offres (achat et vente)"
         ), () -> {
 
             close();
-            new SellOrdersListGui(this, getPlayer(), mat).open();
+            new OrdersGui(this, getPlayer(), mat).open();
         });
 
         LegalEntity token = RPMachine.getPlayerActAs(player);
 
-        if (token.hasDelegatedPermission(player, ShopPermissions.BUY_ITEMS) && avail > 0) {
+        if (token.hasDelegatedPermission(player, ShopPermissions.BUY_ITEMS)) {
             setItem(0, new MenuItem(Material.GOLD_INGOT).setName("Acheter automatiquement").setDescriptionBlock(desc), () -> {
                 close();
                 new BuyGui(player, mat, true).open();
