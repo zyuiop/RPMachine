@@ -95,7 +95,7 @@ public class OrdersGui extends AbstractOrderListGui<Order> {
 
     protected Runnable getAction(BuyOrder a) {
         return () -> {
-            Iterator<ItemStack> iterator = player.getInventory().iterator();
+            Iterator<ItemStack> iterator = Arrays.stream(player.getInventory().getContents()).iterator();
             int toAdd = a.getRemainingItems();
 
             while (iterator.hasNext() && toAdd > 0) {

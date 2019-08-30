@@ -8,6 +8,7 @@ import net.zyuiop.rpmachine.database.PlayerData;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Sign;
+import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -149,6 +150,8 @@ public class CitiesListener implements Listener {
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player && !(event.getEntity() instanceof Monster))
             event.setCancelled(!manager.canBuild((Player) event.getDamager(), event.getEntity().getLocation()));
+        else if (event.getDamager() instanceof Monster && event.getEntity() instanceof Hanging)
+            event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

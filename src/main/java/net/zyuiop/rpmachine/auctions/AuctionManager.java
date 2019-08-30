@@ -128,9 +128,8 @@ public class AuctionManager {
     }
 
     public double averagePrice(Material material) {
-        if (!sellOffers.containsKey(material) && !buyOffers.containsKey(material)) return Double.NaN;
-
-        if (sellOffers.get(material).isEmpty() && buyOffers.get(material).isEmpty()) return Double.NaN;
+        if ((!sellOffers.containsKey(material) || sellOffers.get(material).isEmpty()) &&
+                (!buyOffers.containsKey(material) || buyOffers.get(material).isEmpty())) return Double.NaN;
 
         double total = 0D;
         int items = 0;
@@ -301,7 +300,7 @@ public class AuctionManager {
         JobsManager jm = RPMachine.getInstance().getJobsManager();
         Map<Boolean, Set<Material>> freeMap = buyOffers.keySet().stream().collect(Collectors.partitioningBy(mat -> jm.isFreeToUse(mat) && jm.isFreeToCraft(mat) && jm.getCollectLimit(mat) < 0, Collectors.toSet()));
         Set<BuyOrder> free = freeMap.getOrDefault(true, new HashSet<>()).stream()
-                .flatMap(mat -> getBuyOrders(mat).stream())
+                .flatMap(mat -> getBuyOrders(mat).stream().filter(o -> o.getRemainingItems() > 0))
                 .collect(Collectors.toSet());
 
         Set<Material> restricted = freeMap.getOrDefault(false, new HashSet<>());
@@ -313,7 +312,7 @@ public class AuctionManager {
             allowed.addAll(j.getRestrictUse().stream().filter(restricted::contains).collect(Collectors.toList()));
             allowed.addAll(j.getRestrictCraft().stream().filter(restricted::contains).collect(Collectors.toList()));
 
-            restrictedMap.put(j, allowed.stream().flatMap(mat -> getBuyOrders(mat).stream()).collect(Collectors.toSet()));
+            restrictedMap.put(j, allowed.stream().flatMap(mat -> getBuyOrders(mat).stream().filter(o -> o.getRemainingItems() > 0)).collect(Collectors.toSet()));
         }
 
         for (Player pl : Bukkit.getOnlinePlayers()) {
