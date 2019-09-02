@@ -107,15 +107,6 @@ public class City implements LegalEntity, StoredEntity {
         return set;
     }
 
-    @Override
-    public Set<Player> getOnlineAdministrators() {
-        return getAdministrators().stream()
-                .map(Bukkit::getPlayer)
-                .filter(Objects::nonNull)
-                .filter(OfflinePlayer::isOnline)
-                .collect(Collectors.toSet());
-    }
-
     public Map<String, Plot> getPlots() {
         return plots;
     }

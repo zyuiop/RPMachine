@@ -194,7 +194,7 @@ public class ItemShopSign extends AbstractShopSign {
                 }
 
                 if (owner().transfer(price, token.getLegalEntity())) {
-                    Messages.creditEntity(player, token.getLegalEntity(), price, "vente de " + amountPerPackage + " " + itemType.longItemName());
+                    Messages.credit(token.getLegalEntity(), price, "vente de " + amountPerPackage + " " + itemType.longItemName());
                     Messages.debit(owner(), price, "achat automatique de " + amountPerPackage + " " + itemType.longItemName() + " à " + token.getLegalEntity().displayable());
                     available += amountPerPackage;
                     click.setAmount(click.getAmount() - amountPerPackage);

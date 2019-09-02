@@ -1,5 +1,8 @@
 package net.zyuiop.rpmachine.entities;
 
+import discord4j.core.object.entity.User;
+import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.discord.DiscordLinkingManager;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -74,6 +77,15 @@ public interface LegalEntity extends AccountHolder {
                 .map(Bukkit::getPlayer)
                 .filter(Objects::nonNull)
                 .filter(OfflinePlayer::isOnline)
+                .collect(Collectors.toSet());
+    }
+
+    default Set<Long> getOfflineAdministrators() {
+        return getAdministrators().stream()
+                .filter(admin -> { Player p = Bukkit.getPlayer(admin); return p == null || !p.isOnline(); } )
+                .map(id -> RPMachine.getInstance().getDatabaseManager().getPlayerData(id))
+                .filter(pl -> pl.hasAttribute(DiscordLinkingManager.DISCORD_USER_ID))
+                .map(pl -> (long) pl.getAttribute(DiscordLinkingManager.DISCORD_USER_ID))
                 .collect(Collectors.toSet());
     }
 }

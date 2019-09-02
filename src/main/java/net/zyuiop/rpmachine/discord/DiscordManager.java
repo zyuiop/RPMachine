@@ -7,6 +7,7 @@ import discord4j.core.object.PermissionOverwrite;
 import discord4j.core.object.entity.Channel;
 import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.PermissionSet;
 import discord4j.core.object.util.Snowflake;
@@ -86,6 +87,12 @@ public class DiscordManager {
         }).subscribe(v -> city.save());
     }
 
+    public void sendMessage(long userId, String message) {
+        api.getUserById(Snowflake.of(userId)).flatMap(User::getPrivateChannel)
+                .flatMap(pv -> pv.createMessage(message))
+                .subscribe();
+    }
+
     private Set<PermissionOverwrite> getAdmins(City city) {
         return city.getCouncils().stream().map(id -> RPMachine.getInstance().getDatabaseManager().getPlayerData(id))
                 .filter(data -> data.hasAttribute(DiscordLinkingManager.DISCORD_USER_ID))
@@ -124,7 +131,7 @@ public class DiscordManager {
 
             return priv.and(pub);
 
-        }).reduce((a,b) -> a);
+        }).reduce((a, b) -> a);
     }
 
     public void refreshPermissions() {
