@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.entities;
 
+import com.google.common.collect.Sets;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -97,5 +98,10 @@ public class AdminLegalEntity implements LegalEntity, LegalEntityRepository<Admi
 	@Override
 	public Set<UUID> getAdministrators() {
 		return Bukkit.getOperators().stream().map(OfflinePlayer::getUniqueId).collect(Collectors.toSet());
+	}
+
+	@Override
+	public Set<Long> getOfflineAdministrators() {
+		return Sets.newHashSet();
 	}
 }

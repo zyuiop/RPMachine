@@ -25,7 +25,7 @@ public class Messages {
 
 
         entity.getOfflineAdministrators().forEach(adm -> RPMachine.getInstance().getDiscordManager()
-                .sendMessage(adm, "Crédit " + amount + RPMachine.getCurrencyName() + ": " + reason));
+                .sendMessage(adm, entity.displayable() + " - Crédit " + amount + RPMachine.getCurrencyName() + ": " + reason));
     }
 
     public static void sendMessage(LegalEntity entity, String message) {
@@ -39,7 +39,7 @@ public class Messages {
         entity.getOnlineAdministrators().forEach(pl -> debitEntity(pl, entity, amount, reason));
 
         entity.getOfflineAdministrators().forEach(adm -> RPMachine.getInstance().getDiscordManager()
-                .sendMessage(adm, "Débit " + amount + RPMachine.getCurrencyName() + ": " + reason));
+                .sendMessage(adm, entity.displayable() + " - Débit " + amount + RPMachine.getCurrencyName() + ": " + reason));
     }
 
     public static void debit(Player player, double amount, String reason) {
