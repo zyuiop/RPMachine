@@ -1,25 +1,35 @@
 package net.zyuiop.rpmachine.cities;
 
 import net.zyuiop.rpmachine.RPMachine;
-import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.cities.politics.PoliticalSystem;
 import net.zyuiop.rpmachine.cities.politics.StateOfRights;
+import net.zyuiop.rpmachine.claims.Claim;
+import net.zyuiop.rpmachine.claims.CompoundClaim;
+import net.zyuiop.rpmachine.claims.LeafClaim;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.VirtualChunk;
+import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.database.StoredEntity;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.json.JsonExclude;
 import net.zyuiop.rpmachine.permissions.CityPermissions;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
 import net.zyuiop.rpmachine.permissions.Permission;
-import org.bukkit.*;
+import net.zyuiop.rpmachine.utils.TimeUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class City implements LegalEntity, StoredEntity {
+public class City extends CompoundClaim implements LegalEntity, StoredEntity {
     private final Set<VirtualChunk> chunks = new HashSet<>();
     private final Map<UUID, Set<Permission>> councils = new HashMap<>();
     private final Map<String, Plot> plots = new HashMap<>();
@@ -51,14 +61,89 @@ public class City implements LegalEntity, StoredEntity {
 
     private boolean requireInvite;
 
-    private static boolean sameDay(Date target) {
-        GregorianCalendar date = new GregorianCalendar();
-        date.setTime(new Date());
+    /**
+     * The base claim for the city
+     */
+    private class CityBaseClaim extends LeafClaim {
+        @Override
+        public boolean isInside(Location location) {
+            return City.this.isInside(location);
+        }
 
-        GregorianCalendar compare = new GregorianCalendar();
-        compare.setTime(target);
+        @Override
+        public boolean canBuild(Player player, Location location) {
+            return hasPermission(player, CityPermissions.BUILD_IN_CITY);
+        }
 
-        return compare.get(Calendar.DAY_OF_MONTH) == date.get(Calendar.DAY_OF_MONTH) && date.get(Calendar.MONTH) == compare.get(Calendar.MONTH) && date.get(Calendar.YEAR) == compare.get(Calendar.YEAR);
+        @Override
+        public boolean canInteractWithBlock(Player player, Block block, Action action) {
+            // A modifier et à rendre customisable.
+            return inhabitants.contains(player.getUniqueId());
+        }
+
+        @Override
+        public boolean canInteractWithEntity(Player player, Entity entity) {
+            // A modifier et à rendre customisable.
+            return inhabitants.contains(player.getUniqueId());
+        }
+
+        @Override
+        public boolean canDamageEntity(Player player, Entity entity) {
+            return canBuild(player, entity.getLocation()); // TODO: make customizable
+        }
+    }
+
+    /**
+     * A wrapper for claims in the city, allowing permissions hijacks when needed
+     */
+    private class CityPlotWrapper implements Claim {
+        private final Plot wrapped;
+
+        private CityPlotWrapper(Plot wrapped) {
+            this.wrapped = wrapped;
+        }
+
+        @Override
+        public boolean isInside(Location location) {
+            return wrapped.isInside(location);
+        }
+
+        @Override
+        public boolean canBuild(Player player, Location location) {
+            if (wrapped.getOwner() == null || wrapped.getOwner().equalsIgnoreCase(tag()))
+                return hasPermission(player, CityPermissions.BUILD_IN_EMPTY_PLOTS);
+            else
+                return wrapped.canBuild(player, location) || hasPermission(player, CityPermissions.BUILD_IN_PLOTS);
+        }
+
+        @Override
+        public boolean canInteractWithBlock(Player player, Block block, Action action) {
+            if (wrapped.getOwner() == null || wrapped.getOwner().equalsIgnoreCase(tag()))
+                return hasPermission(player, CityPermissions.INTERACT_IN_EMPTY_PLOTS);
+            else
+                return wrapped.canInteractWithBlock(player, block, action) || hasPermission(player, CityPermissions.INTERACT_IN_PLOTS);
+        }
+
+        @Override
+        public boolean canInteractWithEntity(Player player, Entity entity) {
+            if (wrapped.getOwner() == null || wrapped.getOwner().equalsIgnoreCase(tag()))
+                return hasPermission(player, CityPermissions.INTERACT_IN_EMPTY_PLOTS);
+            else
+                return wrapped.canInteractWithEntity(player, entity) || hasPermission(player, CityPermissions.INTERACT_IN_PLOTS);
+        }
+
+        @Override
+        public boolean canDamageEntity(Player player, Entity entity) {
+            if (wrapped.getOwner() == null || wrapped.getOwner().equalsIgnoreCase(tag()))
+                return hasPermission(player, CityPermissions.INTERACT_IN_EMPTY_PLOTS);
+            else
+                return wrapped.canDamageEntity(player, entity) || hasPermission(player, CityPermissions.INTERACT_IN_PLOTS);
+        }
+
+        @Override
+        public Collection<? extends Claim> getClaims() {
+            return wrapped.getClaims();
+        }
     }
 
     public String getCityName() {
@@ -157,21 +242,21 @@ public class City implements LegalEntity, StoredEntity {
         this.mayorWage = mayorWage;
     }
 
-	public int getJoinTax() {
-		return joinTax;
-	}
+    public int getJoinTax() {
+        return joinTax;
+    }
 
-	public void setJoinTax(int joinTax) {
-		this.joinTax = joinTax;
-	}
+    public void setJoinTax(int joinTax) {
+        this.joinTax = joinTax;
+    }
 
-	public int getTpTax() {
-		return tpTax;
-	}
+    public int getTpTax() {
+        return tpTax;
+    }
 
-	public void setTpTax(int tpTax) {
-		this.tpTax = tpTax;
-	}
+    public void setTpTax(int tpTax) {
+        this.tpTax = tpTax;
+    }
 
     public double getVat() {
         return vat;
@@ -182,14 +267,14 @@ public class City implements LegalEntity, StoredEntity {
     }
 
     public double getPlotSellTaxRate() {
-		return plotSellTaxRate;
-	}
+        return plotSellTaxRate;
+    }
 
-	public void setPlotSellTaxRate(double plotSellTaxRate) {
-		this.plotSellTaxRate = Math.min(plotSellTaxRate, 1.0);
-	}
+    public void setPlotSellTaxRate(double plotSellTaxRate) {
+        this.plotSellTaxRate = Math.min(plotSellTaxRate, 1.0);
+    }
 
-	public UUID getMayor() {
+    public UUID getMayor() {
         return mayor;
     }
 
@@ -255,19 +340,11 @@ public class City implements LegalEntity, StoredEntity {
 
     public boolean isAdjacent(Chunk chunk) {
         VirtualChunk ch = new VirtualChunk(chunk);
-        int x = ch.getX();
-        int z = ch.getZ();
 
-        return (chunks.contains(new VirtualChunk(x + 1, z)) || chunks.contains(new VirtualChunk(x - 1, z)) || chunks.contains(new VirtualChunk(x, z + 1)) || chunks.contains(new VirtualChunk(x, z - 1)));
-    }
-
-    public Plot getPlotHere(Location location) {
-        for (Plot plot : plots.values()) {
-            if (plot.getArea().isInside(location))
-                return plot;
-        }
-
-        return null;
+        return (chunks.contains(ch.add(1, 0)) ||
+                chunks.contains(ch.add(-1, 0)) ||
+                chunks.contains(ch.add(0, 1)) ||
+                chunks.contains(ch.add(0, -1)));
     }
 
     public void payTaxes(LegalEntity payer, double amt) {
@@ -294,7 +371,7 @@ public class City implements LegalEntity, StoredEntity {
                 String owner = plot.ownerTag();
                 Date lastPaid = ownerData.getLastTaxes(getCityName());
 
-                if (force || lastPaid == null || !sameDay(lastPaid)) {
+                if (force || lastPaid == null || !TimeUtils.sameDay(lastPaid)) {
                     double toPay = plot.getArea().computeArea() * taxes;
 
                     if (!ownerData.transfer(toPay, this)) {
@@ -341,30 +418,11 @@ public class City implements LegalEntity, StoredEntity {
         return ret;
     }
 
-    public boolean canInteractWithBlock(Player player, Location location) {
-        Plot plot = getPlotHere(location);
-
-        if (plot == null) {
-            // A voir, tous les habitants de la ville peuvent-t-ils vraiment intéragir dans toutes les parcelles ?
-            return inhabitants.contains(player.getUniqueId());
-        } else {
-            if (plot.getOwner() == null || plot.getOwner().equalsIgnoreCase(tag()))
-                return hasPermission(player, CityPermissions.INTERACT_IN_EMPTY_PLOTS);
-            return hasPermission(player, CityPermissions.INTERACT_IN_PLOTS) || plot.canBuild(player, location);
-        }
+    @Override
+    public boolean isInside(Location location) {
+        return getChunks().contains(new VirtualChunk(location.getChunk()));
     }
 
-    public boolean canBuild(Player player, Location location) {
-        Plot plot = getPlotHere(location);
-
-        if (plot == null) {
-            return hasPermission(player, CityPermissions.BUILD_IN_CITY);
-        } else {
-            if (plot.getOwner() == null || plot.getOwner().equalsIgnoreCase(tag()))
-                return hasPermission(player, CityPermissions.BUILD_IN_EMPTY_PLOTS);
-            return hasPermission(player, CityPermissions.BUILD_IN_PLOTS) || plot.canBuild(player, location);
-        }
-    }
 
     @Override
     public void setUnpaidTaxes(String city, double amount) {
@@ -487,6 +545,29 @@ public class City implements LegalEntity, StoredEntity {
 
     public void setAllowSpawn(boolean allowSpawn) {
         this.allowSpawn = allowSpawn;
+    }
+
+    @Override
+    public Collection<Plot> getClaims() {
+        return plots.values();
+    }
+
+    @Override
+    public Optional<Claim> getClaimAt(Location loc) {
+        return super.getClaimAt(loc).map(c -> new CityPlotWrapper((Plot) c));
+    }
+
+    public Optional<Plot> getPlotAt(Location loc) {
+        return super.getClaimAt(loc).map(c -> (Plot) c);
+    }
+
+
+    /**
+     * @deprecated use getPlotAt
+     */
+    @Deprecated
+    public Plot getPlotHere(Location location) {
+        return getPlotAt(location).orElse(null);
     }
 
     public static class CityTaxPayer {

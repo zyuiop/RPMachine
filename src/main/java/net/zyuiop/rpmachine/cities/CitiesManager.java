@@ -2,6 +2,9 @@ package net.zyuiop.rpmachine.cities;
 
 import com.google.common.collect.ImmutableSet;
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.claims.Claim;
+import net.zyuiop.rpmachine.claims.ClaimCollectionRegistry;
+import net.zyuiop.rpmachine.claims.ClaimRegistry;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
@@ -19,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.DoubleFunction;
 import java.util.stream.Collectors;
 
-public class CitiesManager extends FileEntityStore<City> implements LegalEntityRepository<City> {
+public class CitiesManager extends FileEntityStore<City> implements LegalEntityRepository<City>, ClaimCollectionRegistry {
     public static final Set<ChatColor> ALLOWED_COLORS = ImmutableSet.of(
             ChatColor.YELLOW, ChatColor.DARK_AQUA, ChatColor.AQUA, ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.LIGHT_PURPLE, ChatColor.DARK_PURPLE, ChatColor.DARK_GRAY, ChatColor.GRAY,
             ChatColor.BLUE, ChatColor.GOLD
@@ -133,51 +136,6 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
         return null;
     }
 
-    public boolean canBuild(Player player, Location location) {
-        if (bypass.contains(player.getUniqueId()))
-            return true;
-
-        if (location.getWorld().getName().equals("world")) {
-            City city = getCityHere(location.getChunk());
-
-            if (city == null) {
-                return RPMachine.getInstance().getProjectsManager().canBuild(player, location);
-            }
-            return city.canBuild(player, location);
-        } else {
-            return RPMachine.getInstance().getProjectsManager().canBuild(player, location);
-        }
-    }
-
-    public boolean isProtected(Location location) {
-        if (location.getWorld().getName().equals("world")) {
-            City city = getCityHere(location.getChunk());
-
-            if (city == null) {
-                return RPMachine.getInstance().getProjectsManager().isProtected(location);
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean canInteractWithBlock(Player player, Location location) {
-        if (bypass.contains(player.getUniqueId()))
-            return true;
-
-        if (location.getWorld().getName().equals("world")) {
-            City city = getCityHere(location.getChunk());
-
-            if (city == null) {
-                return RPMachine.getInstance().getProjectsManager().canInteractWithBlock(player, location);
-            }
-            return city.canInteractWithBlock(player, location);
-        } else {
-            return RPMachine.getInstance().getProjectsManager().canInteractWithBlock(player, location);
-        }
-    }
-
     public double getCreationPrice() {
         return f.roundedPrice(cities.size());
     }
@@ -238,6 +196,11 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
 
     public void saveCity(City city) {
         super.saveEntity(city);
+    }
+
+    @Override
+    public Collection<? extends Claim> getClaims() {
+        return getCities();
     }
 
     public class CreationPriceFunction {

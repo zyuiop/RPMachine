@@ -1,6 +1,9 @@
 package net.zyuiop.rpmachine.projects;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.claims.Claim;
+import net.zyuiop.rpmachine.claims.ClaimCollectionRegistry;
+import net.zyuiop.rpmachine.claims.ClaimRegistry;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import net.zyuiop.rpmachine.entities.LegalEntityRepository;
 import org.bukkit.Chunk;
@@ -15,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * @author zyuiop
  */
-public class ProjectsManager extends FileEntityStore<Project> implements LegalEntityRepository<Project> {
+public class ProjectsManager extends FileEntityStore<Project> implements LegalEntityRepository<Project>, ClaimCollectionRegistry {
 	private double globalVat;
 	private double globalTax;
 	private double globalSaleTax;
@@ -114,5 +117,10 @@ public class ProjectsManager extends FileEntityStore<Project> implements LegalEn
 
 	public double getGlobalSaleTax() {
 		return globalSaleTax;
+	}
+
+	@Override
+	public Collection<? extends Claim> getClaims() {
+		return getZones().values();
 	}
 }
