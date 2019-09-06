@@ -140,10 +140,28 @@ public class CitiesListener implements Listener {
         event.setCancelled(!manager.canBuild(event.getPlayer(), event.getRightClicked().getLocation()));
     }
 
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onInteractEntity(PlayerInteractAtEntityEvent event) {
+        event.setCancelled(!manager.canBuild(event.getPlayer(), event.getRightClicked().getLocation()));
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onFillBucket(PlayerBucketFillEvent event) {
+        event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlockClicked().getLocation()));
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onEmptyBucket(PlayerBucketEmptyEvent event) {
+        event.setCancelled(!manager.canBuild(event.getPlayer(), event.getBlockClicked().getLocation()));
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onHangingEntity(HangingBreakByEntityEvent event) {
         if (event.getRemover() instanceof Player)
             event.setCancelled(!manager.canBuild((Player) event.getRemover(), event.getEntity().getLocation()));
+        else {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

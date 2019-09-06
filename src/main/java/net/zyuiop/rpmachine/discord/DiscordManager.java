@@ -28,8 +28,13 @@ public class DiscordManager {
     private DiscordClient api;
 
     public DiscordManager(String token) {
-        api = new DiscordClientBuilder(token)
-                .build();
+        api = token != null ? new DiscordClientBuilder(token)
+                .build() : null;
+
+        if (api == null) {
+            Bukkit.getLogger().warning("No discord API - discarding");
+            return;
+        }
 
         registerCommand(new DiscordLinkingManager());
 
