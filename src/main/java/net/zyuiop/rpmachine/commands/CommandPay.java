@@ -30,8 +30,8 @@ public class CommandPay extends AbstractCommand {
         RoleToken transactionFrom = RPMachine.getPlayerRoleToken(player);
         double val = Double.parseDouble(args[args.length - 1]);
         args = Arrays.copyOfRange(args, 0, args.length - 1);
-        if (val < 0) {
-            player.sendMessage(ChatColor.RED + "Impossible d'envoyer une somme négative.");
+        if (val < 0.01) {
+            player.sendMessage(ChatColor.RED + "Impossible d'envoyer une somme négative ou nulle.");
         } else if (!transactionFrom.hasDelegatedPermission(EconomyPermissions.PAY_MONEY_TO_PLAYER)) {
             player.sendMessage(ChatColor.RED + "Vous n'avez pas le droit de faire ça en tant que " + transactionFrom.getLegalEntity().displayable());
         } else {
