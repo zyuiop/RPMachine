@@ -8,6 +8,8 @@ import net.zyuiop.rpmachine.cities.commands.CommandBypass;
 import net.zyuiop.rpmachine.cities.commands.CommandRuntaxes;
 import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
+import net.zyuiop.rpmachine.claims.Claims;
+import net.zyuiop.rpmachine.claims.ClaimsListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.common.PlayerHeadCraft;
 import net.zyuiop.rpmachine.common.listeners.PlayerListener;
@@ -53,6 +55,7 @@ public class RPMachine extends JavaPlugin {
     private ShopsManager shopsManager;
     private MultiverseManager multiverseManager;
     private DiscordManager discordManager;
+    private Claims claims;
 
     public static RPMachine getInstance() {
         return instance;
@@ -132,6 +135,8 @@ public class RPMachine extends JavaPlugin {
         this.multiverseManager = new MultiverseManager();
         this.discordManager = new DiscordManager(getConfig().getString("discord.token"));
 
+        this.claims = new Claims(this);
+
         // Load DB
         if (!loadDatabase()) {
             getLogger().severe("Cannot load DB, shutting down.");
@@ -170,6 +175,7 @@ public class RPMachine extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SignsListener(), this);
         Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerHeadCraft(), this);
+        Bukkit.getPluginManager().registerEvents(new ClaimsListener(claims), this);
         // Bukkit.getPluginManager().registerEvents(new MendingListener(), this);
 
 
@@ -285,10 +291,8 @@ public class RPMachine extends JavaPlugin {
         super.onDisable();
     }
 
-    public static Plot getPlotHere(Location location) {
-        City c = instance.citiesManager.getCityHere(location.getChunk());
-
-        return c == null ? instance.projectsManager.getZoneHere(location) : c.getPlotHere(location);
+    public Claims getClaims() {
+        return claims;
     }
 
     public ScoreboardManager getScoreboardManager() {

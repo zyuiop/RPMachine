@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 public class InfoCommand implements SubCommand {
@@ -37,10 +38,11 @@ public class InfoCommand implements SubCommand {
         if (city == null) {
             player.sendMessage(ChatColor.RED + "Vous ne vous trouvez pas dans une vile.");
         } else {
-            Plot plot = city.getPlotHere(player.getLocation());
-            if (plot == null) {
+            Optional<Plot> oPlot = city.getPlotAt(player.getLocation());
+            if (!oPlot.isPresent()) {
                 player.sendMessage(ChatColor.RED + "Vous ne vous trouvez pas dans une parcelle.");
             } else {
+                Plot plot = oPlot.get();
                 player.sendMessage(ChatColor.GOLD + "-----[ Informations Parcelle ]-----");
                 player.sendMessage(ChatColor.YELLOW + "Nom : " + plot.getPlotName());
                 player.sendMessage(ChatColor.YELLOW + "Ville : " + city.getCityName());

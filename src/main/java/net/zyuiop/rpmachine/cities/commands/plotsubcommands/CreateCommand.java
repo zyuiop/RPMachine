@@ -14,6 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 public class CreateCommand implements CityMemberSubCommand {
@@ -76,8 +77,8 @@ public class CreateCommand implements CityMemberSubCommand {
                                     return true;
                                 }
 
-                                Plot check = city.getPlotHere(block.getLocation());
-                                if (check != null) {
+                                Optional<Plot> check = city.getPlotAt(block.getLocation());
+                                if (check.isPresent()) {
                                     player.sendMessage(ChatColor.RED + "Une partie de votre sélection fait partie d'une autre parcelle.");
                                     return true;
                                 }
