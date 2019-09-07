@@ -1,5 +1,6 @@
 package net.zyuiop.rpmachine.claims;
 
+import net.zyuiop.rpmachine.json.JsonExclude;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -11,18 +12,8 @@ import org.bukkit.event.block.Action;
  * @author Louis Vialar
  */
 public abstract class CompoundClaim implements Claim {
-    private Claim outsideBehaviour = DenyAllClaim.INSTANCE;
-
-    /**
-     * Set a claim that will handle the interactions that are inside the claim but outside any of the children
-     * @param behaviour
-     */
-    protected void setOutsideBehaviour(Claim behaviour) {
-        this.outsideBehaviour = behaviour;
-    }
-
     public Claim getClaimOrDefault(Location location) {
-        return getClaimAt(location).orElse(outsideBehaviour);
+        return getClaimAt(location).orElse(DenyAllClaim.INSTANCE);
     }
 
     @Override

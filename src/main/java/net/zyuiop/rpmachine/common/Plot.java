@@ -2,10 +2,10 @@ package net.zyuiop.rpmachine.common;
 
 import net.zyuiop.rpmachine.claims.Claim;
 import net.zyuiop.rpmachine.claims.CompoundClaim;
-import net.zyuiop.rpmachine.claims.LeafClaim;
 import net.zyuiop.rpmachine.common.regions.Region;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.Ownable;
+import net.zyuiop.rpmachine.json.JsonExclude;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
 import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.ChatColor;
@@ -29,45 +29,38 @@ public class Plot extends CompoundClaim implements Ownable {
     private String owner = null;
     private PlotSettings plotSettings = new PlotSettings();
     private Date deletionDate = null;
+    // TODO: allow subplots
     // TODO: replace with RoleToken
     private CopyOnWriteArrayList<UUID> plotMembers = new CopyOnWriteArrayList<>();
-    private PlotBaseClaim baseClaim = new PlotBaseClaim();
 
-    public Plot() {
-        setOutsideBehaviour(baseClaim);
+    private boolean hasPlotPermission(Player player) {
+        return plotMembers.contains(player.getUniqueId()) || // membre du plot
+                hasOwnerPermission(player); // owner du plot
     }
 
-    private class PlotBaseClaim extends LeafClaim {
-        @Override
-        public boolean isInside(Location location) {
-            return area.isInside(location);
-        }
+    protected boolean hasOwnerPermission(Player player) {
+        return owner != null && owner() != null && owner().hasDelegatedPermission(player, PlotPermissions.BUILD_ON_PLOTS);
+    }
 
-        private boolean canAct(Player player) {
-            return plotMembers.contains(player.getUniqueId()) || // membre du plot
-                    (owner != null && owner() != null && owner().hasDelegatedPermission(player, PlotPermissions.BUILD_ON_PLOTS)); // owner du plot
-        }
+    // TODO: allow customization for external players
+    @Override
+    public boolean canBuild(Player player, Location location) {
+        return super.canBuild(player, location) || hasPlotPermission(player);
+    }
 
-        // TOOD: make this updatable.
-        @Override
-        public boolean canBuild(Player player, Location location) {
-            return canAct(player);
-        }
+    @Override
+    public boolean canInteractWithBlock(Player player, Block block, Action action) {
+        return super.canInteractWithBlock(player, block, action) || hasPlotPermission(player);
+    }
 
-        @Override
-        public boolean canInteractWithBlock(Player player, Block block, Action action) {
-            return canAct(player);
-        }
+    @Override
+    public boolean canInteractWithEntity(Player player, Entity entity) {
+        return super.canInteractWithEntity(player, entity) || hasPlotPermission(player);
+    }
 
-        @Override
-        public boolean canInteractWithEntity(Player player, Entity entity) {
-            return canAct(player);
-        }
-
-        @Override
-        public boolean canDamageEntity(Player player, Entity entity) {
-            return canAct(player);
-        }
+    @Override
+    public boolean canDamageEntity(Player player, Entity entity) {
+        return super.canDamageEntity(player, entity) || hasPlotPermission(player);
     }
 
     public CopyOnWriteArrayList<UUID> getPlotMembers() {
@@ -138,7 +131,7 @@ public class Plot extends CompoundClaim implements Ownable {
 
     @Override
     public boolean isInside(Location location) {
-        return false;
+        return area.isInside(location);
     }
 
     public void sendDeletionWarning(String cityName) {
@@ -158,7 +151,7 @@ public class Plot extends CompoundClaim implements Ownable {
         return getOwner();
     }
 
-    @Override
+    @Override @JsonExclude
     public Collection<Claim> getClaims() {
         return Collections.emptySet(); // TODO: make it possible to create subplots
     }

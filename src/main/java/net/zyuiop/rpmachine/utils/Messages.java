@@ -29,6 +29,9 @@ public class Messages {
     }
 
     public static void sendMessage(LegalEntity entity, String message) {
+        if (entity == null)
+            return;
+
         entity.getOnlineAdministrators().forEach(pl -> pl.sendMessage(entityPrefix(pl, entity) + message));
 
         entity.getOfflineAdministrators().forEach(adm -> RPMachine.getInstance().getDiscordManager()
