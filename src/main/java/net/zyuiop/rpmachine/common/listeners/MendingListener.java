@@ -1,14 +1,18 @@
 package net.zyuiop.rpmachine.common.listeners;
 
+import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Container;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
@@ -35,21 +39,26 @@ public class MendingListener implements Listener {
         }
     }
 
+    private void removeMending(ItemStack item, Player player) {
+        item.removeEnchantment(Enchantment.MENDING);
+        player.sendMessage(ChatColor.RED + "Désolé, l'enchantement MENDING a été banni du serveur. Il a été supprimé de votre " + item.getType());
+        RPMachine.getInstance().getDatabaseManager().getPlayerData(player).creditMoney(1000);
+        Messages.credit(player, 1000, "Suppression de MENDING sur " + item.getType());
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onJoin(PlayerJoinEvent event) {
         Arrays.spliterator(event.getPlayer().getInventory().getContents()).forEachRemaining(item -> {
             if (item == null) return;
             if (item.getEnchantments().containsKey(Enchantment.MENDING)) {
-                item.removeEnchantment(Enchantment.MENDING);
-                event.getPlayer().sendMessage(ChatColor.RED + "Désolé, l'enchantement MENDING a été banni du serveur. Il a été supprimé de votre " + item.getType());
+                removeMending(item, event.getPlayer());
             }
         });
 
         Arrays.spliterator(event.getPlayer().getEnderChest().getContents()).forEachRemaining(item -> {
             if (item == null) return;
             if (item.getEnchantments().containsKey(Enchantment.MENDING)) {
-                item.removeEnchantment(Enchantment.MENDING);
-                event.getPlayer().sendMessage(ChatColor.RED + "Désolé, l'enchantement MENDING a été banni du serveur. Il a été supprimé de votre " + item.getType());
+                removeMending(item, event.getPlayer());
             }
         });
     }
@@ -65,9 +74,19 @@ public class MendingListener implements Listener {
                     continue;
 
                 if (s.getEnchantments().containsKey(Enchantment.MENDING)) {
-                    s.removeEnchantment(Enchantment.MENDING);
+                    removeMending(s, event.getPlayer());
                 }
             }
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onDrop(PlayerDropItemEvent event) {
+        ItemStack s = event.getItemDrop().getItemStack();
+
+        if (s.getEnchantments().containsKey(Enchantment.MENDING)) {
+            removeMending(s, event.getPlayer());
+        }
+
     }
 }

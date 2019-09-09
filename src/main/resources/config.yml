@@ -6,6 +6,9 @@ jobsquit:
   price: 100
   mindays: 7
 
+mending:
+  disable: true
+
 floors:
   - name: Hameau
     inhabitants: 0
@@ -261,7 +264,15 @@ jobs:
     restrictUse:
       - LOOM
       - STONECUTTER
+      - ACACIA_SAPLING
+      - BAMBOO_SAPLING
+      - BIRCH_SAPLING
+      - DARK_OAK_SAPLING
+      - JUNGLE_SAPLING
+      - OAK_SAPLING
+      - SPRUCE_SAPLING
     restrictCollect:
+      BAMBOO: 16
       OAK_LOG: 16
       DARK_OAK_LOG: 16
       SPRUCE_LOG: 16

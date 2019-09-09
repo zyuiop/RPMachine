@@ -10,6 +10,7 @@ import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.common.PlayerHeadCraft;
+import net.zyuiop.rpmachine.common.listeners.MendingListener;
 import net.zyuiop.rpmachine.common.listeners.PlayerListener;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.DatabaseManager;
@@ -170,7 +171,9 @@ public class RPMachine extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SignsListener(), this);
         Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerHeadCraft(), this);
-        // Bukkit.getPluginManager().registerEvents(new MendingListener(), this);
+
+        if (getConfig().getBoolean("mending.disable", true))
+            Bukkit.getPluginManager().registerEvents(new MendingListener(), this);
 
 
         // Change world spawn
