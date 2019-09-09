@@ -107,6 +107,12 @@ public class EnchantingSign extends AbstractShopSign {
             }
 
             Enchantment enchantment = enchants.keySet().iterator().next();
+
+            if (enchantment.equals(Enchantment.MENDING) && RPMachine.getInstance().getConfig().getBoolean("mending.disabled", true)) {
+                player.sendMessage(ChatColor.RED + "L'enchantement MENDING est désactivé et ne peut être vendu.");
+                return;
+            }
+
             Integer level = enchants.get(enchantment);
 
             this.bukkitEnchantment = enchantment;
