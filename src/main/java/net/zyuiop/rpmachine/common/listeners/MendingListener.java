@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.common.listeners;
 
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.utils.Messages;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Container;
 import org.bukkit.enchantments.Enchantment;
@@ -44,6 +45,8 @@ public class MendingListener implements Listener {
         player.sendMessage(ChatColor.RED + "Désolé, l'enchantement MENDING a été banni du serveur. Il a été supprimé de votre " + item.getType());
         RPMachine.getInstance().getDatabaseManager().getPlayerData(player).creditMoney(1000);
         Messages.credit(player, 1000, "Suppression de MENDING sur " + item.getType());
+
+        Bukkit.getLogger().info("MENDING: Removed enchant on " + item + " of player " + player.getName() + " " + player.getUniqueId());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
