@@ -12,7 +12,7 @@ import net.zyuiop.rpmachine.utils.Messages;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.v1_14_R1.enchantments.CraftEnchantment;
+import org.bukkit.craftbukkit.v1_15_R1.enchantments.CraftEnchantment;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -193,8 +193,8 @@ public class EnchantingSign extends AbstractShopSign {
     }
 
     private int fusionLevelCost() {
-        net.minecraft.server.v1_14_R1.Enchantment e = CraftEnchantment.getRaw(bukkitEnchantment);
-        net.minecraft.server.v1_14_R1.Enchantment.Rarity rarity = e.d();
+        net.minecraft.server.v1_15_R1.Enchantment e = CraftEnchantment.getRaw(bukkitEnchantment);
+        net.minecraft.server.v1_15_R1.Enchantment.Rarity rarity = e.d();
 
         switch (rarity) {
             case COMMON:

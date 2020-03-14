@@ -1,7 +1,7 @@
 name: RPMachine
 main: net.zyuiop.rpmachine.RPMachine
-version: "1.0c for MC 1.14.4"
-api-version: "1.14"
+version: "1.0c for MC 1.15.2"
+api-version: "1.15"
 authors: [zyuiop]
 softdepend: [BukkitBridge]
 commands:

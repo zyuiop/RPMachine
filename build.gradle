@@ -23,7 +23,7 @@ dependencies {
     implementation 'org.apache.commons:commons-pool2:2.0'
     implementation 'commons-io:commons-io:2.6'
     implementation 'com.discord4j:discord4j-core:3.0.8'
-    compileOnly 'com.destroystokyo.paper:paper:1.14.4-R0.1-SNAPSHOT'
+    compileOnly 'com.destroystokyo.paper:paper:1.15.2'
 }
 
 group = 'net.zyuiop'
@@ -35,5 +35,11 @@ publishing {
         maven(MavenPublication) {
             from(components.java)
         }
+    }
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }

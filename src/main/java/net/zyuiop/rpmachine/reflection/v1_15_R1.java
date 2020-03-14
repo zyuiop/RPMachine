@@ -1,14 +1,14 @@
 package net.zyuiop.rpmachine.reflection;
 
-import net.minecraft.server.v1_14_R1.EntityFireworks;
+import net.minecraft.server.v1_15_R1.EntityFireworks;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.scoreboards.ScoreboardSign;
 import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftFirework;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftFirework;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
@@ -17,7 +17,7 @@ import org.bukkit.inventory.meta.FireworkMeta;
 /**
  * @author zyuiop
  */
-public class v1_14_R1 implements ReflectionFunctions {
+public class v1_15_R1 implements ReflectionFunctions {
 	@Override
 	public void launchfw(Location loc, FireworkEffect effect) {
 		final Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
@@ -27,7 +27,7 @@ public class v1_14_R1 implements ReflectionFunctions {
 		fw.setFireworkMeta(fwm);
 		((CraftFirework) fw).getHandle().setInvisible(true);
 		Bukkit.getScheduler().runTaskLater(RPMachine.getInstance(), () -> {
-			net.minecraft.server.v1_14_R1.World w = (((CraftWorld) loc.getWorld()).getHandle());
+			net.minecraft.server.v1_15_R1.World w = (((CraftWorld) loc.getWorld()).getHandle());
 			EntityFireworks fireworks = ((CraftFirework) fw).getHandle();
 			w.broadcastEntityEffect(fireworks, (byte) 17);
 			fireworks.die();
@@ -41,6 +41,6 @@ public class v1_14_R1 implements ReflectionFunctions {
 
 	@Override
 	public ScoreboardSign createScoreboardSign(Player player, String text) {
-		return new ScoreboardSign_v1_14_R1(player, text);
+		return new ScoreboardSign_v1_15_R1(player, text);
 	}
 }

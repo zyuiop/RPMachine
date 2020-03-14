@@ -1,9 +1,9 @@
 package net.zyuiop.rpmachine.reflection;
 
-import net.minecraft.server.v1_14_R1.*;
+import net.minecraft.server.v1_15_R1.*;
 import net.zyuiop.rpmachine.scoreboards.ScoreboardSign;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_14_R1.util.CraftChatMessage;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -11,13 +11,13 @@ import java.lang.reflect.Field;
 /**
  * @author zyuiop
  */
-public class ScoreboardSign_v1_14_R1 implements ScoreboardSign {
+public class ScoreboardSign_v1_15_R1 implements ScoreboardSign {
 	private boolean created = false;
 	private final String[] lines = new String[16];
 	private final Player player;
 	private String objectiveName;
 
-	public ScoreboardSign_v1_14_R1(Player player, String objectiveName) {
+	public ScoreboardSign_v1_15_R1(Player player, String objectiveName) {
 		this.player = player;
 		this.objectiveName = objectiveName;
 	}
