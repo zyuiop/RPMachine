@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class JobsManager {
+public class JobsManager implements IJobsManager {
     private HashMap<String, Job> jobs = new HashMap<>();
     private Set<JobRestrictions> enabledRestrictions = new HashSet<>();
     private Set<Material> restrictCraft = new HashSet<>();

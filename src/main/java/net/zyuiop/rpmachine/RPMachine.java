@@ -126,7 +126,6 @@ public class RPMachine extends JavaPlugin {
 
         // Load useful and non db dependent managers
         AuctionManager.INSTANCE.load();
-        this.jobsManager = new JobsManager(this);
         this.citiesManager = new CitiesManager(this);
         this.scoreboardManager = new ScoreboardManager(this);
         this.projectsManager = new ProjectsManager(this);
@@ -142,6 +141,12 @@ public class RPMachine extends JavaPlugin {
 
         this.shopsManager = new ShopsManager();
 
+        // Jobs
+        if (getConfig().getBoolean("enable-jobs", true)) {
+            this.jobsManager = new JobsManager(this);
+            new CommandJob();
+        }
+
         // Auto-registering commands
         new CityCommand(citiesManager);
         new PlotCommand(citiesManager);
@@ -152,7 +157,6 @@ public class RPMachine extends JavaPlugin {
         new CommandShops();
         new CommandMoney();
         new CommandHome();
-        new CommandJob();
         new SelectionCommand();
         new AuctionTypesCommand();
         new CommandRanking();

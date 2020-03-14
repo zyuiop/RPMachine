@@ -302,8 +302,10 @@ public class EnchantingSign extends AbstractShopSign {
 
         @Override
         public boolean hasPermission(RoleToken player) {
-            return player.getLegalEntity() instanceof PlayerData &&
-                    RPMachine.getInstance().getJobsManager().isRestrictionAllowed(player.getPlayer(), JobRestrictions.ENCHANTING);
+            var jm = RPMachine.getInstance().getJobsManager();
+            var jobAllows = jm == null || jm.isRestrictionAllowed(player.getPlayer(), JobRestrictions.ENCHANTING);
+            return player.getLegalEntity() instanceof PlayerData && jobAllows;
+
         }
 
         public void postCreateInstructions(Player player) {

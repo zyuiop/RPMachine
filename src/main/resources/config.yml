@@ -81,6 +81,7 @@ global:
   vat: 0.2
   plotSellTaxRate: 0.5
 
+enable-jobs: true
 
 jobs:
   - name: Constructeur

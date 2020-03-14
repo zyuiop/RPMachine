@@ -298,6 +298,9 @@ public class AuctionManager {
 
     public void broadcastInterestingOffers() {
         JobsManager jm = RPMachine.getInstance().getJobsManager();
+
+        if (jm == null) return;
+
         Map<Boolean, Set<Material>> freeMap = buyOffers.keySet().stream().collect(Collectors.partitioningBy(mat -> jm.isFreeToUse(mat) && jm.isFreeToCraft(mat) && jm.getCollectLimit(mat) < 0, Collectors.toSet()));
         Set<BuyOrder> free = freeMap.getOrDefault(true, new HashSet<>()).stream()
                 .flatMap(mat -> getBuyOrders(mat).stream().filter(o -> o.getRemainingItems() > 0))
