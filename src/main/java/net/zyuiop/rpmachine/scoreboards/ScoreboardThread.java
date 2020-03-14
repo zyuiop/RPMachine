@@ -82,13 +82,17 @@ public class ScoreboardThread implements Runnable {
 			c = (city == null) ? ChatColor.DARK_GREEN + "Nature" : ChatColor.AQUA + city.getCityName();
 		}
 
+		var jobs = RPMachine.getInstance().getJobsManager() != null;
+
 		sign.setLine(1, ChatColor.RED + "  ");
 		sign.setLine(2, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Monnaie");
 		sign.setLine(3, ChatColor.AQUA + "" + String.format("%.2f", money) + " " + RPMachine.getCurrencyName());
 		sign.setLine(4, ChatColor.RED + "   ");
-		sign.setLine(5, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Métier");
-		sign.setLine(6, job);
-		sign.setLine(7, ChatColor.RED + "    ");
+		if (jobs) {
+			sign.setLine(5, ChatColor.YELLOW + "" + ChatColor.BOLD + "-> Métier");
+			sign.setLine(6, job);
+			sign.setLine(7, ChatColor.RED + "    ");
+		}
 		sign.setLine(8, ChatColor.YELLOW + "" + ChatColor.BOLD +  "-> Maison");
 		sign.setLine(9, home);
 		sign.setLine(10, ChatColor.RED + "     ");

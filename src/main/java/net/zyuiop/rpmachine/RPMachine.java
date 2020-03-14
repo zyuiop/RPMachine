@@ -193,9 +193,12 @@ public class RPMachine extends JavaPlugin {
         }
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
+            Bukkit.getServer().broadcastMessage(ChatColor.GOLD + "Attention, sauvegarde de la map en cours...");
             Bukkit.getLogger().info("Saving world...");
             Bukkit.getWorld("world").save();
             Bukkit.getLogger().info("Done !");
+            Bukkit.getServer().broadcastMessage(ChatColor.GREEN + "Sauvegarde terminée !");
+
         }, 20 * 60, 20 * 20 * 60);
 
         // Create resources world
