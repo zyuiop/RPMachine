@@ -7,6 +7,7 @@ import net.zyuiop.rpmachine.cities.commands.CityCommand;
 import net.zyuiop.rpmachine.cities.commands.CommandBypass;
 import net.zyuiop.rpmachine.cities.commands.CommandRuntaxes;
 import net.zyuiop.rpmachine.cities.commands.PlotCommand;
+import net.zyuiop.rpmachine.cities.listeners.CitiesChatListener;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.common.PlayerHeadCraft;
@@ -174,6 +175,7 @@ public class RPMachine extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new SignsListener(), this);
         Bukkit.getPluginManager().registerEvents(new CitiesListener(citiesManager), this);
+        Bukkit.getPluginManager().registerEvents(new CitiesChatListener(citiesManager), this);
         Bukkit.getPluginManager().registerEvents(new PlayerHeadCraft(), this);
 
         if (getConfig().getBoolean("mending.disable", true))

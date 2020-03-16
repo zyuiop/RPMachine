@@ -268,13 +268,6 @@ public class CitiesListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onChat(AsyncPlayerChatEvent event) {
-        City city = manager.getPlayerCity(event.getPlayer().getUniqueId());
-        if (city != null) {
-            event.setFormat(city.getChatColor() + "[" + city.getCityName() + "]" + ChatColor.RESET + event.getFormat());
-        }
-    }
 
     @EventHandler
     public void onFireSpread(BlockSpreadEvent ev) {

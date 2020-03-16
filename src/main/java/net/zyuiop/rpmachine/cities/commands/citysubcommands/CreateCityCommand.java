@@ -8,6 +8,7 @@ import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.utils.Messages;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -82,7 +83,7 @@ public class CreateCityCommand implements SubCommand, ConfirmationCommand {
                             data.setAttribute(ALLOW_CREATE_ATTR_KEY, null);
 
                             if (!city.isRequireInvite()) {
-                                player.sendMessage(ChatColor.GRAY + "L'Histoire de la ville de " + city.shortDisplayable() + ChatColor.GRAY + " commence ce jour... Que le sort soit avec elle !");
+                                Bukkit.broadcastMessage(ChatColor.GRAY + "L'Histoire de la ville de " + city.shortDisplayable() + ChatColor.GRAY + " commence ce jour... Que le sort soit avec elle !");
                             }
                             Messages.debit(player, amt, "création de ville");
                             city.creditMoney(amt * 0.9); // Creation amount minus 10% TAX

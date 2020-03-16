@@ -137,6 +137,15 @@ public class City implements LegalEntity, StoredEntity {
         return inhabitants;
     }
 
+
+    public Set<Player> getOnlineInhabitants() {
+        return getInhabitants().stream()
+                .map(Bukkit::getPlayer)
+                .filter(Objects::nonNull)
+                .filter(OfflinePlayer::isOnline)
+                .collect(Collectors.toSet());
+    }
+
     public Set<UUID> getInvitedUsers() {
         return invitedUsers;
     }
