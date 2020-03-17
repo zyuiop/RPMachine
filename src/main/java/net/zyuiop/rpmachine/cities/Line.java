@@ -21,14 +21,16 @@ public class Line {
     public void display(Player player) {
         Location loc = start.clone();
         Vector vec = new Vector(start.getX() - end.getX(), start.getY() - end.getY(), start.getZ() - end.getZ()).multiply(-1);
-        vec = vec.normalize().multiply(0.2); // 5 points per block
+        vec = vec.normalize(); // 1 point per block
         while (loc.getBlockX() != end.getBlockX() || loc.getBlockZ() != end.getBlockZ()) {
             double y = loc.getWorld().getHighestBlockYAt(loc);
 
             Location part = loc.clone();
-            for (double dy = 0.5; dy < 7; dy += 1) {
-                part.setY(y + dy);
+            for (double i = 0.5; i < y + 7; i += 1.5) {
+                if (!loc.getWorld().getBlockAt(loc.getBlockX(), (int) i, loc.getBlockZ()).isEmpty())
+                    continue;
 
+                part.setY(i);
                 player.spawnParticle(Particle.BARRIER, part, 1);
             }
 
