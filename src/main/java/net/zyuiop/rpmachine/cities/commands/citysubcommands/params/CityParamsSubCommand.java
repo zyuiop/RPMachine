@@ -21,5 +21,6 @@ public class CityParamsSubCommand extends CompoundSubCommand {
         registerSubCommand("spawn", new SetSpawnCommand(citiesManager), "setspawn");
         registerSubCommand("jointax", new SetJoinTaxCommand(citiesManager), "jointaxes");
         registerSubCommand("color", new SetChatColorCommand(citiesManager));
+        registerSubCommand("politicalsystem", new SetPoliticalSystemCommand(), "ps");
     }
 }

@@ -21,7 +21,7 @@ public class CitiesPermGui extends PermissionsGui {
 
         this.city = city;
 
-        Predicate<Permission> filter = p -> !city.getPoliticalSystem().isRestricted(p);
+        Predicate<Permission> filter = p -> !city.getPoliticalSystem().isPermissionRestricted(p);
 
         addSubMenu(0, PermissionTypes.CITY, new ItemStack(Material.BRICK), filter, "Gestion de la ville", "Permissions liées à la gestion", "de la ville en elle même");
         addSubMenu(1, PermissionTypes.ECONOMY, new ItemStack(Material.GOLD_BLOCK), filter, "Economie", "Régule les transactions que peut", "effectuer le joueur avec le compte", "bancaire de la ville");

@@ -1,9 +1,9 @@
 package net.zyuiop.rpmachine.cities;
 
 import net.zyuiop.rpmachine.RPMachine;
+import net.zyuiop.rpmachine.cities.politics.PoliticalSystems;
 import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.cities.politics.PoliticalSystem;
-import net.zyuiop.rpmachine.cities.politics.StateOfRights;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.VirtualChunk;
 import net.zyuiop.rpmachine.database.StoredEntity;
@@ -36,7 +36,7 @@ public class City implements LegalEntity, StoredEntity {
     private long publicChannelId = 0;
 
     @JsonExclude
-    private PoliticalSystem politicalSystem = StateOfRights.INSTANCE; // todo: make possible to change
+    private PoliticalSystems politicalSystem = PoliticalSystems.STATE_OF_RIGHTS; // todo: make possible to change
 
     private double taxes = 0;
     private double money = 0;
@@ -410,7 +410,7 @@ public class City implements LegalEntity, StoredEntity {
     }
 
     public boolean hasPermission(UUID player, @Nonnull Permission permission) {
-        if (politicalSystem.isRestricted(permission))
+        if (getPoliticalSystem().isPermissionRestricted(permission))
             return false;
 
         if (mayor.equals(player)) {
@@ -424,7 +424,7 @@ public class City implements LegalEntity, StoredEntity {
     }
 
     public PoliticalSystem getPoliticalSystem() {
-        return politicalSystem;
+        return politicalSystem.instance;
     }
 
     @Override
@@ -495,6 +495,16 @@ public class City implements LegalEntity, StoredEntity {
 
     public void setAllowSpawn(boolean allowSpawn) {
         this.allowSpawn = allowSpawn;
+    }
+
+    public void setPoliticalSystem(PoliticalSystems targetSystem) {
+        this.politicalSystem = targetSystem;
+        this.save();
+
+        this.getOnlineInhabitants().forEach(pl -> {
+            pl.sendMessage(getChatColor() + getCityName() + ChatColor.YELLOW + " est désormais sous le régime politique " + ChatColor.AQUA + targetSystem.instance.getName());
+            pl.sendMessage(ChatColor.GRAY + "Pour plus d'informations, utilisez la commande " + ChatColor.YELLOW + "/politicalsystems (/ps)");
+        });
     }
 
     public static class CityTaxPayer {

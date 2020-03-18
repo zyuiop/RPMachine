@@ -7,11 +7,11 @@ import java.util.Set;
 /**
  * @author Louis Vialar
  */
-public class Tyrany implements PoliticalSystem {
-    public static Tyrany INSTANCE = new Tyrany();
+public class Tyranny implements PoliticalSystem {
+    public static Tyranny INSTANCE = new Tyranny();
     private final Set<Permission> DISABLED_PERMS = Set.of();
 
-    private Tyrany() {
+    private Tyranny() {
     }
 
     @Override
@@ -27,5 +27,10 @@ public class Tyrany implements PoliticalSystem {
     @Override
     public Set<Permission> disabledPerms() {
         return DISABLED_PERMS;
+    }
+
+    @Override
+    public Set<String> protectedParameters() {
+        return Set.of();
     }
 }

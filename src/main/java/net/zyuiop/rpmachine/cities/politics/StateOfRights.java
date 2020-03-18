@@ -30,4 +30,9 @@ public class StateOfRights implements PoliticalSystem {
     public Set<Permission> disabledPerms() {
         return DISABLED_PERMS;
     }
+
+    @Override
+    public Set<String> protectedParameters() {
+        return Set.of("politicalSystem")
+    }
 }

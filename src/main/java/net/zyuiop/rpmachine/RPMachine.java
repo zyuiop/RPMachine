@@ -3,12 +3,10 @@ package net.zyuiop.rpmachine;
 import net.zyuiop.rpmachine.auctions.AuctionManager;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.City;
-import net.zyuiop.rpmachine.cities.commands.CityCommand;
-import net.zyuiop.rpmachine.cities.commands.CommandBypass;
-import net.zyuiop.rpmachine.cities.commands.CommandRuntaxes;
-import net.zyuiop.rpmachine.cities.commands.PlotCommand;
+import net.zyuiop.rpmachine.cities.commands.*;
 import net.zyuiop.rpmachine.cities.listeners.CitiesChatListener;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
+import net.zyuiop.rpmachine.cities.voting.VotationsManager;
 import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.common.listeners.*;
 import net.zyuiop.rpmachine.common.Plot;
@@ -52,6 +50,7 @@ public class RPMachine extends JavaPlugin {
     private ShopsManager shopsManager;
     private MultiverseManager multiverseManager;
     private DiscordManager discordManager;
+    private VotationsManager votationsManager;
 
     public static RPMachine getInstance() {
         return instance;
@@ -138,6 +137,7 @@ public class RPMachine extends JavaPlugin {
         }
 
         this.shopsManager = new ShopsManager();
+        this.votationsManager = new VotationsManager();
 
         // Jobs
         if (getConfig().getBoolean("enable-jobs", true)) {
@@ -158,6 +158,8 @@ public class RPMachine extends JavaPlugin {
         new SelectionCommand();
         new AuctionTypesCommand();
         new CommandRanking();
+        new PoliticalSystemsCommand();
+        new VoteCommand(this.votationsManager, this.citiesManager);
 
         // Classic commands
         getCommand("fly").setExecutor(new CommandFly());
@@ -315,5 +317,9 @@ public class RPMachine extends JavaPlugin {
 
     public ProjectsManager getProjectsManager() {
         return projectsManager;
+    }
+
+    public VotationsManager getVotationsManager() {
+        return votationsManager;
     }
 }

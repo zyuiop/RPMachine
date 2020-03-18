@@ -29,6 +29,7 @@ public enum CityPermissions implements DirectPermission {
     // Management
     SET_TAXES("changer les impots de la ville"),
     SET_PRIVACY("changer le type de ville (publique/privée)"),
+    SET_POLITICAL_SYSTEM("changer de système politique"),
     SET_SPAWN("changer le spawn de la ville"),
     SET_CHAT_COLOR("changer la couleur dans le chat"),
     CHECK_TAXES("vérifier les impots en retard"),
