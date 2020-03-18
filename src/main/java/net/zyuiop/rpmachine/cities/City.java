@@ -35,8 +35,7 @@ public class City implements LegalEntity, StoredEntity {
     private long privateChannelId = 0;
     private long publicChannelId = 0;
 
-    @JsonExclude
-    private PoliticalSystems politicalSystem = PoliticalSystems.STATE_OF_RIGHTS; // todo: make possible to change
+    private PoliticalSystems politicalSystem = PoliticalSystems.STATE_OF_RIGHTS;
 
     private double taxes = 0;
     private double money = 0;
