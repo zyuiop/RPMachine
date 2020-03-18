@@ -25,7 +25,7 @@ public class CitiesChatListener implements Listener {
                 ev.getRecipients().clear();
                 ev.getRecipients().addAll(c.getOnlineInhabitants());
 
-                ev.setFormat(c.getChatColor() + "(Chat de vill - " + c.getCityName() + ") " + ChatColor.GRAY + ChatColor.ITALIC + "%s: %s");
+                ev.setFormat(c.getChatColor() + "(Chat de ville - " + c.getCityName() + ") " + ChatColor.GRAY + "%s: %s");
             } else {
                 ev.setFormat(c.getChatColor() + "[" + c.getCityName() + "]" + ChatColor.RESET + ev.getFormat());
             }

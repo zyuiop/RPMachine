@@ -10,9 +10,7 @@ import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.cities.listeners.CitiesChatListener;
 import net.zyuiop.rpmachine.cities.listeners.CitiesListener;
 import net.zyuiop.rpmachine.commands.*;
-import net.zyuiop.rpmachine.common.PlayerHeadCraft;
-import net.zyuiop.rpmachine.common.listeners.MendingListener;
-import net.zyuiop.rpmachine.common.listeners.PlayerListener;
+import net.zyuiop.rpmachine.common.listeners.*;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.DatabaseManager;
 import net.zyuiop.rpmachine.discord.DiscordManager;
@@ -21,7 +19,6 @@ import net.zyuiop.rpmachine.entities.RoleToken;
 import net.zyuiop.rpmachine.gui.WindowsListener;
 import net.zyuiop.rpmachine.jobs.commands.CommandJob;
 import net.zyuiop.rpmachine.jobs.JobsManager;
-import net.zyuiop.rpmachine.common.listeners.SelectionListener;
 import net.zyuiop.rpmachine.multiverse.MultiverseManager;
 import net.zyuiop.rpmachine.projects.ProjectCommand;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
@@ -181,6 +178,11 @@ public class RPMachine extends JavaPlugin {
         if (getConfig().getBoolean("mending.disable", true))
             Bukkit.getPluginManager().registerEvents(new MendingListener(), this);
 
+        if (getConfig().get("craft-results") != null) {
+            var section = getConfig().getConfigurationSection("craft-results");
+            var map = section.getKeys(false).stream().collect(Collectors.toMap(s -> s, section::getInt));
+            Bukkit.getPluginManager().registerEvents(new CraftResultAugmenter(map), this);
+        }
 
         // Change world spawn
         List<City> spawnEligible = citiesManager.getSpawnCities();

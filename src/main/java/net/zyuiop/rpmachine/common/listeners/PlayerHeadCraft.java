@@ -1,4 +1,4 @@
-package net.zyuiop.rpmachine.common;
+package net.zyuiop.rpmachine.common.listeners;
 
 import net.zyuiop.rpmachine.RPMachine;
 import org.bukkit.Bukkit;
