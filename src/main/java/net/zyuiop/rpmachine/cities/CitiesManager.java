@@ -178,6 +178,22 @@ public class CitiesManager extends FileEntityStore<City> implements LegalEntityR
         }
     }
 
+    public boolean canInteractWithEntity(Player player, Location location) {
+        if (bypass.contains(player.getUniqueId()))
+            return true;
+
+        if (location.getWorld().getName().equals("world")) {
+            City city = getCityHere(location.getChunk());
+
+            if (city == null) {
+                return RPMachine.getInstance().getProjectsManager().canInteractWithEntity(player, location);
+            }
+            return city.canInteractWithBlock(player, location);
+        } else {
+            return RPMachine.getInstance().getProjectsManager().canInteractWithEntity(player, location);
+        }
+    }
+
     public double getCreationPrice() {
         return f.roundedPrice(cities.size());
     }

@@ -15,6 +15,11 @@ public class Tyranny implements PoliticalSystem {
     }
 
     @Override
+    public String getName() {
+        return "Tyrannie";
+    }
+
+    @Override
     public String getDescription() {
         return "Une ville dans laquelle le maire et le conseil municipal ont un pouvoir absolu.";
     }

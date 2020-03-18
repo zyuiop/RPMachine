@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class City implements LegalEntity, StoredEntity {
     private final Set<VirtualChunk> chunks = new HashSet<>();
     private final Map<UUID, Set<Permission>> councils = new HashMap<>();
-    private final Map<String, Plot> plots = new HashMap<>();
+    private final Map<String, CityPlot> plots = new HashMap<>();
     private final Set<UUID> inhabitants = new HashSet<>();
     private final Set<UUID> invitedUsers = new HashSet<>();
     private final Map<String, Double> taxesToPay = new HashMap<>();
@@ -105,11 +105,11 @@ public class City implements LegalEntity, StoredEntity {
         return set;
     }
 
-    public Map<String, Plot> getPlots() {
+    public Map<String, CityPlot> getPlots() {
         return plots;
     }
 
-    public void addPlot(String name, Plot plot) {
+    public void addPlot(String name, CityPlot plot) {
         plots.put(name.toLowerCase(), plot);
         save();
     }
@@ -119,7 +119,7 @@ public class City implements LegalEntity, StoredEntity {
         save();
     }
 
-    public Plot getPlot(String name) {
+    public CityPlot getPlot(String name) {
         return plots.get(name.toLowerCase());
     }
 
@@ -268,8 +268,8 @@ public class City implements LegalEntity, StoredEntity {
         return (chunks.contains(new VirtualChunk(x + 1, z)) || chunks.contains(new VirtualChunk(x - 1, z)) || chunks.contains(new VirtualChunk(x, z + 1)) || chunks.contains(new VirtualChunk(x, z - 1)));
     }
 
-    public Plot getPlotHere(Location location) {
-        for (Plot plot : plots.values()) {
+    public CityPlot getPlotHere(Location location) {
+        for (CityPlot plot : plots.values()) {
             if (plot.getArea().isInside(location))
                 return plot;
         }
@@ -349,7 +349,7 @@ public class City implements LegalEntity, StoredEntity {
     }
 
     public boolean canInteractWithBlock(Player player, Location location) {
-        Plot plot = getPlotHere(location);
+        var plot = getPlotHere(location);
 
         if (plot == null) {
             // A voir, tous les habitants de la ville peuvent-t-ils vraiment intéragir dans toutes les parcelles ?
@@ -357,19 +357,32 @@ public class City implements LegalEntity, StoredEntity {
         } else {
             if (plot.getOwner() == null || plot.getOwner().equalsIgnoreCase(tag()))
                 return hasPermission(player, CityPermissions.INTERACT_IN_EMPTY_PLOTS);
-            return hasPermission(player, CityPermissions.INTERACT_IN_PLOTS) || plot.canBuild(player, location);
+            return hasPermission(player, CityPermissions.INTERACT_IN_PLOTS) || plot.canInteractWithBlock(player, inhabitants.contains(player.getUniqueId()));
+        }
+    }
+
+    public boolean canInteractWithEntity(Player player, Location location) {
+        var plot = getPlotHere(location);
+
+        if (plot == null) {
+            // A voir, tous les habitants de la ville peuvent-t-ils vraiment intéragir dans toutes les parcelles ?
+            return inhabitants.contains(player.getUniqueId());
+        } else {
+            if (plot.getOwner() == null || plot.getOwner().equalsIgnoreCase(tag()))
+                return hasPermission(player, CityPermissions.INTERACT_IN_EMPTY_PLOTS);
+            return hasPermission(player, CityPermissions.INTERACT_IN_PLOTS) || plot.canInteractWithEntity(player, inhabitants.contains(player.getUniqueId()));
         }
     }
 
     public boolean canBuild(Player player, Location location) {
-        Plot plot = getPlotHere(location);
+        var plot = getPlotHere(location);
 
         if (plot == null) {
             return hasPermission(player, CityPermissions.BUILD_IN_CITY);
         } else {
             if (plot.getOwner() == null || plot.getOwner().equalsIgnoreCase(tag()))
                 return hasPermission(player, CityPermissions.BUILD_IN_EMPTY_PLOTS);
-            return hasPermission(player, CityPermissions.BUILD_IN_PLOTS) || plot.canBuild(player, location);
+            return hasPermission(player, CityPermissions.BUILD_IN_PLOTS) || plot.canBuild(player, inhabitants.contains(player.getUniqueId()));
         }
     }
 

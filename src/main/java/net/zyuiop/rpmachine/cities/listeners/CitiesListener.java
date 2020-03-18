@@ -137,12 +137,12 @@ public class CitiesListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInteractEntity(PlayerInteractEntityEvent event) {
-        event.setCancelled(!manager.canBuild(event.getPlayer(), event.getRightClicked().getLocation()));
+        event.setCancelled(!manager.canInteractWithEntity(event.getPlayer(), event.getRightClicked().getLocation()));
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInteractEntity(PlayerInteractAtEntityEvent event) {
-        event.setCancelled(!manager.canBuild(event.getPlayer(), event.getRightClicked().getLocation()));
+        event.setCancelled(!manager.canInteractWithEntity(event.getPlayer(), event.getRightClicked().getLocation()));
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

@@ -17,5 +17,6 @@ public class PlotCommand extends CompoundCommand {
         registerSubCommand("leave", new LeaveCommand(citiesManager));
         registerSubCommand("redefine", new RedefineCommand(citiesManager));
         registerSubCommand("info", new InfoCommand(citiesManager), "i");
+        registerSubCommand("permissions", new PermissionsCommand(citiesManager), "p", "perms");
     }
 }

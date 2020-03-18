@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.City;
+import net.zyuiop.rpmachine.cities.CityPlot;
 import net.zyuiop.rpmachine.cities.commands.CityMemberSubCommand;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.common.VirtualChunk;
@@ -88,7 +89,7 @@ public class CreateCommand implements CityMemberSubCommand {
                     if (mustStop)
                         return true;
 
-                    Plot plot = new Plot();
+                    CityPlot plot = new CityPlot();
                     plot.setPlotName(name);
                     plot.setArea(area);
 

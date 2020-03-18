@@ -15,8 +15,13 @@ public class StateOfRights implements PoliticalSystem {
     private StateOfRights() {}
 
     @Override
+    public String getName() {
+        return "État de droit";
+    }
+
+    @Override
     public String getDescription() {
-        return "Une ville dans lequel les droits des citoyens sont protégés.";
+        return "Une ville dans lequel les droits des citoyens sont protégés. En particulier, le maire et les conseillers ne peuvent pas modifier vos parcelles sans votre accord.";
     }
 
     @Override
@@ -33,6 +38,6 @@ public class StateOfRights implements PoliticalSystem {
 
     @Override
     public Set<String> protectedParameters() {
-        return Set.of("politicalSystem")
+        return Set.of("politicalSystem");
     }
 }

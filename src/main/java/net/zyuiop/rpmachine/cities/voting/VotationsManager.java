@@ -71,7 +71,7 @@ public class VotationsManager extends FileEntityStore<Votation> {
         if (entity.isClosed()) {
             this.pastVotations.put(entity.getId(), entity);
         } else {
-            this.currentVotations.put(entity.getId(), entity)
+            this.currentVotations.put(entity.getId(), entity);
         }
     }
 

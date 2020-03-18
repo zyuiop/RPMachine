@@ -69,7 +69,7 @@ public class VoteCommand extends AbstractCommand implements SubCommand {
             } catch (NumberFormatException e) {
                 commandSender.sendMessage(ChatColor.RED + "Argument incorrect : /vote <numéro de votation>.");
             }
-        } else if (args.length > 2) {
+        } else {
             try {
                 var id = Integer.parseInt(args[0]);
                 var votation = votations.getCurrentVotationById(id);

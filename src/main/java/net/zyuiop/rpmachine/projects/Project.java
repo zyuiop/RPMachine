@@ -216,9 +216,19 @@ public class Project extends Plot implements LegalEntity, StoredEntity {
     }
 
     @Override
-    public boolean canBuild(Player player, Location location) {
+    public boolean canBuild(Player player) {
         return getPlotMembers().contains(player.getUniqueId()) ||
                 (ownerTag() != null && owner() != null && owner().hasDelegatedPermission(player, ProjectPermissions.BUILD_ON_PROJECT));
+    }
+
+    @Override
+    protected DelegatedPermission buildPermission() {
+        return ProjectPermissions.BUILD_ON_PROJECT;
+    }
+
+    @Override
+    protected DelegatedPermission interactPermission() {
+        return ProjectPermissions.INTERACT_ON_PROJECT;
     }
 
     public void removeAdmin(UUID id) {

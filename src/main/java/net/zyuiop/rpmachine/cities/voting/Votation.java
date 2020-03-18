@@ -63,6 +63,7 @@ public class Votation implements StoredEntity {
             return false;
         }
 
+        voter.sendMessage(ChatColor.GREEN + "Votre vote a bien été comptabilisé.");
         recordedVotes.put(voter.getUniqueId(), vote);
         return true;
     }
@@ -118,7 +119,7 @@ public class Votation implements StoredEntity {
             Messages.sendMessage(RPMachine.getInstance().getDatabaseManager().getPlayerData(voter), ChatColor.YELLOW + "Votation " + ChatColor.WHITE + question + ChatColor.YELLOW + " terminée !");
             voteNumbers.forEach((k, v) ->
                     Messages.sendMessage(RPMachine.getInstance().getDatabaseManager().getPlayerData(voter),
-                            " - " + answers.get(k) + " : " + String.format("%.2f", (v.size() * 100D) / finalTotalVotes))
+                            " - " + answers.get(k) + " : " + String.format("%.2f", (v.size() * 100D) / finalTotalVotes) + " %")
             );
         });
 
@@ -169,12 +170,12 @@ public class Votation implements StoredEntity {
 
     @Override
     public String getFileName() {
-        return "" + id;
+        return "" + id + ".json";
     }
 
     @Override
     public void setFileName(String name) {
-        this.id = Integer.parseInt(name);
+        this.id = Integer.parseInt(name.replaceAll("[^0-9]", ""));
     }
 
     public boolean hasVoted(UUID uniqueId) {
