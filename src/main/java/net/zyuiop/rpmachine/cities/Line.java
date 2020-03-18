@@ -1,6 +1,5 @@
 package net.zyuiop.rpmachine.cities;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -22,7 +21,10 @@ public class Line {
         Location loc = start.clone();
         Vector vec = new Vector(start.getX() - end.getX(), start.getY() - end.getY(), start.getZ() - end.getZ()).multiply(-1);
         vec = vec.normalize(); // 1 point per block
-        while (loc.getBlockX() != end.getBlockX() || loc.getBlockZ() != end.getBlockZ()) {
+
+        loc = loc.subtract(vec);
+        do {
+            loc = loc.add(vec);
             double y = loc.getWorld().getHighestBlockYAt(loc);
 
             Location part = loc.clone();
@@ -33,9 +35,8 @@ public class Line {
                 part.setY(i);
                 player.spawnParticle(Particle.BARRIER, part, 1);
             }
+        } while (loc.getBlockX() != end.getBlockX() || loc.getBlockZ() != end.getBlockZ());
 
-            loc = loc.add(vec);
-        }
     }
 
     @Override
