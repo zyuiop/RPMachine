@@ -62,6 +62,7 @@ public class VotationsManager extends FileEntityStore<Votation> {
             var votation = currentVotations.remove(fId);
             votation.finish();
             pastVotations.put(fId, votation);
+            saveEntity(votation);
         });
     }
 
