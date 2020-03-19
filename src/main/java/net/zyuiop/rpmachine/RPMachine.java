@@ -24,6 +24,9 @@ import net.zyuiop.rpmachine.scoreboards.ScoreboardManager;
 import net.zyuiop.rpmachine.shops.CommandShops;
 import net.zyuiop.rpmachine.shops.ShopsManager;
 import net.zyuiop.rpmachine.shops.SignsListener;
+import net.zyuiop.rpmachine.transportation.TransportationCommand;
+import net.zyuiop.rpmachine.transportation.TransportationListener;
+import net.zyuiop.rpmachine.transportation.TransportationManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -160,6 +163,11 @@ public class RPMachine extends JavaPlugin {
         new CommandRanking();
         new PoliticalSystemsCommand();
         new VoteCommand(this.votationsManager, this.citiesManager);
+
+        // Transportation
+        var transportationManager = new TransportationManager();
+        new TransportationCommand(transportationManager);
+        Bukkit.getPluginManager().registerEvents(new TransportationListener(transportationManager), this);
 
         // Classic commands
         getCommand("fly").setExecutor(new CommandFly());
