@@ -84,6 +84,31 @@ public class TransportationCommand extends CompoundCommand {
                 return true;
             }
         });
+        registerSubCommand("addfirst", new SubCommand() {
+            @Override
+            public String getUsage() {
+                return "";
+            }
+
+            @Override
+            public String getDescription() {
+                return "ajoute un point au début de l'itinéraire de transport";
+            }
+
+            @Override
+            public boolean run(Player sender, String command, String subCommand, String[] args) {
+                var p = workingPaths.get(sender.getUniqueId());
+                if (p == null) {
+                    sender.sendMessage(ChatColor.RED + "Aucun chemin en cours d'édition");
+                    return true;
+                }
+
+                p.getLocations().add(0, new VirtualLocation(sender.getLocation()));
+                manager.savePath(p);
+                sender.sendMessage(ChatColor.GREEN + "Position #" + p.getLocations().size() + " ajoutée, utilisez /transportation remove pour supprimer le dernier point.");
+                return true;
+            }
+        });
         registerSubCommand("setstart", new SubCommand() {
             @Override
             public String getUsage() {
@@ -136,6 +161,37 @@ public class TransportationCommand extends CompoundCommand {
                     loc.remove(loc.size() - 1);
                     manager.savePath(p);
                     sender.sendMessage(ChatColor.GREEN + "Position #" + (loc.size() + 1) + " supprimée.");
+                }
+                return true;
+            }
+        });
+
+        registerSubCommand("removefirst", new SubCommand() {
+            @Override
+            public String getUsage() {
+                return "";
+            }
+
+            @Override
+            public String getDescription() {
+                return "supprime la première position de l'itinéraire";
+            }
+
+            @Override
+            public boolean run(Player sender, String command, String subCommand, String[] args) {
+                var p = workingPaths.get(sender.getUniqueId());
+                if (p == null) {
+                    sender.sendMessage(ChatColor.RED + "Aucun chemin en cours d'édition");
+                    return true;
+                }
+
+                var loc = p.getLocations();
+                if (loc.isEmpty()) {
+                    sender.sendMessage(ChatColor.RED + "Aucune position dans le chemin");
+                } else {
+                    loc.remove(0);
+                    manager.savePath(p);
+                    sender.sendMessage(ChatColor.GREEN + "Position #1 supprimée.");
                 }
                 return true;
             }
