@@ -17,10 +17,14 @@ public class Line {
         this.end = end;
     }
 
-    public void display(Player player) {
+    public void displayWallFullHeight(Player player) {
+        displayWallFullHeight(player, Particle.BARRIER, 1.5, 1);
+    }
+
+    public void displayWallFullHeight(Player player, Particle particle, double verticalSpacing, double horizontalSpacing) {
         Location loc = start.clone();
-        Vector vec = new Vector(start.getX() - end.getX(), start.getY() - end.getY(), start.getZ() - end.getZ()).multiply(-1);
-        vec = vec.normalize(); // 1 point per block
+        Vector vec = end.toVector().subtract(start.toVector());
+        vec = vec.normalize().multiply(horizontalSpacing); // 1 point per block
 
         loc = loc.subtract(vec);
         do {
@@ -28,15 +32,57 @@ public class Line {
             double y = loc.getWorld().getHighestBlockYAt(loc);
 
             Location part = loc.clone();
-            for (double i = 0.5; i < y + 7; i += 1.5) {
+            for (double i = 0.5; i < y + 7; i += verticalSpacing) {
                 if (!loc.getWorld().getBlockAt(loc.getBlockX(), (int) i, loc.getBlockZ()).isEmpty())
                     continue;
 
                 part.setY(i);
-                player.spawnParticle(Particle.BARRIER, part, 1);
+                player.spawnParticle(particle, part, 1);
             }
         } while (loc.getBlockX() != end.getBlockX() || loc.getBlockZ() != end.getBlockZ());
 
+    }
+
+    public void displayWall(Player player) {
+        displayWall(player, Particle.BARRIER, 1.5, 1);
+    }
+
+    public void displayWall(Player player, Particle particle, double verticalSpacing, double horizontalSpacing) {
+        Location loc = start.clone();
+        Vector vec = end.toVector().subtract(start.toVector()).setY(0);
+        vec = vec.normalize().multiply(horizontalSpacing); // 1 point per block
+
+        loc = loc.subtract(vec);
+        do {
+            loc = loc.add(vec);
+
+            Location part = loc.clone();
+            for (double i = start.getY() ; i < end.getY() ; i += verticalSpacing) {
+                if (!loc.getWorld().getBlockAt(loc.getBlockX(), (int) i, loc.getBlockZ()).isEmpty())
+                    continue;
+
+                part.setY(i);
+                player.spawnParticle(particle, part, 1);
+            }
+        } while (loc.getBlockX() != end.getBlockX() || loc.getBlockZ() != end.getBlockZ());
+
+    }
+
+    public void displayLine(Player player) {
+        displayLine(player, Particle.DRIP_LAVA, 0.2);
+    }
+
+    public void displayLine(Player player, Particle particle, double spacing) {
+        Location loc = start.clone();
+        Vector vec = end.toVector().subtract(start.toVector());
+
+        var distance = vec.length();
+        vec = vec.normalize().multiply(spacing); // 1 point per block
+
+        for (double i = 0.0 ; i < distance ; i += spacing) {
+            loc = loc.add(vec);
+            player.spawnParticle(particle, loc, 1, 0, 0, 0);
+        }
     }
 
     @Override

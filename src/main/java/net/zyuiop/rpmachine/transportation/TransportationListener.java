@@ -31,7 +31,7 @@ public class TransportationListener implements Listener {
 
     @EventHandler
     public void onDismount(EntityDismountEvent ev) {
-        if (ev.getDismounted().isInvulnerable() && ev.getDismounted() instanceof Mob) {
+        if (ev.getDismounted().isInvulnerable() && ev.getDismounted() instanceof Mob && ev.isCancellable() && !ev.getDismounted().isDead()) {
             if (ev.getEntity() instanceof Player) {
                 ((Player) ev.getEntity()).sendMessage(ChatColor.GRAY + "Votre voyage n'est pas terminé...");
             }

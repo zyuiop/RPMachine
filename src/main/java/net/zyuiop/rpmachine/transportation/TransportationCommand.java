@@ -1,13 +1,17 @@
 package net.zyuiop.rpmachine.transportation;
 
+import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.commands.CompoundCommand;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.VirtualLocation;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -16,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TransportationCommand extends CompoundCommand {
     private final Map<UUID, TransportationPath> workingPaths = new ConcurrentHashMap<>();
+    private final Map<UUID, BukkitTask> previewing = new ConcurrentHashMap<>();
 
     public TransportationCommand(TransportationManager manager) {
         super("transportation", "transportation.manage");
@@ -242,6 +247,48 @@ public class TransportationCommand extends CompoundCommand {
                     manager.savePath(p);
                     sender.sendMessage(ChatColor.GREEN + "Icone définie.");
                 }
+
+                return true;
+            }
+        });
+
+        registerSubCommand("preview", new SubCommand() {
+            @Override
+            public String getUsage() {
+                return "";
+            }
+
+            @Override
+            public String getDescription() {
+                return "active/désactive le preview";
+            }
+
+            @Override
+            public boolean run(Player sender, String command, String subCommand, String[] args) {
+                if (previewing.containsKey(sender.getUniqueId())) {
+                    sender.sendMessage(ChatColor.GREEN + "Preview désactivé");
+                    previewing.remove(sender.getUniqueId()).cancel();
+                    return true;
+                }
+
+                var r = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (!sender.isOnline()) {
+                            cancel();
+                        } else if (!workingPaths.containsKey(sender.getUniqueId())) {
+                            cancel();
+                            sender.sendMessage(ChatColor.GREEN + "Preview désactivé (aucun chemin)");
+                        } else {
+                            var path = workingPaths.get(sender.getUniqueId());
+                            path.display(sender);
+                        }
+                    }
+                };
+
+                previewing.put(sender.getUniqueId(), r.runTaskTimer(RPMachine.getInstance(),0, 40));
+                sender.sendMessage(ChatColor.GREEN + "Preview activé");
+
 
                 return true;
             }

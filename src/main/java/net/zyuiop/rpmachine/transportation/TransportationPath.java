@@ -92,6 +92,17 @@ public class TransportationPath implements StoredEntity {
         task.runTaskTimer(RPMachine.getInstance(), 2, 2);
     }
 
+    public void display(Player p) {
+        List<Line> lines = new ArrayList<>();
+        var current = startPoint;
+        for (var loc: locations) {
+            lines.add(new Line(current.getLocation(), loc.getLocation()));
+            current = loc;
+        }
+
+        lines.forEach(l -> l.displayLine(p));
+    }
+
     @Override
     public String getFileName() {
         return fileName;
