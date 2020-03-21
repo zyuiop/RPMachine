@@ -68,7 +68,7 @@ public class AuctionManager {
 
         // Schedule auto purge
         Bukkit.getScheduler().runTaskTimer(RPMachine.getInstance(), this::purge, 15 * 20L, 15 * 20L);
-        Bukkit.getScheduler().runTaskTimer(RPMachine.getInstance(), this::broadcastInterestingOffers, 30 * 20L, 5 * 60 * 20L);
+        Bukkit.getScheduler().runTaskTimer(RPMachine.getInstance(), this::broadcastInterestingOffers, 120 * 20L, 10 * 60 * 20L);
 
         Bukkit.getPluginManager().registerEvents(AuctionInventoryListener.INSTANCE, RPMachine.getInstance());
     }
@@ -299,7 +299,29 @@ public class AuctionManager {
     public void broadcastInterestingOffers() {
         JobsManager jm = RPMachine.getInstance().getJobsManager();
 
-        if (jm == null) return;
+        if (jm == null) {
+            var list = buyOffers.values().stream().flatMap(Collection::stream)
+                    .sorted((o1, o2) -> Double.compare(o2.getItemPrice(), o1.getItemPrice()))
+                    .limit(5)
+                    .collect(Collectors.toList());
+
+            if (list.size() > 0) {
+
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[HdV] " + ChatColor.YELLOW + "Offres d'achat intéressantes");
+                Bukkit.broadcastMessage(ChatColor.GRAY + "Voici le top " + list.size() + " des offres d'achat par prix d'achat unitaire ! Collectez les objets et vendez les à " + ChatColor.GOLD + "l'Hotel des Ventes" + ChatColor.GRAY + " pour vous faire de l'argent !");
+
+                list.forEach(o -> Bukkit.broadcastMessage(ChatColor.GRAY + " - " + o.owner().shortDisplayable() +
+                        ChatColor.GRAY + " achète " +
+                        ChatColor.YELLOW + o.getRemainingItems() +
+                        ChatColor.GRAY + " * " +
+                        ChatColor.YELLOW + o.getMaterial() +
+                        ChatColor.GRAY + " à " +
+                        ChatColor.YELLOW + o.getFormattedItemPrice() + " unité" +
+                        ChatColor.GRAY + " (soit total " + String.format("%.2f", (o.getRemainingItems() * o.getItemPrice())) + RPMachine.getCurrencyName() + ")"
+                ));
+            }
+            return;
+        }
 
         Map<Boolean, Set<Material>> freeMap = buyOffers.keySet().stream().collect(Collectors.partitioningBy(mat -> jm.isFreeToUse(mat) && jm.isFreeToCraft(mat) && jm.getCollectLimit(mat) < 0, Collectors.toSet()));
         Set<BuyOrder> free = freeMap.getOrDefault(true, new HashSet<>()).stream()
