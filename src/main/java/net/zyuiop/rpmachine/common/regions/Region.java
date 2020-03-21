@@ -1,9 +1,12 @@
 package net.zyuiop.rpmachine.common.regions;
 
+import net.zyuiop.rpmachine.cities.Line;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 
@@ -30,4 +33,8 @@ public interface Region extends Iterable<Block> {
     default Spliterator<Block> spliterator() {
         return Spliterators.spliteratorUnknownSize(iterator(), Spliterator.CONCURRENT | Spliterator.IMMUTABLE);
     }
+
+    void describe(Player player);
+
+    List<Line> getBorders();
 }

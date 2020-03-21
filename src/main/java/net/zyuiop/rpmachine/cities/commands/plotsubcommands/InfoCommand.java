@@ -73,6 +73,9 @@ public class InfoCommand implements SubCommand {
                     String mem = Strings.join(members, ", ");
                     player.sendMessage(ChatColor.YELLOW + "Membres : " + mem);
                 }
+
+                player.sendMessage(ChatColor.YELLOW + "Description de la parcelle :");
+                plot.getArea().describe(player);
             }
         }
 

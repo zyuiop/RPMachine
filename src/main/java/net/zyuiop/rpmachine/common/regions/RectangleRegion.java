@@ -1,11 +1,15 @@
 package net.zyuiop.rpmachine.common.regions;
 
+import net.zyuiop.rpmachine.cities.Line;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class RectangleRegion implements Region {
 	protected String world = "world";
@@ -164,5 +168,27 @@ public class RectangleRegion implements Region {
 
 	public String getWorld() {
 		return world;
+	}
+
+
+	@Override
+	public void describe(Player player) {
+		player.sendMessage(ChatColor.GRAY + "Rectangle de sommets " + ChatColor.YELLOW + minX + " " + minY + " " + minZ + " à " + maxX + " " + maxY + " " + maxZ);
+	}
+
+	private Location getLocation(int x, int y, int z) {
+		return Bukkit.getWorld(world).getBlockAt(x, y, z).getLocation();
+	}
+
+
+	@Override
+	public List<Line> getBorders() {
+		return List.of(
+				new Line(getLocation(minX, minY, minZ), getLocation(minX, maxY, maxZ)),
+				new Line(getLocation(minX, minY, minZ), getLocation(maxX, maxY, minZ)),
+
+				new Line(getLocation(maxX, minY, maxZ), getLocation(minX, maxY, maxZ)),
+				new Line(getLocation(maxX, minY, maxZ), getLocation(maxX, maxY, minZ))
+		);
 	}
 }

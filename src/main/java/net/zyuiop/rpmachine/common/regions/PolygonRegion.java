@@ -1,11 +1,11 @@
 package net.zyuiop.rpmachine.common.regions;
 
+import net.zyuiop.rpmachine.cities.Line;
 import net.zyuiop.rpmachine.common.VirtualLocation;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.World;
+import net.zyuiop.rpmachine.utils.Symbols;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -212,5 +212,36 @@ public class PolygonRegion extends RectangleRegion {
                 return next;
             }
         };
+    }
+
+    @Override
+    public void describe(Player player) {
+        player.sendMessage(ChatColor.GRAY + "Polygone d'altitude " + minY + " à " + maxY + " et de sommets :");
+        this.points.forEach(loc ->
+                player.sendMessage(ChatColor.GRAY + Symbols.ARROW_RIGHT_FULL + " " + ChatColor.YELLOW +
+                        loc.getX() + " " + loc.getZ()));
+    }
+
+    @Override
+    public List<Line> getBorders() {
+        var iter = points.iterator();
+        var first = iter.next();
+        var current = first.getLocation();
+        var lines = new ArrayList<Line>();
+
+        while (iter.hasNext()) {
+            current.setY(minY);
+            var next = iter.next().getLocation();
+            next.setY(maxY);
+
+            lines.add(new Line(current.clone(), next.clone()));
+            current = next;
+        }
+
+        var firstLoc = first.getLocation();
+        firstLoc.setY(maxY);
+        current.setY(minY);
+        lines.add(new Line(current.clone(), firstLoc.clone()));
+        return lines;
     }
 }
