@@ -4,6 +4,7 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.cities.CityPlot;
+import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.entities.RoleToken;
@@ -40,28 +41,25 @@ public class PermissionsCommand implements SubCommand {
 
     @Override
     public boolean run(Player player, String command, String subCommand, String[] args) {
-        if (args.length < 3) {
+        var tuple = PlotCommand.getTupleAndArgs(args, player);
+
+        if (tuple == null || tuple.getT3().length < 1) {
             player.sendMessage(ChatColor.RED + "Utilisation : /" + command + " " + subCommand + " " + getUsage());
             return false;
         }
 
-        City city = citiesManager.getCity(args[0]);
-        if (city == null) {
-            player.sendMessage(ChatColor.RED + "Cette ville n'existe pas.");
-            return true;
-        }
+        args = tuple.getT3();
+        var plot = tuple.getT2();
+        var city = tuple.getT1();
 
-        CityPlot plot = city.getPlot(args[1]);
         RoleToken tt = RPMachine.getPlayerRoleToken(player);
-        if (plot == null) {
-            player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
-        } else if (!plot.ownerTag().equals(tt.getTag()) && !tt.hasDelegatedPermission(PlotPermissions.CHANGE_PUBLIC_PERMISSIONS)) {
+        if (!plot.ownerTag().equals(tt.getTag()) && !tt.hasDelegatedPermission(PlotPermissions.CHANGE_PUBLIC_PERMISSIONS)) {
             player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
         } else {
-            if (args[2].equalsIgnoreCase("everyone")) {
+            if (args[0].equalsIgnoreCase("everyone")) {
                 player.sendMessage(ChatColor.GREEN + "Modification des permissions de tous les joueurs...");
                 plot.externalPermissionsGui(player, city::save).open();
-            } else if (args[2].equalsIgnoreCase("citizens")) {
+            } else if (args[0].equalsIgnoreCase("citizens")) {
                 player.sendMessage(ChatColor.GREEN + "Modification des permissions de tous les citoyens de la ville...");
                 plot.citizensPermissionsGui(player, city::save).open();
             } else {

@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.cities.commands.plotsubcommands;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.cities.CitiesManager;
 import net.zyuiop.rpmachine.cities.City;
+import net.zyuiop.rpmachine.cities.commands.PlotCommand;
 import net.zyuiop.rpmachine.commands.SubCommand;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.entities.RoleToken;
@@ -22,7 +23,7 @@ public class MembersCommand implements SubCommand {
 
     @Override
     public String getUsage() {
-        return "<ville> <parcelle> <add|remove> <joueur>";
+        return "[ville] [parcelle] <add|remove> <joueur>";
     }
 
     @Override
@@ -41,29 +42,26 @@ public class MembersCommand implements SubCommand {
 
     @Override
     public boolean run(Player player, String command, String subCommand, String[] args) {
-        if (args.length < 4) {
+        var tuple = PlotCommand.getTupleAndArgs(args, player);
+
+        if (tuple == null || tuple.getT3().length < 2) {
             player.sendMessage(ChatColor.RED + "Utilisation : /plot members " + getUsage());
             return false;
         }
 
-        City city = citiesManager.getCity(args[0]);
-        if (city == null) {
-            player.sendMessage(ChatColor.RED + "Cette ville n'existe pas.");
-            return true;
-        }
+        args = tuple.getT3();
+        var plot = tuple.getT2();
+        var city = tuple.getT1();
 
-        Plot plot = city.getPlot(args[1]);
         RoleToken tt = RPMachine.getPlayerRoleToken(player);
-        if (plot == null) {
-            player.sendMessage(ChatColor.RED + "Cette parcelle n'existe pas.");
-        } else if (!city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) && !plot.ownerTag().equals(tt.getTag())) {
+        if (!city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) && !plot.ownerTag().equals(tt.getTag())) {
             player.sendMessage(ChatColor.RED + "Cette parcelle ne vous appartient pas.");
         } else {
-            UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[3]);
+            UUID id = RPMachine.database().getUUIDTranslator().getUUID(args[1]);
             if (id == null) {
                 player.sendMessage(ChatColor.RED + "Ce joueur n'a pas été trouvé.");
             } else {
-                if (args[2].equalsIgnoreCase("add") && (city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) || tt.checkDelegatedPermission(PlotPermissions.ADD_NEW_MEMBER))) {
+                if (args[0].equalsIgnoreCase("add") && (city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) || tt.checkDelegatedPermission(PlotPermissions.ADD_NEW_MEMBER))) {
                     if (plot.getPlotMembers().contains(id)) {
                         player.sendMessage(ChatColor.GREEN + "Ce joueur est déjà dans la parcelle.");
                         return true;
@@ -71,7 +69,7 @@ public class MembersCommand implements SubCommand {
                     plot.getPlotMembers().add(id);
                     citiesManager.saveCity(city);
                     player.sendMessage(ChatColor.GREEN + "Le joueur a été ajouté dans la parcelle.");
-                } else if (args[2].equalsIgnoreCase("remove") && (city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) || tt.checkDelegatedPermission(PlotPermissions.REMOVE_MEMBER))) {
+                } else if (args[0].equalsIgnoreCase("remove") && (city.hasPermission(player, CityPermissions.CHANGE_PLOT_MEMBERS) || tt.checkDelegatedPermission(PlotPermissions.REMOVE_MEMBER))) {
                     if (!plot.getPlotMembers().contains(id)) {
                         player.sendMessage(ChatColor.GREEN + "Ce joueur n'est pas dans la parcelle.");
                         return true;
