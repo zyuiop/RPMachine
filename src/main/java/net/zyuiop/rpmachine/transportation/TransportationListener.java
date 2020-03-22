@@ -7,6 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
@@ -31,11 +33,32 @@ public class TransportationListener implements Listener {
 
     @EventHandler
     public void onDismount(EntityDismountEvent ev) {
-        if (ev.getDismounted().isInvulnerable() && ev.getDismounted() instanceof Mob && ev.isCancellable() && !ev.getDismounted().isDead()) {
-            if (ev.getEntity() instanceof Player) {
-                ((Player) ev.getEntity()).sendMessage(ChatColor.GRAY + "Votre voyage n'est pas terminé...");
+        if (ev.getEntity() instanceof Player && ev.isCancellable()) {
+            var p = (Player) ev.getEntity();
+            var ti = TransportationPathInstance.getCurrentTransportation(p);
+
+            if (ti != null) {
+                p.sendMessage(ChatColor.GRAY + "Votre voyage n'est pas terminé...");
+                ev.setCancelled(true); // Cannot dismount carrier
             }
-            ev.setCancelled(true); // Cannot dismount carrier
+        }
+    }
+
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent ev) {
+        var ti = TransportationPathInstance.getCurrentTransportation(ev.getPlayer());
+
+        if (ti != null) {
+            ti.cancel();
+        }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent ev) {
+        var ti = TransportationPathInstance.getCurrentTransportation(ev.getPlayer());
+
+        if (ti != null) {
+            ti.cancel();
         }
     }
 

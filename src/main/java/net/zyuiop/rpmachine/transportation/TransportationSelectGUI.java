@@ -41,7 +41,7 @@ public class TransportationSelectGUI extends Window {
                             }
                         }
 
-                        t.proceed(player);
+                        TransportationPathInstance.startTransportation(player, t);
                     });
         }
     }

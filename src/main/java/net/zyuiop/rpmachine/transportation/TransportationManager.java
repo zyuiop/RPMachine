@@ -3,13 +3,15 @@ package net.zyuiop.rpmachine.transportation;
 import net.zyuiop.rpmachine.database.filestorage.FileEntityStore;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TransportationManager extends FileEntityStore<TransportationPath> {
     private Map<String, TransportationPath> paths = new HashMap<>();
     private List<TransportationNPC> NPCs = new ArrayList<>();
+
+    private Map<UUID, TransportationPath> playerPaths = new ConcurrentHashMap<>();
 
     public TransportationManager() {
         super(TransportationPath.class, "transportation");
@@ -25,6 +27,10 @@ public class TransportationManager extends FileEntityStore<TransportationPath> {
         });
         Bukkit.getLogger().info("Loading transportation paths...");
         load();
+    }
+
+    void startTransportation(UUID uuid, TransportationPath path) {
+
     }
 
     public void addPath(TransportationPath path) {
