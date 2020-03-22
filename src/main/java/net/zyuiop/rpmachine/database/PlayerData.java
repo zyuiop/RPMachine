@@ -3,6 +3,7 @@ package net.zyuiop.rpmachine.database;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
@@ -10,6 +11,8 @@ import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.common.VirtualLocation;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.permissions.DelegatedPermission;
+import net.zyuiop.rpmachine.settings.SettingValue;
+import net.zyuiop.rpmachine.settings.Settings;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -224,6 +227,18 @@ public class PlayerData implements LegalEntity {
 	public void setLastLogin() {
 		data.set("last_login", System.currentTimeMillis());
 		save();
+	}
+
+	public void setSetting(Settings setting, SettingValue value) {
+		data.set("settings." + setting, value.toString());
+	}
+
+	public <T extends SettingValue> T getSetting(Settings setting) {
+		if (data.contains("settings." + setting)) {
+			return setting.parse(data.getString("settings." + setting));
+		} else {
+			return (T) setting.defaultValue;
+		}
 	}
 
 	public long getLastLogin() {

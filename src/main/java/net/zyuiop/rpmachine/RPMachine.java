@@ -11,6 +11,7 @@ import net.zyuiop.rpmachine.commands.*;
 import net.zyuiop.rpmachine.common.listeners.*;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.database.DatabaseManager;
+import net.zyuiop.rpmachine.database.PlayerData;
 import net.zyuiop.rpmachine.discord.DiscordManager;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
@@ -21,6 +22,7 @@ import net.zyuiop.rpmachine.multiverse.MultiverseManager;
 import net.zyuiop.rpmachine.projects.ProjectCommand;
 import net.zyuiop.rpmachine.projects.ProjectsManager;
 import net.zyuiop.rpmachine.scoreboards.ScoreboardManager;
+import net.zyuiop.rpmachine.settings.SettingsCommand;
 import net.zyuiop.rpmachine.shops.CommandShops;
 import net.zyuiop.rpmachine.shops.ShopsManager;
 import net.zyuiop.rpmachine.shops.SignsListener;
@@ -163,6 +165,7 @@ public class RPMachine extends JavaPlugin {
         new CommandRanking();
         new PoliticalSystemsCommand();
         new VoteCommand(this.votationsManager, this.citiesManager);
+        new SettingsCommand();
 
         // Transportation
         var transportationManager = new TransportationManager();
@@ -329,5 +332,9 @@ public class RPMachine extends JavaPlugin {
 
     public VotationsManager getVotationsManager() {
         return votationsManager;
+    }
+
+    public static PlayerData getPlayerData(Player player) {
+        return getInstance().getDatabaseManager().getPlayerData(player);
     }
 }
