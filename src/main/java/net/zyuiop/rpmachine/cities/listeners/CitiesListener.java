@@ -216,7 +216,7 @@ public class CitiesListener implements Listener {
             }
 
             if (c1 != null) {
-                event.getPlayer().sendMessage(ChatColor.GOLD + "Vous quittez " + ChatColor.YELLOW + c1.getCityName() + ChatColor.GOLD + " !");
+                sendMessage.accept(ChatColor.GOLD + "Vous quittez " + ChatColor.YELLOW + c1.getCityName() + ChatColor.GOLD + " !");
                 boolean c1Override = (c1.getCouncils().contains(id) || c1.getMayor().equals(id));
                 Plot from = c1.getPlotHere(event.getFrom());
 

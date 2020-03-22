@@ -3,7 +3,7 @@ package net.zyuiop.rpmachine.settings;
 import java.lang.reflect.InvocationTargetException;
 
 public enum Settings {
-    PLOT_MESSAGES(PlotMessagesSettings.class, PlotMessagesSettings.CHAT, "affichage des messages de parcelle");
+    PLOT_MESSAGES(PlotMessagesSettings.class, PlotMessagesSettings.CHAT, "affichage des messages d'entrée/sortie de parcelle et de ville");
 
     private final Class<? extends Enum<?>> clazz;
     public final SettingValue defaultValue;
