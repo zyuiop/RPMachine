@@ -5,6 +5,7 @@ import net.zyuiop.rpmachine.cities.City;
 import net.zyuiop.rpmachine.common.Plot;
 import net.zyuiop.rpmachine.entities.LegalEntity;
 import net.zyuiop.rpmachine.entities.RoleToken;
+import net.zyuiop.rpmachine.json.JsonExclude;
 import net.zyuiop.rpmachine.permissions.PlotPermissions;
 import net.zyuiop.rpmachine.permissions.ShopPermissions;
 import net.zyuiop.rpmachine.projects.Project;
@@ -18,7 +19,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -26,6 +30,9 @@ public class PlotSign extends AbstractShopSign {
     protected String plotName;
     protected String cityName;
     protected boolean citizensOnly;
+
+    @JsonExclude
+    private Map<UUID, Long> confirmations = new HashMap<>();
 
     public PlotSign() {
         super();
@@ -121,6 +128,7 @@ public class PlotSign extends AbstractShopSign {
             player.sendMessage(ChatColor.YELLOW + "Surface : " + plot.getArea().computeArea() + " blocs²");
             player.sendMessage(ChatColor.YELLOW + "Volume : " + plot.getArea().computeVolume() + " blocs³");
             player.sendMessage(ChatColor.YELLOW + "Impots : " + plot.getArea().computeArea() * taxes + " $");
+            player.sendMessage(ChatColor.GRAY + "Pour plus d'informations, utilisez" + ChatColor.YELLOW + " /plot info");
             return;
         }
 
@@ -141,6 +149,14 @@ public class PlotSign extends AbstractShopSign {
 
         if (!tt.checkDelegatedPermission(ShopPermissions.BUY_PLOTS))
             return;
+
+        var confirm = confirmations.get(player.getUniqueId());
+        if (confirm == null || confirm < System.currentTimeMillis()) {
+            player.sendMessage(ChatColor.YELLOW + "Êtes vous sûr(e) de vouloir acheter cette parcelle pour " + ChatColor.GOLD + String.format("%.2f", price) + RPMachine.getCurrencyName() + ChatColor.YELLOW + " ?");
+            player.sendMessage(ChatColor.GRAY + "Pour confirmer l'achat, " + ChatColor.YELLOW + "cliquez à nouveau dans les 30 prochaines secondes" + ChatColor.GRAY + " !");
+            confirmations.put(player.getUniqueId(), System.currentTimeMillis() + 40 * 60 * 1000L); // Add 40secs because people
+            return;
+        }
 
         LegalEntity data = tt.getLegalEntity();
         if (data.withdrawMoney(price)) {
