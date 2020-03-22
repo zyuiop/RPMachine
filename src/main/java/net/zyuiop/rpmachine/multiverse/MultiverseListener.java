@@ -1,5 +1,7 @@
 package net.zyuiop.rpmachine.multiverse;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Streams;
 import net.zyuiop.rpmachine.RPMachine;
 import net.zyuiop.rpmachine.common.regions.RectangleRegion;
 import org.bukkit.*;
@@ -18,9 +20,14 @@ import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Louis Vialar
@@ -330,18 +337,44 @@ public class MultiverseListener implements Listener {
 
             // Clear area around portal
             RectangleRegion clearArea = new RectangleRegion(opposite.getWorld().getName(),
-                    opposite.getBlockX() - 5, opposite.getBlockY() - 1, opposite.getBlockZ() - 5,
-                    opposite.getBlockX() + 5, opposite.getBlockY() + 10, opposite.getBlockZ() + 5);
+                    first.getBlockX() - 5, first.getBlockY() - 1, first.getBlockZ() - 5,
+                    second.getBlockX() + 5, second.getBlockY() + 5, second.getBlockZ() + 5);
 
             l.info(".. Clearing area " + clearArea);
             clearArea.iterator().forEachRemaining(b -> b.setType(Material.AIR));
 
+            // Find platform material
+            Location from = event.getFrom().clone();
+            RectangleRegion overworldArea = new RectangleRegion(from.getWorld().getName(),
+                    from.getBlockX() - 25, from.getBlockY() - 25, from.getBlockZ() - 25,
+                    from.getBlockX() + 25, from.getBlockY() + 25, from.getBlockZ() + 25);
+
+
+            var materials = StreamSupport.stream(overworldArea.spliterator(), false)
+                    .filter(b -> !b.isEmpty() && !b.isLiquid())
+                    .map(Block::getType)
+                    .collect(Collectors.toList());
+            Collections.shuffle(materials);
+
             // Build a platform
-            RectangleRegion platformArea = new RectangleRegion(opposite.getWorld().getName(),
-                    opposite.getBlockX() - 5, opposite.getBlockY() - 1, opposite.getBlockZ() - 5,
-                    opposite.getBlockX() + 5, opposite.getBlockY() - 1, opposite.getBlockZ() + 5);
+
+
+            RectangleRegion portalFloorArea = new RectangleRegion(opposite.getWorld().getName(),
+                    first.getBlockX() - 5, first.getBlockY() - 1, first.getBlockZ() - 5,
+                    second.getBlockX() + 5, first.getBlockY() -1, second.getBlockZ() + 5);
+            RectangleRegion platformArea = portalFloorArea.shift(0, -1, 0);
 
             l.info(".. Making platform area " + platformArea);
+
+            var materialIterator = materials.iterator();
+            portalFloorArea.iterator().forEachRemaining(block -> {
+                if (materialIterator.hasNext()) {
+                    block.setType(materialIterator.next());
+                } else {
+                    block.setType(Material.BEDROCK);
+                }
+            });
+
             platformArea.iterator().forEachRemaining(b -> b.setType(Material.BEDROCK));
 
             // Clone the portal
@@ -353,29 +386,6 @@ public class MultiverseListener implements Listener {
             while (srcBlocks.hasNext() && newBlocks.hasNext()) {
                 Block s = srcBlocks.next();
                 Block t = newBlocks.next();
-
-                t.setType(s.getType(), false);
-                t.setBlockData(s.getBlockData().clone(), false);
-            }
-
-            // Take random blocks from around the portal
-            Location from = event.getFrom().clone();
-            RectangleRegion overworldArea = new RectangleRegion(from.getWorld().getName(),
-                    from.getBlockX() - 5, from.getBlockY() - 1, from.getBlockZ() - 5,
-                    from.getBlockX() + 5, from.getBlockY() + 10, from.getBlockZ() + 5);
-
-            srcBlocks = overworldArea.iterator();
-            newBlocks = clearArea.iterator();
-            Random rnd = new Random(); // We have 10 * 10 * 10 = 1000 blocks ; would be nice to have 20% of them (up to 200)
-            while (srcBlocks.hasNext() && newBlocks.hasNext()) {
-                Block s = srcBlocks.next();
-                Block t = newBlocks.next();
-
-                if (npArea.isInside(t.getLocation()))
-                    continue; // don't replace portal
-
-                if (rnd.nextDouble() > 0.2)
-                    continue;
 
                 t.setType(s.getType(), false);
                 t.setBlockData(s.getBlockData().clone(), false);

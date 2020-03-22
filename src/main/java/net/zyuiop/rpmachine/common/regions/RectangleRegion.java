@@ -130,6 +130,14 @@ public class RectangleRegion implements Region {
 		return true;
 	}
 
+	public RectangleRegion clone() {
+		return new RectangleRegion(world, minX, minY, minZ, maxX, maxY, maxZ);
+	}
+
+	public RectangleRegion shift(int dx, int dy, int dz) {
+		return new RectangleRegion(world, minX + dx, minY + dy, minZ + dz, maxX + dx, maxY + dy, maxZ + dz);
+	}
+
 	@Override
 	public Iterator<Block> iterator() {
 		return new Iterator<Block>() {
