@@ -22,7 +22,7 @@ class BuyGui extends PickNumberGui {
         super("Combien de " + mat + " acheter ?", player, 10, 5, 1, 1);
         this.autoPrice = autoPrice;
         this.min = 1;
-        this.max = InventoryUtils.availablePlaceFor(player.getInventory(), mat);
+        this.max = autoPrice ? InventoryUtils.availablePlaceFor(player.getInventory(), mat) : Integer.MAX_VALUE;
         this.mat = mat;
         this.avgPrice = AuctionManager.INSTANCE.averagePrice(mat);
     }

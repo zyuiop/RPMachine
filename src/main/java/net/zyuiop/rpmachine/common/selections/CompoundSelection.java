@@ -2,6 +2,7 @@ package net.zyuiop.rpmachine.common.selections;
 
 import net.zyuiop.rpmachine.common.regions.CompoundRegion;
 import net.zyuiop.rpmachine.common.regions.Region;
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -50,6 +51,9 @@ public class CompoundSelection implements Selection<CompoundRegion> {
 
     @Override
     public void describe(Player player) {
+        player.sendMessage(ChatColor.GRAY + "Sélection multiple contenant :");
+        this.regions.forEach(r -> r.describe(player));
+        player.sendMessage(ChatColor.YELLOW + "Sélection en cours : (/sel multiple add pour passer à la suivante)");
         this.current.describe(player);
     }
 }
